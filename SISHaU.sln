@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.ServiceInterface", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Tests", "SISHaU\SISHaU.Tests\SISHaU.Tests.csproj", "{D22B5797-9F2A-4BA7-9636-6EFCE62EBE00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "..\..\..\Some_Date\ГисЖКХ\test\gisIntegration_Console_cf\gisIntegration_Console_cf\Library\Library.csproj", "{007624EE-0069-434E-B1BE-0CB4A2136A80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Signature", "SISHaU.Signature\SISHaU.Signature.csproj", "{035759F5-2B6A-4FAB-B372-EAD476AFD334}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{D22B5797-9F2A-4BA7-9636-6EFCE62EBE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D22B5797-9F2A-4BA7-9636-6EFCE62EBE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D22B5797-9F2A-4BA7-9636-6EFCE62EBE00}.Release|Any CPU.Build.0 = Release|Any CPU
-		{007624EE-0069-434E-B1BE-0CB4A2136A80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{007624EE-0069-434E-B1BE-0CB4A2136A80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{007624EE-0069-434E-B1BE-0CB4A2136A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{007624EE-0069-434E-B1BE-0CB4A2136A80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{035759F5-2B6A-4FAB-B372-EAD476AFD334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{035759F5-2B6A-4FAB-B372-EAD476AFD334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{035759F5-2B6A-4FAB-B372-EAD476AFD334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{035759F5-2B6A-4FAB-B372-EAD476AFD334}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
