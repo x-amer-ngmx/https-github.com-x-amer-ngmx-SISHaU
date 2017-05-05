@@ -1,5 +1,5 @@
 ﻿using Funq;
-using ServiceStack;
+using ServiceStack.WebHost.Endpoints;
 using SISHaU.ServiceInterface;
 
 namespace SISHaU

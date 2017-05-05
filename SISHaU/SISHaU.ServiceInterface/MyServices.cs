@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using ServiceStack;
+using ServiceStack.ServiceInterface;
+using ServiceStack.Text;
 using SISHaU.ServiceModel;
 
 namespace SISHaU.ServiceInterface
