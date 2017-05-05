@@ -11,6 +11,7 @@ namespace SISHaU.Library.API.model
         private bool done = true;
         public bool DoWork()
         {
+            //Fucin sheet )))
             return done;
         }
     }
