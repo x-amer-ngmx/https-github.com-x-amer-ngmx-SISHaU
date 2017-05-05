@@ -8,10 +8,11 @@ namespace SISHaU.Library.API.model
 {
     public class MainWorkerClass
     {
+        private string order;
         private bool done = true;
         public bool DoWork()
         {
-            //Fucin sheet )))
+            order = "stacer";
             return done;
         }
     }
