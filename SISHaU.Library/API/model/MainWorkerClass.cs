@@ -8,10 +8,12 @@ namespace SISHaU.Library.API.model
 {
     public class MainWorkerClass
     {
+        private string order;
         private bool done = true;
         public bool DoWork()
         {
             //123
+            order = "AD";
             return done;
         }
     }
