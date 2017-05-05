@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Tests", "SISHaU\SISH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Signature", "SISHaU.Signature\SISHaU.Signature.csproj", "{035759F5-2B6A-4FAB-B372-EAD476AFD334}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Library", "SISHaU.Library\SISHaU.Library.csproj", "{DFCDE107-C6C9-4364-823B-6401937E1480}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{035759F5-2B6A-4FAB-B372-EAD476AFD334}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{035759F5-2B6A-4FAB-B372-EAD476AFD334}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{035759F5-2B6A-4FAB-B372-EAD476AFD334}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFCDE107-C6C9-4364-823B-6401937E1480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFCDE107-C6C9-4364-823B-6401937E1480}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFCDE107-C6C9-4364-823B-6401937E1480}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFCDE107-C6C9-4364-823B-6401937E1480}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
