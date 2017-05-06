@@ -10,10 +10,6 @@ namespace SISHaU.Library.File.Model
     {
         public ResultModel FileInfo { get; set; }
 
-        /// <summary>
-        /// ExplodUnitModel or IEnumerable<ExplodUnitModel>
-        /// </summary>
         public object Parts { get; set;  }
-        public MarcerModel Marcer { get; set; }
     }
 }

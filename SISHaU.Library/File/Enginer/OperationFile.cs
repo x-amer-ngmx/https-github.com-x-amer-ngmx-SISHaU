@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File.Enginer
@@ -60,7 +57,7 @@ namespace SISHaU.Library.File.Enginer
         }
 
         /// <summary>
-        /// Собираем из результирующего объекта\ коллекции объектов ExplodUnitModel, конечный файл.
+        /// Собираем из результирующего объекта\коллекции объектов ExplodUnitModel, конечный файл.
         /// </summary>
         /// <param name="units">object (IEnumerable<ExplodUnitModel> or ExplodUnitModel)</param>
         /// <returns>Массив байт файла</returns>
