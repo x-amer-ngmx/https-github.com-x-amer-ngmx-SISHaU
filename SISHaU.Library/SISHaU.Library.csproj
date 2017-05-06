@@ -30,7 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CryptoPro.Sharpei.Base">
+      <HintPath>..\..\..\GisJkhServicePoint\Gis_jkh_kernel\bin\Debug\CryptoPro.Sharpei.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="CryptoPro.Sharpei.ServiceModel">
+      <HintPath>..\..\..\GisJkhServicePoint\Gis_jkh_kernel\bin\Debug\CryptoPro.Sharpei.ServiceModel.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -42,8 +49,15 @@
   <ItemGroup>
     <Compile Include="API\model\MainWorkerClass.cs" />
     <Compile Include="File\Builder.cs" />
+    <Compile Include="File\Enginer\OperationFile.cs" />
+    <Compile Include="File\Model\ByteDetectorModel.cs" />
+    <Compile Include="File\Model\ConstantModel.cs" />
+    <Compile Include="File\Model\DownloadeResultModel.cs" />
+    <Compile Include="File\Model\ExplodUnitModel.cs" />
     <Compile Include="File\Model\ResultModel.cs" />
     <Compile Include="File\Model\StructModel.cs" />
+    <Compile Include="File\Model\DownloadeModel.cs" />
+    <Compile Include="File\Model\UploadeResultModel.cs" />
     <Compile Include="File\SingleMetods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

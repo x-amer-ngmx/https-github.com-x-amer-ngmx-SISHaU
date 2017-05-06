@@ -1,11 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace SISHaU.Library.File.Model
 {
+    /// <summary>
+    /// Перечень возвращаемых типов ошибок призагрузке/выгрузке
+    /// </summary>
+    public enum XErrorContext
+    {
+        /// <summary>
+        /// Не пройдены проверки на корректность заполнения полей (обязательность, формат и т.п.).
+        /// </summary>
+        FieldValidationException,
+
+        /// <summary>
+        /// Некорректный размер файла
+        /// </summary>
+        InvalidSizeException,
+
+        /// <summary>
+        /// Не пройдены проверки на соответствие контрольной сумме
+        /// </summary>
+        HashConflictException,
+
+        /// <summary>
+        /// Неправильное хранилище
+        /// </summary>
+        ContextNotFoundException,
+
+        /// <summary>
+        /// Не удалось определить тип загружаемого файла или тип файла является недопустимым
+        /// </summary>
+        DetectionException,
+
+        /// <summary>
+        /// Поставщик данных не найден, заблокирован или неактивен.
+        /// </summary>
+        DataProviderValidationException,
+
+        /// <summary>
+        /// Информационная система не найдена по отпечатку или заблокирована.
+        /// </summary>
+        CertificateValidationException,
+
+        /// <summary>
+        /// Не пройдены проверки на существование идентификатора сессии.
+        /// </summary>
+        FileNotFoundException,
+
+        /// <summary>
+        /// Не пройдены проверки на соответствие операции многопоточной загрузки текущей сессии (например файл уже финализирован).
+        /// </summary>
+        InvalidStatusException,
+
+        /// <summary>
+        /// Не пройдены проверки на номер части (номер превышает количество частей, указанных в инициализации).
+        /// </summary>
+        InvalidPartNumberException,
+
+        /// <summary>
+        /// При нарушении ограничений безопасности при работе с файловым хранилищем (например, сессия загрузки инициализирована другим поставщиком данных).
+        /// </summary>
+        FilePermissionException,
+
+        /// <summary>
+        /// Содержимое файла инфицировано
+        /// </summary>
+        FileVirusInfectionException,
+
+        /// <summary>
+        /// Проверка на вредоносное содержимое не выполнялась, выполняется или дата завершения проверки меньше даты обновления антивирусных баз данных.
+        /// </summary>
+        FileVirusNotCheckedException,
+
+    }
+
     /// <summary>
     /// Не стандартные Http Заголовки для обработки запросов и ответов при Загрузке/Выгрузке файлов.
     /// </summary>

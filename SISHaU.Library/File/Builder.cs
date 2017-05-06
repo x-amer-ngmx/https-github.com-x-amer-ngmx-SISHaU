@@ -9,16 +9,29 @@ namespace SISHaU.Library.File
 {
     public class Builder
     {
-        public ResultModel UpLoaderFiles(IEnumerable<string> files)
+        public IEnumerable<UploadeResultModel> UpLoaderFiles(IEnumerable<string> files)
         {
-            ResultModel result = null;
+            IEnumerable<UploadeResultModel> result = null;
+            return result;
+        }
+
+        public UploadeResultModel UpLoaderFiles(string files)
+        {
+            UploadeResultModel result = null;
+            return result;
+        }
+
+
+        public IEnumerable<DownloadeResultModel> DownLoaderFiles(IEnumerable<DownloadeModel> model)
+        {
+            IEnumerable<DownloadeResultModel> result = null;
 
             return result;
         }
 
-        public ResultModel DownLoaderFiles(IEnumerable<string> files)
+        public DownloadeResultModel DownLoaderFiles(DownloadeModel model)
         {
-            ResultModel result = null;
+            DownloadeResultModel result = null;
 
             return result;
         }
