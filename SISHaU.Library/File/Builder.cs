@@ -9,13 +9,13 @@ namespace SISHaU.Library.File
 {
     public class Builder
     {
-        public IEnumerable<UploadeResultModel> UpLoaderFiles(IEnumerable<string> files)
+        public IEnumerable<UploadeResultModel> UpLoaderFiles(IEnumerable<string> files, Repo repository)
         {
             IEnumerable<UploadeResultModel> result = null;
             return result;
         }
 
-        public UploadeResultModel UpLoaderFiles(string files)
+        public UploadeResultModel UpLoaderFiles(string files, Repo repository)
         {
             UploadeResultModel result = null;
             return result;
