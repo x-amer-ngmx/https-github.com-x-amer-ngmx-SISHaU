@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +31,8 @@ namespace SISHaU.Library.File.Enginer
                     parts.Count());
 
                  response = serverConnect.SendRequest(request).Result;
-
+                //Убираю лимит на количество одновременных запросов.
+                ServicePointManager.DefaultConnectionLimit = 15;
                 Parallel.ForEach(parts, (par, state) =>
                 {
                     //распаралелить
