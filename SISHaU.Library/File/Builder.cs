@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace SISHaU.Library.File
     {
         public IEnumerable<UploadeResultModel> UploadFilesList(IEnumerable<string> patch, Repo repository)
         {
-            if (patch==null || !patch.Any()) return null;
+            if (patch==null || !patch.Any()) throw new Exception("Параметр {patch} не должен быть пустым"); 
 
-            var result = new List<UploadeResultModel>();
+            var result = new ConcurrentBag<UploadeResultModel>();
 
             var bild = new EnginerFileRun();
 
@@ -36,6 +37,7 @@ namespace SISHaU.Library.File
                     });
                     continue;
                 }
+
                 var stream = System.IO.File.ReadAllBytes(file);
                 var info = new FileInfo(file);
                 var operation = new OperationFile();
@@ -59,8 +61,6 @@ namespace SISHaU.Library.File
             {
                 result.Add(bild.UploadFile(cupFile, repository));
             });
-
-
 
             return result;
         }
