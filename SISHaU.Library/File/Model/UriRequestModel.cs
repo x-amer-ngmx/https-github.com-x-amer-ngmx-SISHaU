@@ -1,8 +1,9 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
 namespace SISHaU.Library.File.Model
 {
-    public class UriRequestModel
+    public class UriRequestModel : IDisposable
     {
         private string _uri;
 
@@ -11,6 +12,18 @@ namespace SISHaU.Library.File.Model
         public string UriRequest {
             get => _uri;
             set => _uri = $"{ConstantModel.ServerShare}{Repository.GetName()}/{value}";
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+            UriRequest = string.Empty;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

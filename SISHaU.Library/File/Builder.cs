@@ -10,15 +10,17 @@ using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File
 {
-    public class Builder
+    public class Builder : IDisposable
     {
+        OperationFile Operation => new OperationFile();
+
         public IEnumerable<UploadeResultModel> UploadFilesList(IEnumerable<string> patch, Repo repository)
         {
             if (patch==null || !patch.Any()) throw new Exception("Параметр {patch} не должен быть пустым"); 
 
             var result = new ConcurrentBag<UploadeResultModel>();
 
-            var bild = new EnginerFileRun();
+            var bild = new EnginerFileRun(repository);
 
             var upFile = new List<UploadeModel>();
 
@@ -40,8 +42,8 @@ namespace SISHaU.Library.File
 
                 var stream = System.IO.File.ReadAllBytes(file);
                 var info = new FileInfo(file);
-                var operation = new OperationFile();
-                var parts = operation.ExplodingFile(stream);
+                
+                var parts = Operation.ExplodingFile(stream);
 
 
                 upFile.Add(new UploadeModel
@@ -59,7 +61,7 @@ namespace SISHaU.Library.File
 
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
-                result.Add(bild.UploadFile(cupFile, repository));
+                result.Add(bild.UploadFile(cupFile));
             });
 
             return result;
@@ -75,16 +77,44 @@ namespace SISHaU.Library.File
 
         public IEnumerable<DownloadResultModel> DownloadFilesList(IEnumerable<DownloadModel> model)
         {
-            IEnumerable<DownloadResultModel> result = null;
+            if(model==null || model.Any()) throw new Exception("Параметр model не должен быть пустым");
 
-            return result;
+            return model.Select(DownloadFiles).ToList();
         }
 
         public DownloadResultModel DownloadFiles(DownloadModel model)
         {
-            DownloadResultModel result = null;
+            
+            var bild = new EnginerFileRun(model.Repository);
+
+            var file = bild.DownloadFile(model.FileGuid);
+
+            var result=new DownloadResultModel
+            {
+                ErrorMessage = file.ErrorMessage,
+                FileBytes = Operation.CollectFile(file.Parts),
+                FileName = file.FileInfo.FileName,
+                FileSize = file.FileInfo.FileSize
+            };
 
             return result;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+            Operation.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~Builder()
+        {
+            Dispose(false);
         }
     }
 }

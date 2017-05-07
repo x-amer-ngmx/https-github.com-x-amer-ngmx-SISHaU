@@ -7,10 +7,10 @@ using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File.Enginer
 {
-    public class ResponseRequestOnServer
+    public class ResponseRequestOnServer : IDisposable
     {
 
-        private static UriRequestModel RequestUri => new UriRequestModel();
+        private UriRequestModel RequestUri => new UriRequestModel();
 
 
         public ResponseRequestOnServer(Repo rep)
@@ -139,7 +139,7 @@ namespace SISHaU.Library.File.Enginer
         /// <param name="fileId">Идентификатор файла, он же идентификатор сессии</param>
         /// <param name="range">Параметр задаёт диапазон размерности, загружаемого, массива байт</param>
         /// <returns></returns>
-        public HttpRequestMessage RequestDownLoading(string fileId, RangeModel range = null)
+        public HttpRequestMessage RequestDownLoading(string fileId, RangeModel range)
         {
             RequestUri.Method = HttpMethod.Get;
             RequestUri.UriRequest = $"{fileId}?getfile";
@@ -208,6 +208,24 @@ namespace SISHaU.Library.File.Enginer
             }
 
             return result;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+
+            RequestUri?.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~ResponseRequestOnServer()
+        {
+            Dispose(false);
         }
     }
 }

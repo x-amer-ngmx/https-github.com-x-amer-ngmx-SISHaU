@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File.Enginer
 {
-    public class OperationFile
+    public class OperationFile : IDisposable
     {
         /// <summary>
         /// Разделяем полученны поток файла 
@@ -77,6 +78,11 @@ namespace SISHaU.Library.File.Enginer
             }
             
             return result;
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 }

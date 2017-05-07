@@ -22,7 +22,7 @@ namespace SISHaU.Library.File.Enginer
             _serverConnect = new ResponseRequestOnServer(repository);
         }
 
-        public UploadeResultModel UploadFile(UploadeModel uploadeMod, Repo repository)
+        public UploadeResultModel UploadFile(UploadeModel uploadeMod)
         {
             UploadeResultModel result = null;
 
@@ -65,11 +65,20 @@ namespace SISHaU.Library.File.Enginer
 
         #region Загрузка файлов
 
-        public DownloadResultModel DownloadFile(string fileId)
+        public UploadeModel DownloadFile(string fileId)
         {
-            DownloadResultModel result = null;
+            UploadeModel result = null;
+
             _request = _serverConnect.RequestLoadingUnitInfo(fileId);
             _response = _serverConnect.SendRequest(_request).Result;
+
+            RangeModel range = null;
+
+            _request = _serverConnect.RequestDownLoading(fileId, range);
+            _response = _serverConnect.SendRequest(_request).Result;
+
+
+
             return result;
         }
 
@@ -79,6 +88,7 @@ namespace SISHaU.Library.File.Enginer
         {
             if (!disposing) return;
 
+            _serverConnect?.Dispose();
             _request?.Dispose();
             _response?.Dispose();
 

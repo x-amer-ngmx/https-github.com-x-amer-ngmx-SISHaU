@@ -13,5 +13,7 @@ namespace SISHaU.Library.File.Model
         public object Parts { get; set;  }
 
         public string GostHash { get; set; }
+
+        public RequestErrorModel ErrorMessage { get; set; }
     }
 }
