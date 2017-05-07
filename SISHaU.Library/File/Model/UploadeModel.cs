@@ -11,5 +11,7 @@ namespace SISHaU.Library.File.Model
         public ResultModel FileInfo { get; set; }
 
         public object Parts { get; set;  }
+
+        public string GostHash { get; set; }
     }
 }

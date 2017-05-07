@@ -33,7 +33,8 @@ namespace SISHaU.Library.File.Enginer
 
                 foreach (var par in parts)
                 {
-                    request = serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Marcer.Md5Hash, par.Part);
+                    //распаралелить
+                    request = serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part);
                     response = serverConnect.SendRequest(request).Result;
                 }
 
@@ -44,7 +45,7 @@ namespace SISHaU.Library.File.Enginer
             }
             else if (part!=null)
             {
-                request = serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Marcer.Md5Hash, part.Part);
+                request = serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.Part);
                 response = serverConnect.SendRequest(request).Result;
             }
 

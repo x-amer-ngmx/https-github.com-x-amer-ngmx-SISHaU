@@ -56,6 +56,7 @@
     <Compile Include="File\Model\DownloadeResultModel.cs" />
     <Compile Include="File\Model\ExplodUnitModel.cs" />
     <Compile Include="File\Model\MarcerModel.cs" />
+    <Compile Include="File\Model\RequestErrorModel.cs" />
     <Compile Include="File\Model\ResultModel.cs" />
     <Compile Include="File\Model\StructModel.cs" />
     <Compile Include="File\Model\DownloadModel.cs" />
