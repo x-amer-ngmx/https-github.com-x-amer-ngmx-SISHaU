@@ -2,6 +2,7 @@
 using Funq;
 using ServiceStack.WebHost.Endpoints;
 using SISHaU.ServiceInterface;
+using SISHaU.ServiceInterface.Services;
 using SISHaU.ServiceModel;
 using Container = Funq.Container;
 
@@ -14,7 +15,7 @@ namespace SISHaU
         /// Base constructor requires a Name and Assembly where web service implementation is located
         /// </summary>
         public AppHost()
-            : base("SISHaU", typeof(MyServices).Assembly) { }
+            : base("SISHaU", typeof(FileExchangeService).Assembly) { }
 
         /// <summary>
         /// Application specific configuration
@@ -25,7 +26,7 @@ namespace SISHaU
             //Config examples
             //this.Plugins.Add(new PostmanFeature());
             //this.Plugins.Add(new CorsFeature());
-            Routes.Add<Hello>("/hello/{Name}");
+            //Routes.Add<Hello>("/hello/{Name}");
         }
     }
 }
