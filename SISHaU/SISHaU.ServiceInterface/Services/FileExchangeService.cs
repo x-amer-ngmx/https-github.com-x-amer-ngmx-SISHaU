@@ -10,18 +10,19 @@ namespace SISHaU.ServiceInterface.Services
 {
     public class FileExchangeService : IService
     {
-        public object Get(DownloadFiles filesInfo)
+        public DownloadFilesResponse Get(DownloadFiles filesInfo)
         {
             return new DownloadFilesResponse();
         }
 
-        public object Get(DownloadFile fileInfo)
+        public DownloadFileResponse Get(DownloadFile fileInfo)
         {
             return new DownloadFileResponse();
         }
 
-        public object Post(UploadFiles filesInfo)
+        public UploadFilesResponse Post(UploadFiles filesInfo)
         {
+
             return new UploadFilesResponse();
         }
     }
