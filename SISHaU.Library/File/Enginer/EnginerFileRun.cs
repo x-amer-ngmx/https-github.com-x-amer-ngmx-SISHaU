@@ -11,45 +11,51 @@ namespace SISHaU.Library.File.Enginer
 {
     public class EnginerFileRun : IDisposable
     {
+        private readonly ResponseRequestOnServer _serverConnect;
+        private HttpRequestMessage _request;
+        private HttpResponseMessage _response;
 
         #region Выгрузка фыйлов
+
+        public EnginerFileRun(Repo repository)
+        {
+            _serverConnect = new ResponseRequestOnServer(repository);
+        }
 
         public UploadeResultModel UploadFile(UploadeModel uploadeMod, Repo repository)
         {
             UploadeResultModel result = null;
-            HttpRequestMessage request;
-            HttpResponseMessage response;
-
-            var serverConnect = new ResponseRequestOnServer(repository);
 
             var parts = uploadeMod.Parts as IEnumerable<ExplodUnitModel>;
             var part = uploadeMod.Parts as ExplodUnitModel;
 
             if (parts != null)
             {
-                request = serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
+                _request = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
                     parts.Count());
 
-                 response = serverConnect.SendRequest(request).Result;
+                 _response = _serverConnect.SendRequest(_request).Result;
+
+                var sessionId = "123";
                 //Убираю лимит на количество одновременных запросов.
                 ServicePointManager.DefaultConnectionLimit = 15;
                 Parallel.ForEach(parts, (par, state) =>
                 {
                     //распаралелить
-                    request = serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part);
-                    response = serverConnect.SendRequest(request).Result;
+                    _request = _serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part, sessionId);
+                    _response = _serverConnect.SendRequest(_request).Result;
 
                 });
 
-                request = serverConnect.RequestLoadingUnitCloseSession();
+                _request = _serverConnect.RequestLoadingUnitCloseSession(sessionId);
 
-                response = serverConnect.SendRequest(request).Result;
+                _response = _serverConnect.SendRequest(_request).Result;
 
             }
             else if (part!=null)
             {
-                request = serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.Part);
-                response = serverConnect.SendRequest(request).Result;
+                _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, uploadeMod.FileInfo.FileName);
+                _response = _serverConnect.SendRequest(_request).Result;
             }
 
             return result;
@@ -59,9 +65,11 @@ namespace SISHaU.Library.File.Enginer
 
         #region Загрузка файлов
 
-        public DownloadResultModel DownloadFile()
+        public DownloadResultModel DownloadFile(string fileId)
         {
             DownloadResultModel result = null;
+            _request = _serverConnect.RequestLoadingUnitInfo(fileId);
+            _response = _serverConnect.SendRequest(_request).Result;
             return result;
         }
 
@@ -70,7 +78,10 @@ namespace SISHaU.Library.File.Enginer
         private void Dispose(bool disposing)
         {
             if (!disposing) return;
-            //if (_objects != null) _objects.Dispose();
+
+            _request?.Dispose();
+            _response?.Dispose();
+
         }
 
         public void Dispose()

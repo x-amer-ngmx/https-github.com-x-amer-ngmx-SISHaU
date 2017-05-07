@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
 
@@ -9,22 +10,54 @@ namespace SISHaU.Library.File.Enginer
     public class ResponseRequestOnServer
     {
 
-        private Uri RequestUri { get; set; }
-        private Uri UriPartLoader { get; set; }
+        private static UriRequestModel RequestUri => new UriRequestModel();
+
 
         public ResponseRequestOnServer(Repo rep)
         {
-            UriPartLoader = new Uri($"{ConstantModel.ServerShare}{rep.GetName()}");
+            RequestUri.Repository = rep;
         }
+
+        //Uploade
+        // Простая загрузка PUT /ext-bus-file-store-service/rest/homemanagement/ HTTP/1.1
+
+        // Инициализация сессии POST /ext-bus-file-store-service/rest/homemanagement/?upload HTTP/1.1
+        // Загрузка части PUT /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
+        // Завершение сессии POST /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?completed HTTP/1.1
+
+        // Получение сведение о загружаемом файле HEAD /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
+
+        //Downloade
+        // GET /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?getfile HTTP/1.1
+
+        /*
+         *Тип построени адресного запроса
+         * global EndPointShare
+         * 
+         * Repo Repository
+         * HttpMethod Method
+         * Uri UriRequest = {EndPointShare}{Repository}/{param}
+         * 
+        */
+
+
 
         // UriPartLoader = $"{XSrvLocation}{dir.Name()}";
         // UriStartSessionPart = $"{UriPartLoader}/?upload";
         // UriSessionID = $"{UriPartLoader}/{_sessionId}";
         // UriCloseSessionPart = $"{UriSessionID}?compleate";
 
+        /// <summary>
+        /// Метод формирует HTTP запрос на запуск сессии при передачи файла частями.
+        /// </summary>
+        /// <param name="fileName">Наименование файла с расширением</param>
+        /// <param name="fileSize">Размер файла</param>
+        /// <param name="partCount">Кол-во частей</param>
+        /// <returns></returns>
         public HttpRequestMessage RequestLoadingUnitStartSession(string fileName, long fileSize, int partCount)
         {
-            RequestUri = new Uri($"{UriPartLoader}/?upload");
+            RequestUri.Method = HttpMethod.Post;
+            RequestUri.UriRequest = "?upload";
 
             var result = RequestHead();
             result.Headers.Add(HeadParam.X_Upload_Filename.GetName(), fileName);
@@ -33,15 +66,31 @@ namespace SISHaU.Library.File.Enginer
 
             return result;
         }
-        public HttpRequestMessage RequestLoadingUnitCloseSession()
+
+        /// <summary>
+        /// Метод формирует HTTP запрос на завершение сессии при передачи файла частями.
+        /// </summary>
+        /// <param name="sessionId">Идентификатор сессии</param>
+        /// <returns></returns>
+        public HttpRequestMessage RequestLoadingUnitCloseSession(string sessionId)
         {
+            RequestUri.Method = HttpMethod.Post;
+            RequestUri.UriRequest = $"{sessionId}?completed";
+
             var result = RequestHead();
 
             return result;
         }
 
-        public HttpRequestMessage RequestLoadingUnitInfo()
+        /// <summary>
+        /// Метод возвращает интформацию о выгружаемом (Uploade) файле
+        /// </summary>
+        /// <param name="fileId">Идентификатор файла, он же идентификатор сессии</param>
+        /// <returns></returns>
+        public HttpRequestMessage RequestLoadingUnitInfo(string fileId)
         {
+            RequestUri.Method = HttpMethod.Head;
+            RequestUri.UriRequest = $"{fileId}";
             var result = RequestHead();
             return result;
         }
@@ -53,15 +102,27 @@ namespace SISHaU.Library.File.Enginer
         /// <param name="partSize">Размер, либо файла, либо его части </param>
         /// <param name="md5">Хеш сумма файла</param>
         /// <param name="param">Принимает либо string FileName, либо int PartNumber</param>
+        /// <param name="sessionId">Параметр задаётся в случае загрузки частями и является идентификатором сессии</param>
         /// <returns>Возврашает http-сообщение</returns>
-        public HttpRequestMessage RequestLoadingPart(byte[] part, long partSize, byte[] md5, object param)
+        public HttpRequestMessage RequestLoadingPart(byte[] part, long partSize, byte[] md5, object param, string sessionId = null)
         {
-            var result = RequestHead();
-            var name = string.Empty;
+            string name;
 
-            if(param is string) name = HeadParam.X_Upload_Filename.GetName();
-            else if(param is int) name = HeadParam.X_Upload_Partnumber.GetName();
+            if (param is string)
+            {
+                RequestUri.UriRequest = string.Empty;
+                name = HeadParam.X_Upload_Filename.GetName();
+            }
+            else if (param is int)
+            {
+                RequestUri.UriRequest = $"{sessionId}";
+                name = HeadParam.X_Upload_Partnumber.GetName();
+            }
             else throw new Exception("Тип передаваяемого параметра не распознан.");
+
+            RequestUri.Method = HttpMethod.Put;
+
+            var result = RequestHead();
 
             result.Headers.Add(name, $"{param}");
 
@@ -70,27 +131,25 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        /*
-        public HttpRequestMessage RequestEasyLoading(byte[] part, long partSize, byte[] md5, string fileName)
+        /// <summary>
+        /// Метод формирует HTTP запрос на загрузку файла.
+        /// 
+        /// Если файл больше 5мб то параметр range не задаються.
+        /// </summary>
+        /// <param name="fileId">Идентификатор файла, он же идентификатор сессии</param>
+        /// <param name="range">Параметр задаёт диапазон размерности, загружаемого, массива байт</param>
+        /// <returns></returns>
+        public HttpRequestMessage RequestDownLoading(string fileId, RangeModel range = null)
         {
-            var result = RequestHead();
-            result.Headers.Add(HeadParam.X_Upload_Filename.GetName(), fileName);
+            RequestUri.Method = HttpMethod.Get;
+            RequestUri.UriRequest = $"{fileId}?getfile";
 
-            result.Content = GetHttpContent(part, partSize, md5);
+            var result = RequestHead();
+
+            if(range!=null) result.Headers.Range = new RangeHeaderValue(range.From, range.To);
 
             return result;
         }
-
-        public HttpRequestMessage RequestLoadingUnit(byte[] part, long partSize, byte[] md5, int partNum)
-        {
-            var result = RequestHead();
-            result.Headers.Add(HeadParam.X_Upload_Partnumber.GetName(), $"{partNum}");
-
-            result.Content = GetHttpContent(part, partSize, md5);
-
-            return result;
-        }
-        */
 
         /// <summary>
         /// Формируем http-content, передаём массив байт файла или части
@@ -114,7 +173,7 @@ namespace SISHaU.Library.File.Enginer
         /// <returns>Везвращает готовый общий заголовок</returns>
         private HttpRequestMessage RequestHead()
         {
-            var result = new HttpRequestMessage(HttpMethod.Put, RequestUri)
+            var result = new HttpRequestMessage(RequestUri.Method, new Uri(RequestUri.UriRequest))
             {
                 Version = HttpVersion.Version11,
                 Headers =
