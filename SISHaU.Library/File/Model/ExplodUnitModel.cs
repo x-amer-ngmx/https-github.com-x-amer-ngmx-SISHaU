@@ -1,6 +1,6 @@
 ﻿namespace SISHaU.Library.File.Model
 {
-    public abstract class ExplodUnitModel : ByteDetectorModel
+    public class ExplodUnitModel : ByteDetectorModel
     {
         private byte[] _unit;
 
