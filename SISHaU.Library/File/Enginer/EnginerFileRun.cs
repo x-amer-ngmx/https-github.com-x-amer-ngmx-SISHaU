@@ -31,12 +31,12 @@ namespace SISHaU.Library.File.Enginer
 
                  response = serverConnect.SendRequest(request).Result;
 
-                foreach (var par in parts)
+                Parallel.ForEach(parts, (par, state) =>
                 {
                     //распаралелить
                     request = serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part);
                     response = serverConnect.SendRequest(request).Result;
-                }
+                });
 
                 request = serverConnect.RequestLoadingUnitCloseSession();
 
