@@ -26,15 +26,8 @@ namespace SISHaU.Library.File
         public static string FileGost(this byte[] stream)
         {
             string result;
-            try
-            {
-                var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
-                result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
+            result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
 
             return result;
         }

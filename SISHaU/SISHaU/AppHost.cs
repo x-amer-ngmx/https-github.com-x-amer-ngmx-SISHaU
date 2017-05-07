@@ -1,4 +1,5 @@
-﻿using Funq;
+﻿using System.ComponentModel;
+using Funq;
 using ServiceStack.WebHost.Endpoints;
 using SISHaU.ServiceInterface;
 using SISHaU.ServiceInterface.Services;

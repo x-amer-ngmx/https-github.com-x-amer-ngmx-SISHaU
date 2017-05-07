@@ -66,9 +66,10 @@ namespace SISHaU.Library.File.Enginer
             if (units == null) return null;
 
             byte[] result = null;
-            if (units is IEnumerable<ExplodUnitModel>)
+            var explodUnits = units as IEnumerable<ExplodUnitModel>;
+            if (null != explodUnits)
             {
-                result = ((IEnumerable<ExplodUnitModel>)units).SelectMany(explodUnit => explodUnit.Unit).ToArray();
+                result = explodUnits.SelectMany(explodUnit => explodUnit.Unit).ToArray();
             }
             else if (units is ExplodUnitModel)
             {

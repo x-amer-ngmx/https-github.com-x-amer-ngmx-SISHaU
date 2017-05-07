@@ -183,7 +183,9 @@ namespace SISHaU.Signature.Gis
                 }
             };
 
+#pragma warning disable 612
             cert.CertDigest.DigestMethod.Algorithm = CPSignedXml.XmlDsigGost3411UrlObsolete;
+#pragma warning restore 612
 
             var rawCertData = Convert.FromBase64String(xadesInfo.RawPk);
             var pkHash = HashAlgorithm.Create("GOST3411");
@@ -217,7 +219,9 @@ namespace SISHaU.Signature.Gis
             var reference = new Reference
             {
                 Uri = "#signed-data-container",
+#pragma warning disable 612
                 DigestMethod = CPSignedXml.XmlDsigGost3411UrlObsolete,
+#pragma warning restore 612
                 Id = $"{signatureid}-ref0"
             };
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
@@ -225,7 +229,9 @@ namespace SISHaU.Signature.Gis
             signedXml.AddReference(reference);
 
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigCanonicalizationUrl;
+#pragma warning disable 612
             signedXml.SignedInfo.SignatureMethod = CPSignedXml.XmlDsigGost3410UrlObsolete;
+#pragma warning restore 612
 
             return signedXml;
         }

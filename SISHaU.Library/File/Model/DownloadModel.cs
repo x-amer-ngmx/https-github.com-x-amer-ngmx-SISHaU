@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SISHaU.Library.File.Model
 {
-    public class DownloadeModel
+    public class DownloadModel
     {
         public Repo Pepository { get; set; }
         public string FileGuid { get; set; }

@@ -56,9 +56,9 @@ namespace SISHaU.Library.File.Enginer
 
         #region Загрузка файлов
 
-        public DownloadeResultModel DownloadFile()
+        public DownloadResultModel DownloadFile()
         {
-            DownloadeResultModel result = null;
+            DownloadResultModel result = null;
             return result;
         }
 
