@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SISHaU.Library.File.Model
 {
-    public class DownloadeResultModel : ResultModel
+    public class DownloadResultModel : ResultModel
     {
         public byte[] FileBytes { get; set; }
     }

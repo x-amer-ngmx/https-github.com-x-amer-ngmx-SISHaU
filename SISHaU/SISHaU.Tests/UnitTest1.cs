@@ -1,9 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using ServiceStack;
-using ServiceStack.ServiceInterface.Testing;
-using SISHaU.ServiceModel;
-using SISHaU.ServiceInterface;
+﻿using NUnit.Framework;
 
 namespace SISHaU.Tests
 {

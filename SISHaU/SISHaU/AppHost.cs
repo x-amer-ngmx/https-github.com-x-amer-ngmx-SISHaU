@@ -1,6 +1,9 @@
-﻿using Funq;
+﻿using System.ComponentModel;
+using Funq;
 using ServiceStack.WebHost.Endpoints;
 using SISHaU.ServiceInterface;
+using SISHaU.ServiceModel;
+using Container = Funq.Container;
 
 namespace SISHaU
 {
@@ -22,6 +25,7 @@ namespace SISHaU
             //Config examples
             //this.Plugins.Add(new PostmanFeature());
             //this.Plugins.Add(new CorsFeature());
+            Routes.Add<Hello>("/hello/{Name}");
         }
     }
 }

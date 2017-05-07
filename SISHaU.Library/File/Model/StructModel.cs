@@ -2,7 +2,7 @@
 namespace SISHaU.Library.File.Model
 {
     /// <summary>
-    /// Перечень возвращаемых типов ошибок призагрузке/выгрузке
+    /// Перечень возвращаемых типов ошибок при загрузке/выгрузке
     /// </summary>
     public enum XErrorContext
     {
