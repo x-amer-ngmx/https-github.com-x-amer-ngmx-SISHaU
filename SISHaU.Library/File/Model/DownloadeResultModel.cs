@@ -9,5 +9,7 @@ namespace SISHaU.Library.File.Model
     public class DownloadeResultModel : ResultModel
     {
         public byte[] FileBytes { get; set; }
+
+        public RequestErrorModel ErrorMessage { get; set; }
     }
 }

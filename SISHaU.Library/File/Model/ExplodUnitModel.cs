@@ -9,14 +9,11 @@
             set
             {
                 _unit = value;
-                Marcer = new MarcerModel
-                {
-                    Md5Hash = Unit.FileMd5(),
-                    GostHash = Unit.FileGost()
-                };
+                Md5Hash = _unit.FileMd5();
+
             }
         }
 
-        public MarcerModel Marcer { get; private set; }
+        public byte[] Md5Hash{ get; private set; }
     }
 }
