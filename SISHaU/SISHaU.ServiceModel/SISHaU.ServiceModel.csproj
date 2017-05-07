@@ -54,13 +54,13 @@
     <Compile Include="Types\FileExchangeService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SISHaU.Library\SISHaU.Library.csproj">
-      <Project>{DFCDE107-C6C9-4364-823B-6401937E1480}</Project>
-      <Name>SISHaU.Library</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\..\SISHaU.Library\SISHaU.Library.csproj">
+      <Project>{dfcde107-c6c9-4364-823b-6401937e1480}</Project>
+      <Name>SISHaU.Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

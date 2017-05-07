@@ -8,7 +8,7 @@ namespace SISHaU.Library.File.Model
 {
     public class DownloadModel
     {
-        public Repo Pepository { get; set; }
+        public Repo Repository { get; set; }
         public string FileGuid { get; set; }
         
     }
