@@ -3,7 +3,7 @@
     public class ByteDetectorModel
     {
         public int Part { get; set; }
-        public int From { get; set; }
-        public int To { get; set; }
+        public long From { get; set; }
+        public long To { get; set; }
     }
 }

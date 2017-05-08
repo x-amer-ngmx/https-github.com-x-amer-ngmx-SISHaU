@@ -11,9 +11,10 @@ namespace SISHaU.Library.File.Enginer
         /// Разделяем полученны поток файла 
         /// </summary>
         /// <param name="file">Массив байт файла</param>
-        /// <returns>object (ExplodUnitModel or List<ExplodUnitModel>)</returns>
-        public object ExplodingFile(byte[] file)
+        /// <returns>коллекцию типа ExplodUnitModel</returns>
+        public List<ExplodUnitModel> ExplodingFile(byte[] file)
         {
+
             long sizeFile = file.Length;
             var modes = sizeFile % ConstantModel.MaxPartSize;
             var mod = modes == 0;
@@ -21,38 +22,56 @@ namespace SISHaU.Library.File.Enginer
             var parts = (int)(sizeFile / ConstantModel.MaxPartSize);
             var pprs = !mod ? parts + 1 : parts;
 
-            var res = new List<ByteDetectorModel>();
+            
             if (pprs <= 1)
             {
-                return
+                return new List<ExplodUnitModel>
+                {
                     new ExplodUnitModel
                     {
                         Unit = file
-                    };
+                    }
+                };
 
             }
+
+            var res = new List<ByteDetectorModel>();
 
             parts = pprs;
 
 
             while (parts > 0)
             {
-                var xxc = parts == pprs ? modes : ConstantModel.MaxPartSize;
-                var from = (int)xxc;
-                var to = (int)(sizeFile > ConstantModel.MaxPartSize ? (sizeFile - xxc) : 0);
-                res.Add(new ByteDetectorModel { Part =  parts, From = to, To = from - 1 });
-                sizeFile = to;
+                var partTo = parts == pprs ? modes : ConstantModel.MaxPartSize;
+                var to = (int)partTo;
+                var from = (int)(sizeFile > ConstantModel.MaxPartSize ? sizeFile - partTo : 0);
+                res.Add(new ByteDetectorModel { Part =  parts, From = from, To = to });
+                sizeFile = from;
                 parts--;
             }
 
-            res = (from resx in res orderby resx.Part ascending select resx).ToList();
-            var result = res.Select(detector => new ExplodUnitModel
+            res = (from resx in res orderby resx.Part select resx).ToList();
+
+            var result = new List<ExplodUnitModel>();
+
+            long partFromSize = 0;
+            foreach (var detector in res)
             {
-                Part = detector.Part,
-                From = detector.From,
-                To = detector.To,
-                Unit = file.Skip(detector.From).Take(detector.To + 1).ToArray()
-            }).ToList();
+                var thisPartSize = (partFromSize + ConstantModel.MaxPartSize);
+                var partToSize = modes > thisPartSize ? modes : thisPartSize;
+                result.Add(new ExplodUnitModel
+                {
+                    PartDetect = new ByteDetectorModel
+                    {
+                        Part = detector.Part,
+                        From = partFromSize,
+                        To = partToSize
+                    }, 
+                    Unit = file.Skip((int)detector.From).Take((int)detector.To).ToArray()
+                });
+
+                partFromSize = thisPartSize;
+            }
 
             return result;
         }
@@ -60,21 +79,22 @@ namespace SISHaU.Library.File.Enginer
         /// <summary>
         /// Собираем из результирующего объекта\коллекции объектов ExplodUnitModel, конечный файл.
         /// </summary>
-        /// <param name="units">object (IEnumerable<ExplodUnitModel> or ExplodUnitModel)</param>
+        /// <param name="units">последовательнось типа ExplodUnitModel</param>
         /// <returns>Массив байт файла</returns>
-        public byte[] CollectFile(object units)
+        public byte[] CollectFile(IEnumerable<ExplodUnitModel> units)
         {
-            if (units == null) return null;
+            if (units == null || !units.Any()) return null;
 
             byte[] result = null;
-            var explodUnits = units as IEnumerable<ExplodUnitModel>;
-            if (null != explodUnits)
+            var count = units.Count();
+
+            if (count > 1)
             {
-                result = explodUnits.SelectMany(explodUnit => explodUnit.Unit).ToArray();
+                result = units.SelectMany(explodUnit => explodUnit.Unit).ToArray();
             }
-            else if (units is ExplodUnitModel)
+            else if ( count == 1 )
             {
-                result = ((ExplodUnitModel)units).Unit;
+                result = units.FirstOrDefault()?.Unit;
             }
             
             return result;

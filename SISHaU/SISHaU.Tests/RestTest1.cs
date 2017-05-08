@@ -19,7 +19,7 @@ namespace SISHaU.Tests
                 {
                     FilesPathList = new List<string>()
                     {
-                        { @"D:\gens_214ru.zip" }
+                        { @"D:\test.zip" }
                     },
                     RepositoryMarker = Repo.Agreements
                 });

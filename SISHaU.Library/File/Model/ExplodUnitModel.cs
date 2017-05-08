@@ -1,8 +1,10 @@
 ﻿namespace SISHaU.Library.File.Model
 {
-    public class ExplodUnitModel : ByteDetectorModel
+    public class ExplodUnitModel
     {
         private byte[] _unit;
+
+        public ByteDetectorModel PartDetect { get; set; }
 
         public byte[] Unit {
             get => _unit;

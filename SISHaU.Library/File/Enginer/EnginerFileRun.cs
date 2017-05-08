@@ -26,25 +26,29 @@ namespace SISHaU.Library.File.Enginer
 
         public UploadeResultModel UploadFile(UploadeModel uploadeMod)
         {
+            if (uploadeMod ==null || !uploadeMod.Parts.Any())
+            {
+                return null;
+            }
             UploadeResultModel result = null;
 
-            var parts = uploadeMod.Parts as IEnumerable<ExplodUnitModel>;
-            var part = uploadeMod.Parts as ExplodUnitModel;
+            var count = uploadeMod.Parts.Count();
 
-            if (parts != null)
+            if (count > 1)
             {
                 _request = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
-                    parts.Count());
+                    count);
 
                 _response = _serverConnect.SendRequest(_request).Result;
+                var content = _response.Content.ReadAsStringAsync().Result;
                 var session = _response.ResultEnginer<ResponseIdModel>();
 
                 //Убираю лимит на количество одновременных запросов.
                 ServicePointManager.DefaultConnectionLimit = 15;
-                Parallel.ForEach(parts, (par, state) =>
+                Parallel.ForEach(uploadeMod.Parts, (par, state) =>
                 {
                     //распаралелить
-                    _request = _serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part, session.UploadId);
+                    _request = _serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.PartDetect.Part, session.UploadId);
                     _response = _serverConnect.SendRequest(_request).Result;
 
                     var stateUploaded = _response.ResultEnginer<ResponseModel>();
@@ -77,8 +81,13 @@ namespace SISHaU.Library.File.Enginer
                     };
 
             }
-            else if (part!=null)
+            else if (count == 1)
             {
+                var part = uploadeMod.Parts.FirstOrDefault();
+
+                //это никогда не наступит но решарпер предупреждает...
+                if (part == null) return null;
+
                 _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, uploadeMod.FileInfo.FileName);
                 _response = _serverConnect.SendRequest(_request).Result;
                 var uploadeId = _response.ResultEnginer<ResponseIdModel>(false);
