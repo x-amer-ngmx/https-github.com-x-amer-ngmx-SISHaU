@@ -92,7 +92,7 @@ namespace SISHaU.Library.File
 
         public static T ResultEnginer<T>(this HttpResponseMessage respons, bool isSession = true) where T : class
         {
-            var result = Activator.CreateInstance(typeof(T));
+            object result;
             XErrorContext? error = null;
 
             /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода

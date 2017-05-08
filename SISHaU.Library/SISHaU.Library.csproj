@@ -55,7 +55,6 @@
     <Compile Include="File\Model\ConstantModel.cs" />
     <Compile Include="File\Model\DownloadeResultModel.cs" />
     <Compile Include="File\Model\ExplodUnitModel.cs" />
-    <Compile Include="File\Model\MarcerModel.cs" />
     <Compile Include="File\Model\RangeModel.cs" />
     <Compile Include="File\Model\RequestErrorModel.cs" />
     <Compile Include="File\Model\ResponseModel.cs" />
