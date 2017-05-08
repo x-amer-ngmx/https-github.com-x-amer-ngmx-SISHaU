@@ -30,7 +30,6 @@ bld/
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
-
 # NUNIT
 *.VisualState.xml
 TestResult.xml
@@ -229,7 +228,7 @@ FakesAssemblies/
 **/*.DesktopClient/ModelManifest.xml
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
-*.Tests/*.config
+Tests/*.config
 _Pvt_Extensions
 
 # LightSwitch generated files
