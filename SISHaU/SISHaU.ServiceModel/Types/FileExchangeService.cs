@@ -43,6 +43,6 @@ namespace SISHaU.ServiceModel.Types
 
     public class DownloadFilesResponse
     {
-        
+        public IList<DownloadResultModel> Result { get; set; }
     }
 }

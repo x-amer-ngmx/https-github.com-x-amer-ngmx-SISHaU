@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Practices.ServiceLocation;
 using ServiceStack.ServiceHost;
+using SISHaU.Library.File;
 using SISHaU.ServiceModel.Types;
 
 namespace SISHaU.ServiceInterface.Services
 {
     public class FileExchangeService : IService
     {
+        private readonly IBuilder _fileExchange = ServiceLocator.Current.GetInstance<IBuilder>();
+
         public DownloadFilesResponse Get(DownloadFiles filesInfo)
         {
-            return new DownloadFilesResponse();
+
+            return new DownloadFilesResponse
+            {
+                Result = _fileExchange.DownloadFilesList(filesInfo.DownloadModelList)
+            };
         }
 
         public DownloadFileResponse Get(DownloadFile fileInfo)
@@ -20,7 +23,7 @@ namespace SISHaU.ServiceInterface.Services
             return new DownloadFileResponse();
         }
 
-        public UploadFilesResponse Post(UploadFiles filesInfo)
+        public object Post(UploadFiles filesInfo)
         {
 
             return new UploadFilesResponse();

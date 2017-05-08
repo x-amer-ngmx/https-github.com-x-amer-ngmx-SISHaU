@@ -6,7 +6,7 @@ namespace SISHaU
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            new AppHost().Init();
+            HostUtils.InitHost<AppHost>();
         }
     }
 }

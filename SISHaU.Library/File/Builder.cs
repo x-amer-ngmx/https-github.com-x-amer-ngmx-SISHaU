@@ -3,18 +3,25 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Enginer;
 using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File
 {
-    public class Builder : IDisposable
+    public interface IBuilder
+    {
+        IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository);
+        UploadeResultModel UploadFiles(string patch, Repo repository);
+        IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model);
+        DownloadResultModel DownloadFiles(DownloadModel model);
+    }
+
+    public class Builder : IDisposable, IBuilder
     {
         OperationFile Operation => new OperationFile();
 
-        public IEnumerable<UploadeResultModel> UploadFilesList(IEnumerable<string> patch, Repo repository)
+        public IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository)
         {
             if (patch==null || !patch.Any()) throw new Exception("Параметр {patch} не должен быть пустым"); 
 
@@ -64,7 +71,7 @@ namespace SISHaU.Library.File
                 result.Add(bild.UploadFile(cupFile));
             });
 
-            return result;
+            return result.ToList();
         }
 
         public UploadeResultModel UploadFiles(string patch, Repo repository)
@@ -75,9 +82,9 @@ namespace SISHaU.Library.File
         }
 
 
-        public IEnumerable<DownloadResultModel> DownloadFilesList(IEnumerable<DownloadModel> model)
+        public IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model)
         {
-            if(model==null || model.Any()) throw new Exception("Параметр model не должен быть пустым");
+            if(model==null || !model.Any()) throw new Exception("Параметр model не должен быть пустым");
 
             return model.Select(DownloadFiles).ToList();
         }
