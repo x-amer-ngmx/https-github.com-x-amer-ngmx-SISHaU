@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
 
@@ -34,7 +33,8 @@ namespace SISHaU.Library.File.Enginer
                 _request = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
                     parts.Count());
 
-                 _response = _serverConnect.SendRequest(_request).Result;
+                _response = _serverConnect.SendRequest(_request).Result;
+                _response.ResultEnginer<ResponseIdModel>();
 
                 var sessionId = "123";
                 //Убираю лимит на количество одновременных запросов.

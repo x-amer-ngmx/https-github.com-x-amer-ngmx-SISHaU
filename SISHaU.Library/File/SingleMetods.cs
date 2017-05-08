@@ -23,7 +23,88 @@ namespace SISHaU.Library.File
         {
             var result = Activator.CreateInstance(typeof(T));
 
+            /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
+             * Date
+             * Location
+             * X-Upload-UploadID
+             * Connection
+             * X-Upload-Filename
+             * X-Upload-Length
+             * X-Upload-Completed-Parts
+             * X-Upload-Completed
+             * Last-Modified
+             * Content-Length
+             * Content-Type
+             * X-Upload-FileGUID
+             * Content - X-Upload-Error / byte[]
+             * ------------------------------------
+             * 2.3.6.1	Простая загрузка.
+                    HTTP/1.1 200 OK
+                     +Location: /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f
+                     +Date: Mon, 1 Nov 2010 20:34:56 GMT
 
+
+                    2.3.6.2	Загрузка частями.
+                    2.3.6.2.1	Инициализация сессии.
+                    HTTP/1.1 200 OK
+                     +Date: Mon, 1 Nov 2010 20:34:56 GMT
+                     +X-Upload-UploadID: dc9441c7-312a-4210-b77f-ea368359795f
+
+
+
+                    2.3.6.2.2	Загрузка части файла.
+                    HTTP/1.1 200 OK
+                     +Date: Mon, 1 Nov 2010 20:34:56 GMT
+
+
+                    2.3.6.2.3	Завершение сессии загрузки.
+                    HTTP/1.1 200 OK
+                     +Date: Mon, 1 Nov 2010 20:34:56 GMT
+                     +Connection: close
+
+
+                    2.3.6.2.4	Получение сведений о загружаемом файле.
+                    HTTP/1.1 200 OK
+                     +Date: Mon, 1 Nov 2010 20:34:56 GMT
+                     +X-Upload-Filename: dogovo.tif
+                     +X-Upload-Length: 20000000
+                     +X-Upload-Completed-Parts: 1,2,3
+                     +X-Upload-Completed: false
+
+
+                    2.3.6.3	Выгрузка файла.
+                    HTTP/1.1 200 OK
+                     +Date: Wed, 06 Jun 2012 20:48:15 GMT
+                     +Last-Modified: Wed, 06 Jun 2012 13:39:25 GMT
+                     +Content-Length: 611892
+                     +Content-Type: text/plain
+                     +X-Upload-FileGUID: dc9441c7-312a-4210-b77f-ea368359795f
+                     +[1000 bytes of object data]
+             */
+
+            //разобрать HttpResponseMessage
+
+            var typeSwitcher = new Dictionary<Type, Action>
+            {
+                { typeof(ResponseIdModel), () =>
+                {
+                    result = new ResponseIdModel { };
+                }},
+                { typeof(ResponseSessionCloseModel), () =>
+                {
+                    result = new ResponseSessionCloseModel { };
+                }},
+                { typeof(ResponseInfoModel), () =>
+                {
+                    result = new ResponseInfoModel { };
+                }},
+                { typeof(ResponseDownloadModel), () =>
+                {
+                    result = new ResponseDownloadModel { };
+                }},
+            };
+
+            typeSwitcher[typeof(T)]();
 
             return (T) result;
         }
