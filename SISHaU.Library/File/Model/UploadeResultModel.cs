@@ -10,7 +10,7 @@ namespace SISHaU.Library.File.Model
 
         public string FileGuid { get; set; }
 
-        public DateTime UTime { get; set; }
+        public DateTime? UTime { get; set; }
 
         public RequestErrorModel ErrorMessage { get; set; }
 

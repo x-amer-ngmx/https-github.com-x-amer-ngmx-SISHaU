@@ -14,11 +14,14 @@ namespace SISHaU.Library.File.Enginer
         private HttpRequestMessage _request;
         private HttpResponseMessage _response;
 
+        private readonly Repo _repository;
+
         #region Выгрузка фыйлов
 
         public EnginerFileRun(Repo repository)
         {
-            _serverConnect = new ResponseRequestOnServer(repository);
+            _repository = repository;
+            _serverConnect = new ResponseRequestOnServer(_repository);
         }
 
         public UploadeResultModel UploadFile(UploadeModel uploadeMod)
@@ -34,28 +37,61 @@ namespace SISHaU.Library.File.Enginer
                     parts.Count());
 
                 _response = _serverConnect.SendRequest(_request).Result;
-                _response.ResultEnginer<ResponseIdModel>();
+                var session = _response.ResultEnginer<ResponseIdModel>();
 
-                var sessionId = "123";
                 //Убираю лимит на количество одновременных запросов.
                 ServicePointManager.DefaultConnectionLimit = 15;
                 Parallel.ForEach(parts, (par, state) =>
                 {
                     //распаралелить
-                    _request = _serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part, sessionId);
+                    _request = _serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part, session.UploadId);
                     _response = _serverConnect.SendRequest(_request).Result;
+
+                    var stateUploaded = _response.ResultEnginer<ResponseModel>();
+                    if (stateUploaded.ServerError != null)
+                    {
+                        //Возникла ошибка при загрузке части
+                    }
 
                 });
 
-                _request = _serverConnect.RequestLoadingUnitCloseSession(sessionId);
+                _request = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId);
 
                 _response = _serverConnect.SendRequest(_request).Result;
+
+                var closeSess = _response.ResultEnginer<ResponseSessionCloseModel>();
+
+                if (closeSess.IsClose == false)
+                {
+                    //Ошибка сессию по какой-то причине не удалось закрыть
+                }
+                else 
+                    result = new UploadeResultModel
+                    {
+                        FileName = uploadeMod.FileInfo.FileName,
+                        FileSize = uploadeMod.FileInfo.FileSize,
+                        GostHash = uploadeMod.GostHash,
+                        Repository = _repository,
+                        FileGuid = session.UploadId,
+                        UTime = closeSess.ResultDate?.DateTime
+                    };
 
             }
             else if (part!=null)
             {
                 _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, uploadeMod.FileInfo.FileName);
                 _response = _serverConnect.SendRequest(_request).Result;
+                var uploadeId = _response.ResultEnginer<ResponseIdModel>(false);
+
+                result = new UploadeResultModel
+                {
+                    FileName = uploadeMod.FileInfo.FileName,
+                    FileSize = uploadeMod.FileInfo.FileSize,
+                    GostHash = uploadeMod.GostHash,
+                    Repository = _repository,
+                    FileGuid = uploadeId.UploadId,
+                    UTime = uploadeId.ResultDate?.DateTime
+                };
             }
 
             return result;

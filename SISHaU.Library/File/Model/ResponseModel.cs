@@ -8,7 +8,7 @@ namespace SISHaU.Library.File.Model
 {
     public class ResponseModel
     {
-        public DateTimeOffset ResultDate { get; set; }//
+        public DateTimeOffset? ResultDate { get; set; }//
         public XErrorContext? ServerError { get; set; }//
     }
 
@@ -22,20 +22,19 @@ namespace SISHaU.Library.File.Model
         public bool? IsClose { get; set; } //Connection: close
     }
 
-    public class ResponseInfoModel : ResponseIdModel
+    public class ResponseInfoModel : ResponseModel
     {
         public string FileName { get; set; } //X-Upload-Filename: filename
         public long FileSize{ get; set; } //X-Upload-Length: length
-        public int[] FileParts { get; set; } //X-Upload-Completed-Parts: list of patrs
-        public bool IsCompleate { get; set; } //X-Upload-Completed: flag
+        public int[] FileCompleateParts { get; set; } //X-Upload-Completed-Parts: list of patrs
+        public bool? IsCompleate { get; set; } //X-Upload-Completed: flag
     }
 
     public class ResponseDownloadModel : ResponseModel
     {
-        public DateTimeOffset RFileLastMod { get; set; }
+        public DateTimeOffset? FileLastModification { get; set; }
         //public long RFileLength { get; set; }
-        public string RFileType { get; set; }
-        public Guid RFileGuid { get; set; }
+        public string FileType { get; set; }
         public byte[] RFileBytes { get; set; }
     }
 

@@ -21,6 +21,26 @@ namespace SISHaU.Library.File
             return en is Repo ? result?.ToLower() : result;
         }
 
+        public static bool ToBool(this string res)
+        {
+            return bool.Parse(res);
+        }
+
+        public static int[] ToParts(this string parts, char sp = ',')
+        {
+            int[] result;
+            try
+            {
+                result = parts.Split(sp).Select(int.Parse).ToArray();
+            }
+            catch (Exception)
+            {
+                result = null;
+                //throw;
+            }
+            return result;
+        }
+
         public static string GetVal(this HttpHeaders head, string param)
         {
             IEnumerable<string> str;
@@ -33,7 +53,7 @@ namespace SISHaU.Library.File
         {
             var a = respons.StatusCode;
             var b = respons.Headers.Date;
-            var c = respons.Headers.Location;
+            var c = respons.Headers.Location; //получить UploadeID
             var d = respons.Headers.ConnectionClose;
 
             var e = respons.Content.Headers.ContentLength;
@@ -70,10 +90,10 @@ namespace SISHaU.Library.File
             return (T) result;
         }
 
-        public static T ResultEnginer<T>(this HttpResponseMessage respons) where T : class
+        public static T ResultEnginer<T>(this HttpResponseMessage respons, bool isSession = true) where T : class
         {
             var result = Activator.CreateInstance(typeof(T));
-
+            XErrorContext? error = null;
 
             /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
              * Date
@@ -140,20 +160,63 @@ namespace SISHaU.Library.File
             {
                 { typeof(ResponseIdModel), () =>
                 {
-                    
-                    result = new ResponseIdModel { };
+
+                    var id = respons.StatusCode == HttpStatusCode.OK ?  isSession
+                        ? respons.Headers.GetVal(HeadParam.X_Upload_UploadID.GetName())
+                        : respons.Headers.Location.ToString().Split('/').LastOrDefault()
+                        : null;
+
+                    result = new ResponseIdModel
+                    {
+                        ResultDate = respons.Headers.Date,
+                        UploadId = id,
+                        ServerError = error
+                    };
                 }},
                 { typeof(ResponseSessionCloseModel), () =>
                 {
-                    result = new ResponseSessionCloseModel { };
+                    result = new ResponseSessionCloseModel
+                    {
+                        ResultDate = respons.Headers.Date,
+                        IsClose = respons.StatusCode == HttpStatusCode.OK ? respons.Headers.ConnectionClose : null,
+                        ServerError = error
+                    };
                 }},
                 { typeof(ResponseInfoModel), () =>
                 {
-                    result = new ResponseInfoModel { };
+                    long size = 0;
+
+                    int[] parts = null;
+                    bool? compleat = false;
+
+                    if (respons.StatusCode == HttpStatusCode.OK)
+                    {
+                        long.TryParse(respons.Headers.GetVal(HeadParam.X_Upload_Length.GetName()), out size);
+
+                        parts = respons.Headers.GetVal(HeadParam.X_Upload_Completed_Parts.GetName()).ToParts();
+                        compleat = respons.Headers.GetVal(HeadParam.X_Upload_Completed.GetName()).ToBool();
+                    }
+
+                    result = new ResponseInfoModel
+                    {
+                        ResultDate = respons.Headers.Date,
+                        FileName = respons.StatusCode == HttpStatusCode.OK ?  respons.Headers.GetVal(HeadParam.X_Upload_Filename.GetName()) : null,
+                        FileSize = size,
+                        FileCompleateParts = parts,
+                        IsCompleate = compleat,
+                        ServerError = error
+                    };
                 }},
                 { typeof(ResponseDownloadModel), () =>
                 {
-                    result = new ResponseDownloadModel { };
+                    result = new ResponseDownloadModel
+                    {
+                        ResultDate = respons.Headers.Date,
+                        FileLastModification = respons.StatusCode == HttpStatusCode.OK ? respons.Content.Headers.LastModified : null,
+                        FileType = respons.StatusCode == HttpStatusCode.OK ? respons.Content.Headers.ContentType?.MediaType : null,
+                        RFileBytes = respons.StatusCode == HttpStatusCode.OK ? respons.Content.ReadAsByteArrayAsync().Result : null,
+                        ServerError = error
+                    };
                 }},
             };
 
