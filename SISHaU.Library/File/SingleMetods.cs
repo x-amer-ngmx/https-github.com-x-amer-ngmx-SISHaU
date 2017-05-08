@@ -23,6 +23,7 @@ namespace SISHaU.Library.File
         {
             var result = Activator.CreateInstance(typeof(T));
 
+
             /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
              * Date
              * Location
