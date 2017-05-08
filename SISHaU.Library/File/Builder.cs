@@ -27,8 +27,6 @@ namespace SISHaU.Library.File
 
             var result = new ConcurrentBag<UploadeResultModel>();
 
-            var bild = new EnginerFileRun(repository);
-
             var upFile = new List<UploadeModel>();
 
             foreach (var file in patch)
@@ -68,7 +66,7 @@ namespace SISHaU.Library.File
 
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
-                result.Add(bild.UploadFile(cupFile));
+                result.Add(new EnginerFileRun(repository).UploadFile(cupFile));
             });
 
             return result.ToList();
