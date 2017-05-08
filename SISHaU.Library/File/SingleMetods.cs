@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,9 +21,50 @@ namespace SISHaU.Library.File
             return en is Repo ? result?.ToLower() : result;
         }
 
+        public static string GetVal(this HttpHeaders head, string param)
+        {
+            IEnumerable<string> str;
+            var result = head.TryGetValues(param, out str) ? str.FirstOrDefault() : string.Empty;
+            return result;
+        }
+
         //Возможно это лишнее
         public static T ResponseConverter<T>(this HttpResponseMessage respons)
         {
+            var a = respons.StatusCode;
+            var b = respons.Headers.Date;
+            var c = respons.Headers.Location;
+            var d = respons.Headers.ConnectionClose;
+
+            var e = respons.Content.Headers.ContentLength;
+            var f = respons.Content.Headers.ContentType?.MediaType;
+            var g = respons.Content.ReadAsByteArrayAsync().Result; // byt[]
+            var h = respons.Content.ReadAsStringAsync().Result; // get error if respons.StatusCode == HttpStatusCode.BadRequest
+            var j = respons.Content.Headers.LastModified;
+
+            var x = respons.Headers.GetVal(HeadParam.X_Upload_UploadID.GetName());
+            var x1 = respons.Headers.GetVal(HeadParam.X_Upload_Filename.GetName());
+            var x2 = respons.Headers.GetVal(HeadParam.X_Upload_Length.GetName());
+            var x3 = respons.Headers.GetVal(HeadParam.X_Upload_Completed_Parts.GetName());
+            var x4 = respons.Headers.GetVal(HeadParam.X_Upload_Completed.GetName());
+            var x5 = respons.Headers.GetVal(HeadParam.X_Upload_FileGUID.GetName());
+            
+
+            /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
+ * Date -
+ * Location -
+ * X-Upload-UploadID
+ * Connection -
+ * X-Upload-Filename
+ * X-Upload-Length
+ * X-Upload-Completed-Parts
+ * X-Upload-Completed
+ * Last-Modified -
+ * Content-Length -
+ * Content-Type -
+ * X-Upload-FileGUID
+ * Content - X-Upload-Error / byte[]
+ */
             object result = null;
 
             return (T) result;
@@ -97,6 +140,7 @@ namespace SISHaU.Library.File
             {
                 { typeof(ResponseIdModel), () =>
                 {
+                    
                     result = new ResponseIdModel { };
                 }},
                 { typeof(ResponseSessionCloseModel), () =>
