@@ -12,7 +12,7 @@ namespace SISHaU.Library.File.Enginer
         /// </summary>
         /// <param name="file">Массив байт файла</param>
         /// <returns>object (ExplodUnitModel or List<ExplodUnitModel>)</returns>
-        public object ExplodingFile(byte[] file)
+        public IList<ExplodUnitModel> ExplodingFile(byte[] file)
         {
             long sizeFile = file.Length;
             var modes = sizeFile % ConstantModel.MaxPartSize;
@@ -25,15 +25,13 @@ namespace SISHaU.Library.File.Enginer
             if (pprs <= 1)
             {
                 return
-                    new ExplodUnitModel
-                    {
-                        Unit = file
+                    new List<ExplodUnitModel>{
+                        new ExplodUnitModel{ Unit = file }
                     };
 
             }
 
             parts = pprs;
-
 
             while (parts > 0)
             {
@@ -52,9 +50,9 @@ namespace SISHaU.Library.File.Enginer
                 From = detector.From,
                 To = detector.To,
                 Unit = file.Skip(detector.From).Take(detector.To + 1).ToArray()
-            }).ToList();
+            });
 
-            return result;
+            return result.ToList();
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,20 +29,22 @@ namespace SISHaU.Library.File.Enginer
         {
             UploadeResultModel result = null;
 
-            var parts = uploadeMod.Parts as IEnumerable<ExplodUnitModel>;
-            var part = uploadeMod.Parts as ExplodUnitModel;
+            if (null == uploadeMod?.Parts || !uploadeMod.Parts.Any())
+            {
+                throw new InvalidDataException("Части файла отсутствуют.");
+            }
 
-            if (parts != null)
+            if (uploadeMod.Parts.Count > 1)
             {
                 _request = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
-                    parts.Count());
+                    uploadeMod.Parts.Count);
 
                 _response = _serverConnect.SendRequest(_request).Result;
                 var session = _response.ResultEnginer<ResponseIdModel>();
 
                 //Убираю лимит на количество одновременных запросов.
                 ServicePointManager.DefaultConnectionLimit = 15;
-                Parallel.ForEach(parts, (par, state) =>
+                Parallel.ForEach(uploadeMod.Parts, (par, state) =>
                 {
                     //распаралелить
                     _request = _serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.Part, session.UploadId);
@@ -76,23 +79,24 @@ namespace SISHaU.Library.File.Enginer
                         UTime = closeSess.ResultDate?.DateTime
                     };
 
+                return result;
             }
-            else if (part!=null)
-            {
-                _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, uploadeMod.FileInfo.FileName);
-                _response = _serverConnect.SendRequest(_request).Result;
-                var uploadeId = _response.ResultEnginer<ResponseIdModel>(false);
 
-                result = new UploadeResultModel
-                {
-                    FileName = uploadeMod.FileInfo.FileName,
-                    FileSize = uploadeMod.FileInfo.FileSize,
-                    GostHash = uploadeMod.GostHash,
-                    Repository = _repository,
-                    FileGuid = uploadeId.UploadId,
-                    UTime = uploadeId.ResultDate?.DateTime
-                };
-            }
+            var part = uploadeMod.Parts.First();
+
+            _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, uploadeMod.FileInfo.FileName);
+            _response = _serverConnect.SendRequest(_request).Result;
+            var uploadeId = _response.ResultEnginer<ResponseIdModel>(false);
+
+            result = new UploadeResultModel
+            {
+                FileName = uploadeMod.FileInfo.FileName,
+                FileSize = uploadeMod.FileInfo.FileSize,
+                GostHash = uploadeMod.GostHash,
+                Repository = _repository,
+                FileGuid = uploadeId.UploadId,
+                UTime = uploadeId.ResultDate?.DateTime
+            };
 
             return result;
         }
