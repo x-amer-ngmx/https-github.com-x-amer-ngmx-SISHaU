@@ -92,7 +92,7 @@ namespace SISHaU.Library.File
 
         public static T ResultEnginer<T>(this HttpResponseMessage respons, bool isSession = true) where T : class
         {
-            object result;
+            T result = null;
             XErrorContext? error = null;
 
             /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
@@ -171,7 +171,7 @@ namespace SISHaU.Library.File
                         ResultDate = respons.Headers.Date,
                         UploadId = id,
                         ServerError = error
-                    };
+                    } as T;
                 }},
                 { typeof(ResponseSessionCloseModel), () =>
                 {
@@ -180,7 +180,7 @@ namespace SISHaU.Library.File
                         ResultDate = respons.Headers.Date,
                         IsClose = respons.StatusCode == HttpStatusCode.OK ? respons.Headers.ConnectionClose : null,
                         ServerError = error
-                    };
+                    } as T;
                 }},
                 { typeof(ResponseInfoModel), () =>
                 {
@@ -205,7 +205,7 @@ namespace SISHaU.Library.File
                         FileCompleateParts = parts,
                         IsCompleate = compleat,
                         ServerError = error
-                    };
+                    } as T;
                 }},
                 { typeof(ResponseDownloadModel), () =>
                 {
@@ -216,13 +216,13 @@ namespace SISHaU.Library.File
                         FileType = respons.StatusCode == HttpStatusCode.OK ? respons.Content.Headers.ContentType?.MediaType : null,
                         RFileBytes = respons.StatusCode == HttpStatusCode.OK ? respons.Content.ReadAsByteArrayAsync().Result : null,
                         ServerError = error
-                    };
+                    } as T;
                 }},
             };
 
             typeSwitcher[typeof(T)]();
 
-            return (T) result;
+            return result;
         }
 
         public static byte[] FileMd5(this byte[] stream)

@@ -75,7 +75,6 @@ namespace SISHaU.Library.File
         public UploadeResultModel UploadFiles(string patch, Repo repository)
         {
             var result = UploadFilesList( new []{ patch } , repository).SingleOrDefault();
-
             return result;
         }
 
