@@ -20,7 +20,7 @@ namespace SISHaU.ServiceModel.Types
 
     public class UploadFilesResponse
     {
-        
+        public IList<UploadeResultModel> Result { get; set; }
     }
 
     [Api("Загрузить файл из ГИС ЖКХ")]

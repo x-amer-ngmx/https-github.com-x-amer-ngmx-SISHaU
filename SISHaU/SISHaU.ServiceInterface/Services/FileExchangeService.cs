@@ -11,7 +11,6 @@ namespace SISHaU.ServiceInterface.Services
 
         public DownloadFilesResponse Get(DownloadFiles filesInfo)
         {
-
             return new DownloadFilesResponse
             {
                 Result = _fileExchange.DownloadFilesList(filesInfo.DownloadModelList)
@@ -23,10 +22,12 @@ namespace SISHaU.ServiceInterface.Services
             return new DownloadFileResponse();
         }
 
-        public object Post(UploadFiles filesInfo)
+        public UploadFilesResponse Post(UploadFiles filesInfo)
         {
-
-            return new UploadFilesResponse();
+            return new UploadFilesResponse
+            {
+                Result = _fileExchange.UploadFilesList(filesInfo.FilesPathList, filesInfo.RepositoryMarker)
+            };
         }
     }
 }

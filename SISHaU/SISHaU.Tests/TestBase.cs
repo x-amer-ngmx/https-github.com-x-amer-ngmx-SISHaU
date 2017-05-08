@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Configuration;
 using System.Net;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceStack.ServiceClient.Web;
 
 namespace SISHaU.Tests
 {
-    [SetUpFixture]
+    [TestClass]
     public class TestBase
     {
         private static readonly string BaseUrl = ConfigurationManager.AppSettings["base_url"];
@@ -22,10 +22,10 @@ namespace SISHaU.Tests
             }*/
         };
 
-        [SetUp]
+        [AssemblyInitialize]
         public static void SetUp(TestContext ctx)
         {
-            _appHost = HostUtils.InitHost<TestAppHost>();
+            _appHost = InitHost();
         }
 
         private static TestAppHost InitHost()
@@ -35,7 +35,7 @@ namespace SISHaU.Tests
             return host;
         }
 
-        [TearDown]
+        [AssemblyCleanup]
         public static void CleanUp()
         {
             _appHost.Stop();

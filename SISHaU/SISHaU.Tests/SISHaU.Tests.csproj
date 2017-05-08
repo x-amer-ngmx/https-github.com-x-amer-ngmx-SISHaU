@@ -41,6 +41,7 @@
     <Reference Include="FluentAssertions.Core, Version=4.19.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FluentAssertions.4.19.2\lib\net45\FluentAssertions.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -82,6 +83,10 @@
     <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SISHaU.Library\SISHaU.Library.csproj">
+      <Project>{DFCDE107-C6C9-4364-823B-6401937E1480}</Project>
+      <Name>SISHaU.Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SISHaU.ServiceInterface\SISHaU.ServiceInterface.csproj">
       <Project>{801a0f89-d5f6-49a6-bcea-6624388c98a4}</Project>
       <Name>SISHaU.ServiceInterface</Name>
