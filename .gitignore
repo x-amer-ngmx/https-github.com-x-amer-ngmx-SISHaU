@@ -229,7 +229,7 @@ FakesAssemblies/
 **/*.DesktopClient/ModelManifest.xml
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
-**/*.Tests/App.config
+*.Tests/*.config
 _Pvt_Extensions
 
 # LightSwitch generated files
