@@ -10,12 +10,15 @@ namespace SISHaU.Library.File.Enginer
     public class ResponseRequestOnServer : IDisposable
     {
 
-        private UriRequestModel RequestUri => new UriRequestModel();
+        private UriRequestModel RequestUri { get; }
 
 
         public ResponseRequestOnServer(Repo rep)
         {
-            RequestUri.Repository = rep;
+            RequestUri = new UriRequestModel
+            {
+                Repository = rep
+            };
         }
 
         //Uploade

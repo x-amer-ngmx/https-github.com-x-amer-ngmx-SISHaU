@@ -7,7 +7,7 @@ namespace SISHaU.Library.File.Model
 {
     public static class ConstantModel
     {
-        public static string DateproviderId { get; set; }
+        public static string DateproviderId => $"{ConfigurationManager.AppSettings["data-provider-id"]}";
 
         public static string ServerShare => $"{ConfigurationManager.AppSettings["uri-host"]}/ext-bus-file-store-service/rest/";
         public static long MaxPartSize => ConfigurationManager.AppSettings["max-part-size"]==null ? 5242880 :
