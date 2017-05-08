@@ -19,6 +19,14 @@ namespace SISHaU.Library.File
             return en is Repo ? result?.ToLower() : result;
         }
 
+        //Возможно это лишнее
+        public static T ResponseConverter<T>(this HttpResponseMessage respons)
+        {
+            object result = null;
+
+            return (T) result;
+        }
+
         public static T ResultEnginer<T>(this HttpResponseMessage respons) where T : class
         {
             var result = Activator.CreateInstance(typeof(T));
