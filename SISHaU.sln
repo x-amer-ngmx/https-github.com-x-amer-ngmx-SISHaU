@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU", "SISHaU\SISHaU\SISHaU.csproj", "{4389B305-B381-4B50-B1A8-BBB5259A0524}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Signature", "SISHaU.Signature\SISHaU.Signature.csproj", "{035759F5-2B6A-4FAB-B372-EAD476AFD334}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Library", "SISHaU.Library\SISHaU.Library.csproj", "{DFCDE107-C6C9-4364-823B-6401937E1480}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.DataAccess", "SISHaU.DataAccess\SISHaU.DataAccess.csproj", "{551EBF42-27DF-4C10-9FC7-BF1E58C0C423}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{DFCDE107-C6C9-4364-823B-6401937E1480}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFCDE107-C6C9-4364-823B-6401937E1480}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFCDE107-C6C9-4364-823B-6401937E1480}.Release|Any CPU.Build.0 = Release|Any CPU
+		{551EBF42-27DF-4C10-9FC7-BF1E58C0C423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{551EBF42-27DF-4C10-9FC7-BF1E58C0C423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{551EBF42-27DF-4C10-9FC7-BF1E58C0C423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{551EBF42-27DF-4C10-9FC7-BF1E58C0C423}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
