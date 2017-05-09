@@ -3,6 +3,8 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extras.CommonServiceLocator;
 using Microsoft.Practices.ServiceLocation;
+using NHibernate;
+using SISHaU.DataAccess;
 using SISHaU.Library.File;
 
 namespace SISHaU
@@ -22,6 +24,11 @@ namespace SISHaU
         public static void InitializeServices()
         {
             var builder = new ContainerBuilder();
+
+            var nhSessionFactory = new SessionFactoryManager().CreateSessionFactory();
+            builder.Register(c => nhSessionFactory).As<ISessionFactory>().SingleInstance();
+            builder.Register(c => c.Resolve<ISessionFactory>().GetHashCode());
+            builder.Register(c => c.Resolve<ISessionFactory>().OpenSession());
 
             var fileExchangeBuilder = new Builder();
             builder.RegisterInstance(fileExchangeBuilder).As<IBuilder>().SingleInstance();

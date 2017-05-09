@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SISHaU.DataAccess
+namespace SISHaU.DataAccess.Definition
 {
-    public class Class1
+    public class EntityDto
     {
+        public virtual Guid Id { get; set; }
     }
 }
