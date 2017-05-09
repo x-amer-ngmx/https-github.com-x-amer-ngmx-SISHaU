@@ -176,15 +176,19 @@ namespace SISHaU.Library.File.Enginer
         /// <returns>Везвращает готовый общий заголовок</returns>
         private HttpRequestMessage RequestHead()
         {
-            var result = new HttpRequestMessage(RequestUri.Method, new Uri(RequestUri.UriRequest))
+            var host = new Uri(RequestUri.UriRequest);
+            var result = new HttpRequestMessage(RequestUri.Method, host)
             {
                 Version = HttpVersion.Version11,
                 Headers =
                 {
+                    Host = host.Host,
                     Date = DateTimeOffset.Now,
                     Authorization = ConstantModel.XAutent
                 }
             };
+
+            //result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), "654da58971a8a856effdc057c98bb1a2ab0c7611".ToUpper());
 
             result.Headers.Add(HeadParam.X_Upload_Dataprovider.GetName(), ConstantModel.DateproviderId);
 

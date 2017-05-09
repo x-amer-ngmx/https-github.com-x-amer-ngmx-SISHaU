@@ -86,6 +86,11 @@ namespace SISHaU.Library.File.Model
         Connection,
 
         /// <summary>
+        /// Отпечаток сертификата в случает не шифрованного соединения
+        /// </summary>
+        X_Client_Cert_Fingerprint,
+
+        /// <summary>
         /// Идентификатор поставщика данных
         /// </summary>
         X_Upload_Dataprovider,

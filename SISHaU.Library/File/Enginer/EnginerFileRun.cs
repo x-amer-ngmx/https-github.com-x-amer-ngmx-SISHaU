@@ -45,10 +45,10 @@ namespace SISHaU.Library.File.Enginer
 
                 //Убираю лимит на количество одновременных запросов.
                 ServicePointManager.DefaultConnectionLimit = 15;
-                Parallel.ForEach(uploadeMod.Parts, (par, state) =>
+                Parallel.ForEach(uploadeMod.Parts, (part, state) =>
                 {
                     //распаралелить
-                    _request = _serverConnect.RequestLoadingPart(par.Unit, par.Unit.Length, par.Md5Hash, par.PartDetect.Part, session.UploadId);
+                    _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId);
                     _response = _serverConnect.SendRequest(_request).Result;
 
                     var stateUploaded = _response.ResultEnginer<ResponseModel>();

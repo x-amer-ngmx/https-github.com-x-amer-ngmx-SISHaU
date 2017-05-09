@@ -65,7 +65,7 @@ namespace SISHaU.Library.File.Enginer
                     {
                         Part = detector.Part,
                         From = partFromSize,
-                        To = partToSize
+                        To = partToSize-1
                     }, 
                     Unit = file.Skip((int)detector.From).Take((int)detector.To).ToArray()
                 });
