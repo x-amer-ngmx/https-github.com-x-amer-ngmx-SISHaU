@@ -134,7 +134,7 @@ namespace SISHaU.Library.File.Enginer
             result = new UploadeResultModel
             {
                 FileName = error!=null ? null : uploadeMod.FileInfo.FileName,
-                FileSize = error != null ? null : uploadeMod.FileInfo.FileSize,
+                FileSize = error != null ? 0 : uploadeMod.FileInfo.FileSize,
                 GostHash = error != null ? null : uploadeMod.GostHash,
                 Repository = error != null ? (Repo?) null : _repository,
                 FileGuid = error != null ? null : fileGuid,

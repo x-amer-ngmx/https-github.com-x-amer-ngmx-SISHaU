@@ -24,6 +24,17 @@ namespace SISHaU.Tests
                     RepositoryMarker = Repo.Agreements
                 });
 
+                var downResult = jsonClient.Post(new DownloadFile()
+                {
+                    DownloadModel = new DownloadModel
+                    {
+                        Repository = Repo.Homemanagement,
+                        FileGuid = "GUID FILE",
+                        Parts = null // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
+                    }
+                });
+
+                var dRes = downResult;
                 var res = result;
             }
         }
