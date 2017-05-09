@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.ServiceLocation;
+﻿using System;
+using Microsoft.Practices.ServiceLocation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NHibernate;
 using SISHaU.DataAccess.Model;
@@ -14,7 +15,10 @@ namespace SISHaU.Tests
             var sessionFactory = ServiceLocator.Current.GetInstance<ISessionFactory>();
             using (var session = sessionFactory.OpenSession())
             {
-                var loggingElement = new FileServiceLogEntity();
+                var loggingElement = new FileServiceLogEntity
+                {
+                    Id = Guid.NewGuid()
+                };
                 session.Save(loggingElement);
             }
         }

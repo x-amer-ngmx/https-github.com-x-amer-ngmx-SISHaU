@@ -16,7 +16,12 @@ namespace SISHaU.DataAccess.Definition
         public MapAction(string schemaName, string tableName, Expression<Func<T, object>> memberExpression = null) : base()
         {
             GenerateSchemaAction();
-            Schema(schemaName);
+
+            if (!string.IsNullOrEmpty(schemaName))
+            {
+                Schema(schemaName);
+            }
+
             TableName = tableName;
             Table(TableName);
             //Пропускаем все не GUID идентификаторы

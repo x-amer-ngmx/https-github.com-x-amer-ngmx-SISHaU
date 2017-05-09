@@ -9,11 +9,12 @@ namespace SISHaU.DataAccess.Model
 {
     public class FileServiceLogEntity : EntityDto
     {
-    }
+        public virtual string Text { get; set; }
+     }
 
     public class FileServiceLogEntityMap : MapAction<FileServiceLogEntity>
     {
-        public FileServiceLogEntityMap() : base("", "", id => id.Id)
+        public FileServiceLogEntityMap() : base("", "log", id => id.Id)
         {
             
         }
