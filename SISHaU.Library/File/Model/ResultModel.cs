@@ -9,6 +9,6 @@ namespace SISHaU.Library.File.Model
     public class ResultModel
     {
         public string FileName { get; set; }
-        public long FileSize { get; set; }
+        public long? FileSize { get; set; }
     }
 }

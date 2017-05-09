@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -34,6 +35,12 @@ namespace SISHaU.Library.File.Enginer
 
             var count = uploadeMod.Parts.Count();
 
+            var fileGuid = string.Empty;
+            IList<ByteDetectorModel> fileParts = null;
+            DateTime? fileDate = null;
+
+            RequestErrorModel error = null;
+
             if (count > 1)
             {
                 _request = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
@@ -45,6 +52,9 @@ namespace SISHaU.Library.File.Enginer
 
                 //Убираю лимит на количество одновременных запросов.
                 ServicePointManager.DefaultConnectionLimit = 15;
+
+                //возможно эту часть необходимо вынести в отдельный метод для потдержки докачки частей в случае сбоя
+                //и нужно рассмотреть возможность рекурсивной работы этого метода
                 Parallel.ForEach(uploadeMod.Parts, (part, state) =>
                 {
                     //распаралелить
@@ -68,8 +78,15 @@ namespace SISHaU.Library.File.Enginer
                 if (closeSess.IsClose == false)
                 {
                     //Ошибка сессию по какой-то причине не удалось закрыть
+                    error = new RequestErrorModel();
                 }
-                else 
+                else
+                {
+                    fileGuid = session.UploadId;
+                    fileParts = uploadeMod.Parts.Select(p => p.PartDetect).ToList();
+                    fileDate = closeSess.ResultDate?.DateTime;
+                }
+                    /*
                     result = new UploadeResultModel
                     {
                         FileName = uploadeMod.FileInfo.FileName,
@@ -77,8 +94,9 @@ namespace SISHaU.Library.File.Enginer
                         GostHash = uploadeMod.GostHash,
                         Repository = _repository,
                         FileGuid = session.UploadId,
+                        Parts = uploadeMod.Parts.Select(p=>p.PartDetect).ToList(),
                         UTime = closeSess.ResultDate?.DateTime
-                    };
+                    };*/
 
             }
             else if (count == 1)
@@ -88,10 +106,17 @@ namespace SISHaU.Library.File.Enginer
                 //это никогда не наступит но решарпер предупреждает...
                 if (part == null) return null;
 
-                _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, uploadeMod.FileInfo.FileName);
+                _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash,
+                    uploadeMod.FileInfo.FileName);
                 _response = _serverConnect.SendRequest(_request).Result;
                 var uploadeId = _response.ResultEnginer<ResponseIdModel>(false);
 
+                // Проверка на ошибку... это уже надо делать при непосредственных запросах... Ибо мой компилятор в мозгу физически ограничен, ну или я его сам ограничиваю))))
+                
+                fileGuid = uploadeId.UploadId;
+                fileDate = uploadeId.ResultDate?.DateTime;
+
+                /*
                 result = new UploadeResultModel
                 {
                     FileName = uploadeMod.FileInfo.FileName,
@@ -100,8 +125,24 @@ namespace SISHaU.Library.File.Enginer
                     Repository = _repository,
                     FileGuid = uploadeId.UploadId,
                     UTime = uploadeId.ResultDate?.DateTime
-                };
+                };*/
+
             }
+            else throw new Exception("Что-то пошло не так, количество частей меньше одной.");
+
+
+            result = new UploadeResultModel
+            {
+                FileName = error!=null ? null : uploadeMod.FileInfo.FileName,
+                FileSize = error != null ? null : uploadeMod.FileInfo.FileSize,
+                GostHash = error != null ? null : uploadeMod.GostHash,
+                Repository = error != null ? (Repo?) null : _repository,
+                FileGuid = error != null ? null : fileGuid,
+                Parts = error != null ? null : fileParts,
+                UTime = error != null ? null : fileDate,
+                ErrorMessage = error
+            };
+
 
             return result;
         }
@@ -110,7 +151,7 @@ namespace SISHaU.Library.File.Enginer
 
         #region Загрузка файлов
 
-        public UploadeModel DownloadFile(string fileId)
+        public UploadeModel DownloadFile(string fileId, IEnumerable<ByteDetectorModel> part)
         {
             UploadeModel result = null;
 
