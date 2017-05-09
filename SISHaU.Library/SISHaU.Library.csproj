@@ -36,6 +36,9 @@
     <Reference Include="CryptoPro.Sharpei.ServiceModel">
       <HintPath>..\..\..\GisJkhServicePoint\Gis_jkh_kernel\bin\Debug\CryptoPro.Sharpei.ServiceModel.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -65,10 +68,14 @@
     <Compile Include="File\Model\UploadeResultModel.cs" />
     <Compile Include="File\Model\UriRequestModel.cs" />
     <Compile Include="File\SingleMetods.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="API\model\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

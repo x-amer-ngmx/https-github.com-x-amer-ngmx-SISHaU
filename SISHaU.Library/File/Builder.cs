@@ -47,7 +47,11 @@ namespace SISHaU.Library.File
 
                 var stream = System.IO.File.ReadAllBytes(file);
                 var info = new FileInfo(file);
-                
+
+                Logger.InitLogger();//инициализация - требуется один раз в начале
+
+                Logger.Log.Info("Ура заработало!");
+
                 var parts = Operation.ExplodingFile(stream);
 
 

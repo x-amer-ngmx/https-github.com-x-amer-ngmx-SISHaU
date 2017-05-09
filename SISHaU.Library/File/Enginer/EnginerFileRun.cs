@@ -86,17 +86,6 @@ namespace SISHaU.Library.File.Enginer
                     fileParts = uploadeMod.Parts.Select(p => p.PartDetect).ToList();
                     fileDate = closeSess.ResultDate?.DateTime;
                 }
-                    /*
-                    result = new UploadeResultModel
-                    {
-                        FileName = uploadeMod.FileInfo.FileName,
-                        FileSize = uploadeMod.FileInfo.FileSize,
-                        GostHash = uploadeMod.GostHash,
-                        Repository = _repository,
-                        FileGuid = session.UploadId,
-                        Parts = uploadeMod.Parts.Select(p=>p.PartDetect).ToList(),
-                        UTime = closeSess.ResultDate?.DateTime
-                    };*/
 
             }
             else if (count == 1)
@@ -115,32 +104,19 @@ namespace SISHaU.Library.File.Enginer
                 
                 fileGuid = uploadeId.UploadId;
                 fileDate = uploadeId.ResultDate?.DateTime;
-
-                /*
-                result = new UploadeResultModel
-                {
-                    FileName = uploadeMod.FileInfo.FileName,
-                    FileSize = uploadeMod.FileInfo.FileSize,
-                    GostHash = uploadeMod.GostHash,
-                    Repository = _repository,
-                    FileGuid = uploadeId.UploadId,
-                    UTime = uploadeId.ResultDate?.DateTime
-                };*/
-
             }
             else throw new Exception("Что-то пошло не так, количество частей меньше одной.");
 
 
-            result = new UploadeResultModel
+            result = error != null ? new UploadeResultModel{ ErrorMessage = error } : new UploadeResultModel
             {
-                FileName = error!=null ? null : uploadeMod.FileInfo.FileName,
-                FileSize = error != null ? null : uploadeMod.FileInfo.FileSize,
-                GostHash = error != null ? null : uploadeMod.GostHash,
-                Repository = error != null ? (Repo?) null : _repository,
-                FileGuid = error != null ? null : fileGuid,
-                Parts = error != null ? null : fileParts,
-                UTime = error != null ? null : fileDate,
-                ErrorMessage = error
+                FileName = uploadeMod.FileInfo.FileName,
+                FileSize = uploadeMod.FileInfo.FileSize,
+                GostHash = uploadeMod.GostHash,
+                Repository = _repository,
+                FileGuid = fileGuid,
+                Parts = fileParts,
+                UTime = fileDate
             };
 
 
