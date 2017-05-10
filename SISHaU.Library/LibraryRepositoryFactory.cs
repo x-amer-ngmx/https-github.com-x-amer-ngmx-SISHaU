@@ -9,16 +9,16 @@ namespace SISHaU.Library
 {
     public class LibraryRepositoryFactory
     {
-        public static Func<IFileBuilder> FileBuilder = CreateDefultFileBuilder;
+        public static Func<IUploadeResultRepository> FileBuilder = CreateDefultFileBuilder;
 
-        private static IFileBuilder CreateDefultFileBuilder()
+        private static IUploadeResultRepository CreateDefultFileBuilder()
         {
             throw new Exception("");
         }
 
-        public IFileBuilder FileRepositiryBuilder()
+        public IUploadeResultRepository FileRepositiryBuilder()
         {
-            IFileBuilder builder = FileRepositiryBuilder();
+            IUploadeResultRepository builder = FileRepositiryBuilder();
             return builder;
         }
     }
