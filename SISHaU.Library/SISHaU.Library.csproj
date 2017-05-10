@@ -55,6 +55,7 @@
     <Compile Include="File\Enginer\OperationFile.cs" />
     <Compile Include="File\Enginer\ResponseRequestOnServer.cs" />
     <Compile Include="File\IFileBuilder.cs" />
+    <Compile Include="File\IUploadeResultRepository.cs" />
     <Compile Include="File\Model\ByteDetectorModel.cs" />
     <Compile Include="File\Model\ConstantModel.cs" />
     <Compile Include="File\Model\DownloadeResultModel.cs" />
