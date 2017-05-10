@@ -7,7 +7,7 @@ namespace SISHaU.ServiceInterface.Services
 {
     public class FileExchangeService : IService
     {
-        private readonly IBuilder _fileExchange = ServiceLocator.Current.GetInstance<IBuilder>();
+        private readonly IFileBuilder _fileExchange = ServiceLocator.Current.GetInstance<IFileBuilder>();
 
         public DownloadFilesResponse Get(DownloadFiles filesInfo)
         {
