@@ -11,13 +11,13 @@ namespace SISHaU.DataAccess
         public ISessionFactory CreateSessionFactory()
         {
             return Fluently.Configure()
-                .Database(new FirebirdConfiguration().Raw("hbm2ddl.keywords", "auto-quote")
+                .Database(new FirebirdConfiguration()/*.Raw("hbm2ddl.keywords", "auto-quote")*/
                     .ConnectionString(cs => cs.FromConnectionStringWithKey("ConnectionString")))
                 .Mappings(mps => mps.FluentMappings.AddFromAssemblyOf<EntityDto>())
-                .ExposeConfiguration(ex =>
+                /*.ExposeConfiguration(ex =>
                 {
                     new SchemaUpdate(ex).Execute(true, true);
-                }).ExposeConfiguration(SchemaMetadataUpdater.QuoteTableAndColumns)
+                })*//*.ExposeConfiguration(SchemaMetadataUpdater.QuoteTableAndColumns)*/
                 .BuildConfiguration().BuildSessionFactory();
         }
     }

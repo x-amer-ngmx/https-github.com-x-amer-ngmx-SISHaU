@@ -39,13 +39,13 @@ namespace SISHaU.DataAccess.Definition
             /*1) Или CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
                  и генерировать uuid так - select * from uuid_generate_v4()*/
             /*2) Или CREATE EXTENSION pgcrypto; и вызов - select gen_random_uuid()*/
-            identityPart
+            identityPart.GeneratedBy.Guid()/*
                 .Length(36)
                 .GeneratedBy
                 .Guid()
                 .Not
                 .Nullable()
-                .Default("public.gen_random_uuid()");
+                .Default("public.gen_random_uuid()")*/;
         }
         private void ResolveAction(string action)
         {
