@@ -4,18 +4,63 @@ using SISHaU.Library.File.Model;
 
 namespace SISHaU.ServiceModel.Types
 {
-    [Api("Залить файлы в ГИС ЖКХ")]
-    [Route("/UploadFiles", "POST")]
-    public class UploadFiles : IReturn<UploadFilesResponse>
-    {
-        [ApiMember(Name = "FilesPathList", Description = "Список файлов для выгрузки",
-            ParameterType = "List<string>", DataType = "string", IsRequired = true)]
-        public List<string> FilesPathList { get; set; }
+    public class DefauiltParam {
+        [ApiMember(Name = "Repo", Description = "Директория удалённого сервера",
+ParameterType = "enum", DataType = "string", IsRequired = true)]
+        public Repo repository { get; set; }
+    }
 
-        [ApiMember(Name = "FilesPaths", Description = "Список файлов для выгрузки. Альтернативный метод.",
+    [Api("Выгрузить файлы в ГИС ЖКХ")]
+    [Route("/UploadFiles", "POST")]
+    public class UploadFiles : DefauiltParam, IReturn<UploadFilesResponse>
+    {
+        [ApiMember(Name = "files", Description = "Список файлов для выгрузки",
+            ParameterType = "List<string>", DataType = "string", IsRequired = true)]
+        public List<string> files { get; set; }
+
+    }
+
+
+    [Api("Выгрузить файл в ГИС ЖКХ")]
+    [Route("/UploadFile", "POST")]
+    public class UploadFile : DefauiltParam, IReturn<UploadFileResponse>
+    {
+        [ApiMember(Name = "file", Description = "Файл для выгрузки",
             ParameterType = "string", DataType = "string", IsRequired = false)]
-        public string FilesPaths { get; set; }
-        public Repo RepositoryMarker { get; set; }
+        public string file { get; set; }
+    }
+
+    [Api("Загрузить файл из ГИС ЖКХ")]
+    [Route("/DownloadFile", "GET")]
+    public class DownloadFile : IReturn<DownloadFileResponse>
+    {
+        [ApiMember(
+            Name = "download",
+            ParameterType = "object",
+            DataType = "DownloadModel",
+            Description = "параметр для загрузки одного файла",
+            IsRequired = true)]
+        public DownloadModel download { get; set; }
+    }
+
+
+    [Api("Загрузить файлы из ГИС ЖКХ")]
+    [Route("/DownloadFiles", "GET")]
+    public class DownloadFiles : IReturn<DownloadFilesResponse>
+    {
+        [ApiMember(
+            Name = "downloads",
+            ParameterType = "object",
+            DataType = "List<DownloadModel>",
+            Description = "коллекция параметров для загрузки файлов",
+            IsRequired = true)]
+        public List<DownloadModel> downloads { get; set; }
+    }
+
+
+    public class UploadFileResponse
+    {
+        public UploadeResultModel Result { get; set; }
     }
 
     public class UploadFilesResponse
@@ -23,24 +68,15 @@ namespace SISHaU.ServiceModel.Types
         public IList<UploadeResultModel> Result { get; set; }
     }
 
-    [Api("Загрузить файл из ГИС ЖКХ")]
-    [Route("/DownloadFile", "GET")]
-    public class DownloadFile : IReturn<DownloadFileResponse>
-    {
-        public DownloadModel DownloadModel { get; set; }
-    }
+
+
+
+
 
     public class DownloadFileResponse{
+        public DownloadResultModel Result { get; set; }
+    }
     
-    }
-
-    [Api("Выгрузить несколько файлов подряд из ГИС ЖКХ")]
-    [Route("/DownloadFiles", "GET")]
-    public class DownloadFiles : IReturn<DownloadFilesResponse>
-    {
-        public List<DownloadModel> DownloadModelList { get; set; }
-    }
-
     public class DownloadFilesResponse
     {
         public IList<DownloadResultModel> Result { get; set; }

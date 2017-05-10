@@ -13,20 +13,29 @@ namespace SISHaU.ServiceInterface.Services
         {
             return new DownloadFilesResponse
             {
-                Result = _fileExchange.DownloadFilesList(filesInfo.DownloadModelList)
+                Result = _fileExchange.DownloadFilesList(filesInfo.downloads)
             };
         }
 
         public DownloadFileResponse Get(DownloadFile fileInfo)
         {
-            return new DownloadFileResponse();
+            return new DownloadFileResponse {
+                Result = _fileExchange.DownloadFiles(fileInfo.download)
+            };
         }
 
         public UploadFilesResponse Post(UploadFiles filesInfo)
         {
             return new UploadFilesResponse
             {
-                Result = _fileExchange.UploadFilesList(filesInfo.FilesPathList, filesInfo.RepositoryMarker)
+                Result = _fileExchange.UploadFilesList(filesInfo.files, filesInfo.repository)
+            };
+        }
+        public UploadFileResponse Post(UploadFile filesInfo)
+        {
+            return new UploadFileResponse
+            {
+                Result = _fileExchange.UploadFiles(filesInfo.file, filesInfo.repository)
             };
         }
     }
