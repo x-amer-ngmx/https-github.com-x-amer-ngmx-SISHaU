@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Adapter", "SISHaU.Ad
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchitectDiagram", "ArchitectDiagram", "{316AD569-538F-44C7-A33F-2374B42B4443}"
 	ProjectSection(SolutionItems) = preProject
-		Graph1.dgml = Graph1.dgml
+		GlobalGraph.dgml = GlobalGraph.dgml
 	EndProjectSection
 EndProject
 Global

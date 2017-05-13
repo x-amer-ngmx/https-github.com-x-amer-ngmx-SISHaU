@@ -241,4 +241,3 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /MONITORCONCEPTDB.DBF
-/Graph1.dgml
