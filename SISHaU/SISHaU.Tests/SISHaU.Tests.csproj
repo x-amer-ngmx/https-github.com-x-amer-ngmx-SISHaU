@@ -83,6 +83,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Net" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -111,9 +112,9 @@
       <Project>{53E82AC1-DD1D-4C66-B55F-F9F4ACFB2F40}</Project>
       <Name>SISHaU.ServiceModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SISHaU\SISHaU.csproj">
+    <ProjectReference Include="..\SISHaU\SISHaU.Web.csproj">
       <Project>{4389B305-B381-4B50-B1A8-BBB5259A0524}</Project>
-      <Name>SISHaU</Name>
+      <Name>SISHaU.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

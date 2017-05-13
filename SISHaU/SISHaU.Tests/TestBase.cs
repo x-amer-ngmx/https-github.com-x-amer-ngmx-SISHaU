@@ -1,8 +1,7 @@
-﻿using System;
-using System.Configuration;
-using System.Net;
+﻿using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceStack.ServiceClient.Web;
+using SISHaU.Web;
 
 namespace SISHaU.Tests
 {

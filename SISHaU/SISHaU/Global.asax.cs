@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SISHaU
+namespace SISHaU.Web
 {
     public class Global : System.Web.HttpApplication
     {

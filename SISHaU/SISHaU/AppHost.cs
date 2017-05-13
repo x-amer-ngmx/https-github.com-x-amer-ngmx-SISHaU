@@ -1,12 +1,8 @@
-﻿using System.ComponentModel;
-using Funq;
-using ServiceStack.WebHost.Endpoints;
-using SISHaU.ServiceInterface;
+﻿using ServiceStack.WebHost.Endpoints;
 using SISHaU.ServiceInterface.Services;
-using SISHaU.ServiceModel;
 using Container = Funq.Container;
 
-namespace SISHaU
+namespace SISHaU.Web
 {
     //VS.NET Template Info: https://servicestack.net/vs-templates/EmptyAspNet
     public class AppHost : AppHostBase

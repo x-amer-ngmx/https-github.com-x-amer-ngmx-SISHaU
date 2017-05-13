@@ -13,15 +13,14 @@ namespace SISHaU.DataAccess.Definition
         private string TableName { get; set; }
         private string GetIdName => $"{TableName}_id";
 
-        public MapAction(string schemaName, string tableName, Expression<Func<T, object>> memberExpression = null) : base()
+        public MapAction(string tableName, Expression<Func<T, object>> memberExpression = null) : base()
         {
             GenerateSchemaAction();
-            Schema(schemaName);
             TableName = tableName;
             Table(TableName);
             //Пропускаем все не GUID идентификаторы
             if (null == memberExpression) return;
-            GenerateGuidIdentity(Id(memberExpression/*, GetIdName*/));
+            GenerateGuidIdentity(Id(memberExpression, GetIdName));
         }
 
         internal void SetThisColumnKey<TU>(OneToManyPart<TU> column)
@@ -29,18 +28,23 @@ namespace SISHaU.DataAccess.Definition
             column.KeyColumn(GetIdName);
         }
 
+        /// <summary>
+        /// Задаёт правило для генерации колонки - идентификатора
+        /// </summary>
+        /// <param name="identityPart"></param>
         internal void GenerateGuidIdentity(IdentityPart identityPart)
         {
+            identityPart.GeneratedBy.Guid();
             /*1) Или CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
                  и генерировать uuid так - select * from uuid_generate_v4()*/
             /*2) Или CREATE EXTENSION pgcrypto; и вызов - select gen_random_uuid()*/
-            identityPart
+            /*identityPart
                 .Length(36)
                 .GeneratedBy
                 .Guid()
                 .Not
                 .Nullable()
-                .Default("public.gen_random_uuid()");
+                .Default("public.gen_random_uuid()");*/
         }
         private void ResolveAction(string action)
         {

@@ -7,7 +7,7 @@ using NHibernate;
 using SISHaU.DataAccess;
 using SISHaU.Library.File;
 
-namespace SISHaU
+namespace SISHaU.Web
 {
     public static class HostUtils
     {
