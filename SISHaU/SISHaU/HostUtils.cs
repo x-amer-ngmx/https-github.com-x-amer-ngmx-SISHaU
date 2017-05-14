@@ -22,7 +22,7 @@ namespace SISHaU.Web
         }
 
         public static void InitializeServices()
-        {
+        {/*
             var builder = new ContainerBuilder();
 
             var nhSessionFactory = new SessionFactoryManager().CreateSessionFactory();
@@ -33,9 +33,9 @@ namespace SISHaU.Web
             var fileExchangeBuilder = new Builder();
             builder.RegisterInstance(fileExchangeBuilder).As<IBuilder>().SingleInstance();
 
-            var cfg = builder.Build();
+            var cfg = builder.Build();*/
 
-            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(cfg));
+            //ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(cfg));
         }
     }
 }

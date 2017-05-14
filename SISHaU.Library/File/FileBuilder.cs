@@ -9,15 +9,7 @@ using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File
 {
-    public interface IBuilder
-    {
-        IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository);
-        UploadeResultModel UploadFiles(string patch, Repo repository);
-        IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model);
-        DownloadResultModel DownloadFiles(DownloadModel model);
-    }
-
-    public class Builder : IDisposable, IBuilder
+    public class FileBuilder : IDisposable, IFileBuilder
     {
         OperationFile Operation => new OperationFile();
 
@@ -120,7 +112,7 @@ namespace SISHaU.Library.File
             GC.SuppressFinalize(this);
         }
 
-        ~Builder()
+        ~FileBuilder()
         {
             Dispose(false);
         }

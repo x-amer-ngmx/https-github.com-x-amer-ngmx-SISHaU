@@ -17,16 +17,16 @@ namespace SISHaU.Tests
             {
                 var result = jsonClient.Post(new UploadFiles
                 {
-                    FilesPathList = new List<string>()
+                    files = new List<string>()
                     {
                         { @"D:\test.zip" }
                     },
-                    RepositoryMarker = Repo.Agreements
+                    repository = Repo.Agreements
                 });
 
                 var downResult = jsonClient.Post(new DownloadFile()
                 {
-                    DownloadModel = new DownloadModel
+                    download = new DownloadModel
                     {
                         Repository = Repo.Homemanagement,
                         FileGuid = "GUID FILE",
@@ -46,11 +46,11 @@ namespace SISHaU.Tests
 
             var result = service.Post(new UploadFiles
             {
-                FilesPathList = new List<string>()
+                files = new List<string>()
                 {
                     {@"c:\Orchard.Source.zip"}
                 },
-                RepositoryMarker = Repo.Agreements
+                repository = Repo.Agreements
             });
         }
     }
