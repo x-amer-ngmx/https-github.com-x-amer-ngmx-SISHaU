@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Web", "SISHaU\SISHaU\SISHaU.Web.csproj", "{4389B305-B381-4B50-B1A8-BBB5259A0524}"
 EndProject
@@ -23,6 +23,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Adapter", "SISHaU.Ad
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.Integration", "SISHaU.Integration\SISHaU.Integration.csproj", "{AC23E862-4CA2-4B6E-864A-4DB7C582D7D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchitectDiagram", "ArchitectDiagram", "{316AD569-538F-44C7-A33F-2374B42B4443}"
+	ProjectSection(SolutionItems) = preProject
+		GlobalGraph.dgml = GlobalGraph.dgml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
