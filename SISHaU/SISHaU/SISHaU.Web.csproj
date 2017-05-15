@@ -88,7 +88,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
   </ItemGroup>
@@ -112,7 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Handler1.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -130,9 +128,6 @@
     <Compile Include="AppHost.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Handler1.ashx.cs">
-      <DependentUpon>Handler1.ashx</DependentUpon>
     </Compile>
     <Compile Include="HostUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -167,8 +162,8 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>; Move all assemblies and related files to lib folder
-ROBOCOPY "$(TargetDir) " "$(TargetDir)lib\ " /XF *.frx *.exe *.pdb *.config *.manifest /IS /MOV
-if %25errorlevel%25 leq 4 exit 0 else exit %25errorlevel%25</PostBuildEvent>
+;ROBOCOPY "$(TargetDir) " "$(TargetDir)lib\ " /XF *.frx *.exe *.pdb *.config *.manifest /IS /MOV
+;if %25errorlevel%25 leq 4 exit 0 else exit %25errorlevel%25</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
