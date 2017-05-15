@@ -1,31 +1,31 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Integration.HouseManagement;
 
-namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
+namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDevice
 {
     public class MeteringDeviceExport : BaseModel<HouseManagementModel>
     {
-        //exportMeteringDeviceDataRequest ExportParameters { get; set; }
+        private exportMeteringDeviceDataRequest ExportParameters { get; set; }
 
         public MeteringDeviceExport(HouseManagementModel baseModel) : base(baseModel)
         {
-            //ExportParameters = GenerateGenericType<exportMeteringDeviceDataRequest>();
+            ExportParameters = GenerateGenericType<exportMeteringDeviceDataRequest>();
         }
 
         public MeteringDeviceExport ByFiasGuid(string fiasGuid)
-        {/*
+        {
             ExportParameters.FIASHouseGuid = fiasGuid;
             ExportParameters.FIASHouseGuidSpecified = true;
-            */
             return this;
         }
 
         public override HouseManagementModel Pool()
         {
-            //BaseModelEntity.MetringDeviceExport = ExportParameters;
+            if(null == BaseModelEntity.MeteringDeviceExport)
+                BaseModelEntity.MeteringDeviceExport = new List<exportMeteringDeviceDataRequest>();
+
+            BaseModelEntity.MeteringDeviceExport.Add(ExportParameters);
+
             return BaseModelEntity;
         }
     }

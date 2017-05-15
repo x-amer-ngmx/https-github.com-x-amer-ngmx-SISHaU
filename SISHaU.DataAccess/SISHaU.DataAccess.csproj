@@ -55,6 +55,9 @@
   <ItemGroup>
     <Compile Include="Definition\EntityDto.cs" />
     <Compile Include="Definition\MapAction.cs" />
+    <Compile Include="Model\Dto\BaseDto.cs" />
+    <Compile Include="Model\Dto\NsiBaseDto.cs" />
+    <Compile Include="Model\Dto\NsiCommonDto.cs" />
     <Compile Include="Model\FileServiceLogEntity.cs" />
     <Compile Include="SessionFactoryManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,6 +98,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SISHaU.Integration\SISHaU.Integration.csproj">
+      <Project>{AC23E862-4CA2-4B6E-864A-4DB7C582D7D4}</Project>
+      <Name>SISHaU.Integration</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

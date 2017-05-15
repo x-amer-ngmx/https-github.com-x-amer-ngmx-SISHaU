@@ -1,79 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Integration.HouseManagement;
+using Integration.HouseManagementService;
+using Integration.HouseManagementServiceAsync;
+using SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.Account;
+using SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDevice;
 
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
 {
-    public class HouseManagementModel //: Requester<HouseManagementPortsTypeClient, HouseManagementPortsTypeAsyncClient>
+    public class HouseManagementModel : Requester<HouseManagementPortsTypeClient, HouseManagementPortsTypeAsyncClient>
     {
-        //public IList<importAccountRequestAccount> Accounts { get; set; }
-        //public IDictionary<string, IList<importMeteringDeviceDataRequestMeteringDevice>> MeteringDeviceHouses { get; set; }
-        //public exportMeteringDeviceDataRequest MetringDeviceExport { get; set; }
+        public IList<importAccountRequestAccount> Accounts { get; set; }
+        public IList<importMeteringDeviceDataRequest> MeteringDeviceImport { get; set; }
+        public IList<exportMeteringDeviceDataRequest> MeteringDeviceExport { get; set; }
 
-        //public ImportResult ImportAccountResult { get; set; }
-        //public ImportResult ImportMeteringDeviceResult { get; set; }
-        //public exportMeteringDeviceDataResult MetringDeviceExportResult { get; set; }
+        public ImportResult ImportAccountResult { get; set; }
+        public ImportResult ImportMeteringDeviceResult { get; set; }
+        public IList<exportMeteringDeviceDataResult> MetringDeviceExportResult { get; set; }
 
-        //public AccountModel Account()
-        //{
-        //    if (null == Accounts)
-        //        Accounts = new List<importAccountRequestAccount>();
+        public AccountModel Account()
+        {
+            return new AccountModel(this);
+        }
 
-        //    return new AccountModel(this);
-        //}
+        public MeteringDeviceModel MeteringDevice()
+        {
+            return new MeteringDeviceModel(this);
+        }
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="fiasHouseGuid">Обрати внимание, что fiasHouseGuid всё-таки идёт на один дом, и если его в цикле поменять, 
-        ///// то все приборы учёта тоже перейдут на новый дом. Чтобы в цикле изменить дом придётся отправлять запрос на сервер и очищать список приборов учёта.
-        ///// Сделал словарик)))</param>
-        ///// <returns></returns>
-        //public MeteringDeviceModel MeteringDevice(string fiasHouseGuid)
-        //{
-        //    if (null == MeteringDeviceHouses)
-        //        MeteringDeviceHouses = new Dictionary<string, IList<importMeteringDeviceDataRequestMeteringDevice>>();
+        public HouseManagementModel Sync(bool clearPool = false)
+        {
+            if (null != Accounts && Accounts.Any())
+            {
+                var request = GenerateGenericType<importAccountRequest>();
+                request.Account = Accounts.ToArray();
+                ImportAccountResult = ProcessRequest<ImportResult>(request);
+                if (clearPool)
+                    Accounts.Clear();
+            }
 
-        //    if (!MeteringDeviceHouses.ContainsKey(fiasHouseGuid))
-        //        MeteringDeviceHouses.Add(fiasHouseGuid, new List<importMeteringDeviceDataRequestMeteringDevice>());
+            if (MeteringDeviceExport.Any())
+            {
+                MetringDeviceExportResult = new List<exportMeteringDeviceDataResult>();
+                foreach (var meteringDeviceHouseExport in MeteringDeviceExport)
+                {
+                    MetringDeviceExportResult.Add(ProcessRequest<exportMeteringDeviceDataResult>(meteringDeviceHouseExport));
+                }
 
-        //    return new MeteringDeviceModel(this, fiasHouseGuid);
-        //}
+                if (clearPool)
+                    MeteringDeviceExport.Clear();
+            }
 
-        //public HouseManagementModel Sync(bool clearPool = false)
-        //{
-        //    if (null != Accounts && Accounts.Any())
-        //    {
-        //        var request = GenerateGenericType<importAccountRequest>();
-        //        request.Account = Accounts.ToArray();
-        //        ImportAccountResult = ProcessRequest<ImportResult>(request);
-        //        if (clearPool)
-        //            Accounts.Clear();
-        //    }
-
-        //    if (null != MeteringDeviceHouses && MeteringDeviceHouses.Any())
-        //    {
-        //        /*Здесь вообще можно очень гибко менять режимы работы с гис*/
-        //        foreach (var meteringDeviceHouse in MeteringDeviceHouses)
-        //        {
-        //            var request = GenerateGenericType<importMeteringDeviceDataRequest>();
-        //            request.FIASHouseGuid = meteringDeviceHouse.Key;
-        //            request.MeteringDevice = meteringDeviceHouse.Value.ToArray();
-        //            ImportMeteringDeviceResult = ProcessRequest<ImportResult>(request);
-        //        }
-
-        //        if (clearPool)
-        //            MeteringDeviceHouses.Clear();
-        //    }
-
-        //    if (null != MetringDeviceExport)
-        //    {
-        //        MetringDeviceExportResult = ProcessRequest<exportMeteringDeviceDataResult>(MetringDeviceExport);
-        //    }
-
-        //    return this;
-        //}
+            return this;
+        }
     }
 }

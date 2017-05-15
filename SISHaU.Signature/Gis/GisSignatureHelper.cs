@@ -24,14 +24,16 @@ namespace SISHaU.Signature.Gis
     public static class GisSignatureHelper
     {
         private const bool PreserveWhitespace = true;
-
-        private static X509Certificate2 FindCertificate(string thumbPrint)
+        private static readonly string CertificateThumbPrint = ConfigurationManager.AppSettings["certificate-thumbprint"].ToUpper();
+        private static readonly X509Certificate2 Certificate = GetCertificate();
+        public static X509Certificate2 FindCertificate(string thumbPrint = null)
         {
+
             var store = new X509Store("MY", StoreLocation.CurrentUser);
             store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
 
             var fcollection = store.Certificates.Find(
-                X509FindType.FindByThumbprint, thumbPrint, false);
+                X509FindType.FindByThumbprint, string.IsNullOrEmpty(thumbPrint) ? CertificateThumbPrint : thumbPrint, false);
 
             var cert = new X509Certificate2();
 
@@ -43,25 +45,26 @@ namespace SISHaU.Signature.Gis
             return cert;
         }
 
-        public static string SignXml(string xmlText)
+        private static X509Certificate2 GetCertificate()
         {
-            var tp = ConfigurationManager.AppSettings["certificate-thumbprint"].ToUpper();
-            var key = ConfigurationManager.AppSettings["container-key"];
-            var cert = FindCertificate(tp);
-
-            return xmlText.Contains("signed-data-container") ?  GetSignedRequestXades(xmlText, cert, key) : xmlText;
+            return FindCertificate(CertificateThumbPrint);
         }
 
-        private static string GetSignedRequestXades(string request, X509Certificate2 certificate, string privateKeyPassword)
+        public static string SignXml(string xmlText)
+        {
+            return xmlText.Contains("signed-data-container") ?  GetSignedRequestXades(xmlText) : xmlText;
+        }
+
+        private static string GetSignedRequestXades(string request)
         {
             var originalDoc = new XmlDocument { PreserveWhitespace = PreserveWhitespace };
-
+            
             originalDoc.LoadXml(request);
 
             var signatureid = $"xmldsig-{Guid.NewGuid().ToString().ToLower()}";
-            var signedXml = GetXadesSignedXml(certificate, originalDoc, signatureid, privateKeyPassword);
+            var signedXml = GetXadesSignedXml(Certificate, originalDoc, signatureid);
 
-            var rawCertData = Convert.ToBase64String(certificate.GetRawCertData());
+            var rawCertData = Convert.ToBase64String(Certificate.GetRawCertData());
 
             var keyInfo = GetKeyInfo(rawCertData);
             signedXml.KeyInfo = keyInfo;
@@ -119,28 +122,31 @@ namespace SISHaU.Signature.Gis
             {
                 switch (pair.Key.ToLower())
                 {
-                    case "t":
-                    case "title":
+                    case "E=":
+                        pair.Key = "1.2.840.113549.1.9.1";
+                        break;
+                    case "t=":
+                    case "title=":
                         pair.Key = "2.5.4.12";
                         break;
 
-                    case "g":
-                    case "givenname":
+                    case "g=":
+                    case "givenname=":
                         pair.Key = "2.5.4.42";
                         break;
 
-                    case "sn":
-                    case "surname":
+                    case "sn=":
+                    case "surname=":
                         pair.Key = "2.5.4.4";
                         break;
 
-                    case "ou":
-                    case "orgunit":
+                    case "ou=":
+                    case "orgunit=":
                         pair.Key = "2.5.4.11";
                         break;
 
-                    case "unstructured-name":
-                    case "unstructuredname":
+                    case "unstructured-name=":
+                    case "unstructuredname=":
                         pair.Key = "1.2.840.113549.1.9.2";
                         break;
                 }
@@ -170,15 +176,11 @@ namespace SISHaU.Signature.Gis
             var x509CertificateParser = new Org.BouncyCastle.X509.X509CertificateParser();
             var bouncyCert = x509CertificateParser.ReadCertificate(Convert.FromBase64String(xadesInfo.RawPk));
 
-            var x509IssuerDn = GetOidRepresentation(bouncyCert.IssuerDN.ToString());
-
-            x509IssuerDn = IssuerNamePatcher(x509IssuerDn);
-
             var cert = new Cert
             {
                 IssuerSerial =
                 {
-                    X509IssuerName = x509IssuerDn,
+                    X509IssuerName = IssuerNamePatcher(bouncyCert.IssuerDN.ToString()),
                     X509SerialNumber = bouncyCert.SerialNumber.ToString()
                 }
             };
@@ -202,9 +204,13 @@ namespace SISHaU.Signature.Gis
             return xadesObject;
         }
 
-        private static XadesSignedXml GetXadesSignedXml(X509Certificate2 certificate, XmlDocument originalDoc, string signatureid, string privateKeyPassword)
+        private static XadesSignedXml GetXadesSignedXml(X509Certificate2 certificate, XmlDocument originalDoc, string signatureid)
         {
+            //ToDo нужно реализовать шифрование секции в AppConfig, чтобы приватный ключ нельзя было отследить. Или перенести его в отдельный файл или токен
+            //Шифрование секции я видел в IBExpert, когда настраивал Firebird
+            var privateKeyPassword = ConfigurationManager.AppSettings["container-key"];
             var secureString = new SecureString();
+            
             foreach (var ch in privateKeyPassword)
                 secureString.AppendChar(ch);
 
@@ -250,19 +256,6 @@ namespace SISHaU.Signature.Gis
             keyInfo.AddClause(new KeyInfoNode(x509DataElement));
             //keyInfo.AddClause(new KeyInfoX509Data(certificate));
             return keyInfo;
-        }
-
-        /// <summary>
-        /// Заменяет части IssuerName на OID. https://technet.microsoft.com/en-us/library/cc772812(WS.10).aspx
-        /// </summary>
-        /// <param name="issuerName"></param>
-        /// <returns></returns>
-        private static string GetOidRepresentation(string issuerName)
-        {
-            var result = issuerName;
-            result = result.Replace("E=", "1.2.840.113549.1.9.1=");
-            result = result.Replace("unstructuredName=", "1.2.840.113549.1.9.2=");
-            return result;
         }
     }
 }

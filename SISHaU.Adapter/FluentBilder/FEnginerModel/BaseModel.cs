@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SISHaU.Adapter.FluentBilder.FInterface;
+﻿using SISHaU.Adapter.FluentBilder.FInterface;
 
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel
 {

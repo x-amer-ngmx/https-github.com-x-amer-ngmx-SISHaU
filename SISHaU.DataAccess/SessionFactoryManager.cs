@@ -16,7 +16,7 @@ namespace SISHaU.DataAccess
             {
                 FbConnection.CreateDatabase(ConfigurationManager.ConnectionStrings["ConnectionString"].ToString());
             }
-            catch (FbException fbexc)
+            catch (FbException)
             {
                 //Можно как-то сообщить, что база уже есть и создавать её не требуется
             }
