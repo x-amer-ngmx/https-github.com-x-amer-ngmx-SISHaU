@@ -5,6 +5,7 @@ using Integration.HouseManagementService;
 using Integration.HouseManagementServiceAsync;
 using SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.Account;
 using SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDevice;
+using SISHaU.Library.API;
 
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
 {

@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SISHaU.Adapter</RootNamespace>
     <AssemblyName>SISHaU.Adapter</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,6 +63,10 @@
     <ProjectReference Include="..\SISHaU.Integration\SISHaU.Integration.csproj">
       <Project>{AC23E862-4CA2-4B6E-864A-4DB7C582D7D4}</Project>
       <Name>SISHaU.Integration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SISHaU.Library\SISHaU.Library.csproj">
+      <Project>{dfcde107-c6c9-4364-823b-6401937e1480}</Project>
+      <Name>SISHaU.Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

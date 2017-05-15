@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="SISHaU.Global" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="SISHaU.Web.Global" Language="C#" %>
