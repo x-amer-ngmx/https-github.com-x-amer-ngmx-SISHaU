@@ -835,7 +835,7 @@ namespace SISHaU.Signature
 			for (int counterSignatureCounter = 0; (retVal == true) && (counterSignatureCounter < counterSignatureCollection.Count); counterSignatureCounter++)
 			{
 				counterSignature = counterSignatureCollection[counterSignatureCounter];
-				//1TODO: check if parent signature document is present in counterSignature (maybe a deep copy is required)
+				//TODO: check if parent signature document is present in counterSignature (maybe a deep copy is required)
 				if (counterSignature.signatureStandard == KnownSignatureStandard.Xades)
 				{
 					retVal &= counterSignature.XadesCheckSignature(counterSignatureMask);
@@ -1201,7 +1201,7 @@ namespace SISHaU.Signature
 			int index;
 			bool retVal;
 
-			//1TODO: Similar test should be done for XML based (Other) certificates, but as the check needed is not known, there is no implementation
+			//TODO: Similar test should be done for XML based (Other) certificates, but as the check needed is not known, there is no implementation
 			retVal = true;
 			unsignedSignatureProperties = this.XadesObject.QualifyingProperties.UnsignedProperties.UnsignedSignatureProperties;
 			if ((unsignedSignatureProperties.CompleteCertificateRefs != null) && (unsignedSignatureProperties.CompleteCertificateRefs.CertRefs != null) &&
@@ -1239,7 +1239,7 @@ namespace SISHaU.Signature
 		/// <returns>If the function returns true the check was OK</returns>
 		public virtual bool CheckRevocationValuesMatchRevocationRefs()
 		{
-		    //1TODO: Similar test should be done for XML based (Other) revocation information and OCSP responses, but to keep the library independent of these technologies, this test is left to appliactions using the library
+		    //TODO: Similar test should be done for XML based (Other) revocation information and OCSP responses, but to keep the library independent of these technologies, this test is left to appliactions using the library
 
 			const bool retVal = true;
 
