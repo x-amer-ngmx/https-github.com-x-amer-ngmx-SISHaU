@@ -99,5 +99,16 @@ namespace SISHaU.Library.API
 
             return new nsiRef();
         }
+
+        public nsiRef GetVerificationInterval(sbyte intervalValue)
+        {
+            return GetNsiRef("16", "Межповерочный интервал", intervalValue.ToString());
+        }
+
+        public nsiRef GetMeteringDeviceMunicipalResource(string resourceName)
+        {
+            return GetNsiRef("2", "Вид коммунального ресурса", resourceName);
+        }
+
     }
 }

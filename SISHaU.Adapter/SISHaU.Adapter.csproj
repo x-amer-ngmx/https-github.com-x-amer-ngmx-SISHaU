@@ -50,9 +50,13 @@
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountReason.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\PayerInfo.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseManagementModel.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristics.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristicsSetValues.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\DeviceDataToCreate.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceExport.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceImport.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceModel.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\ResidentialPremiseDevice.cs" />
     <Compile Include="FluentBilder\FInterface\IBaseModelPooler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

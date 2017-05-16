@@ -5089,33 +5089,36 @@ namespace Integration.HouseManagement
         [System.Xml.Serialization.XmlElementAttribute("AccountGUID", Order=1)]
         public string[] AccountGUID { get; set; }
     }
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(exportMeteringDeviceDataResultType))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Svc2CodeConverter", "1.0.0.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://dom.gosuslugi.ru/schema/integration/house-management/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://dom.gosuslugi.ru/schema/integration/house-management/")]
     public class MeteringDeviceFullInformationType
     {
-        
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+
+        [System.Xml.Serialization.XmlElementAttribute(Order = 0)]
         public MeteringDeviceBasicCharacteristicsType BasicChatacteristicts { get; set; }
-        
-        [System.Xml.Serialization.XmlElementAttribute("LinkedWithMetering", typeof(MeteringDeviceFullInformationTypeLinkedWithMetering), Order=1)]
+
+        [System.Xml.Serialization.XmlElementAttribute("LinkedWithMetering", typeof(MeteringDeviceFullInformationTypeLinkedWithMetering), Order = 1)]
         public MeteringDeviceFullInformationTypeLinkedWithMetering LinkedWithMetering { get; set; }
-        
-        [System.Xml.Serialization.XmlElementAttribute("NotLinkedWithMetering", typeof(bool), Order=2)]
+
+        [System.Xml.Serialization.XmlElementAttribute("NotLinkedWithMetering", typeof(bool), Order = 2)]
         public bool NotLinkedWithMetering { get; set; }
-        
-        [System.Xml.Serialization.XmlElementAttribute("MunicipalResourceEnergy", typeof(MunicipalResourceElectricType), Order=3)]
+
+        [System.Xml.Serialization.XmlIgnore]
+        public bool NotLinkedWithMeteringSpecified { get; set; }
+
+        [System.Xml.Serialization.XmlElementAttribute("MunicipalResourceEnergy", typeof(MunicipalResourceElectricType), Order = 3)]
         public MunicipalResourceElectricType MunicipalResourceEnergy { get; set; }
-        
-        [System.Xml.Serialization.XmlElementAttribute("MunicipalResourceNotEnergy", typeof(MunicipalResourceNotElectricType), Order=4)]
+
+        [System.Xml.Serialization.XmlElementAttribute("MunicipalResourceNotEnergy", typeof(MunicipalResourceNotElectricType), Order = 4)]
         public MunicipalResourceNotElectricType MunicipalResourceNotEnergy { get; set; }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Svc2CodeConverter", "1.0.0.0")]
     [System.SerializableAttribute()]

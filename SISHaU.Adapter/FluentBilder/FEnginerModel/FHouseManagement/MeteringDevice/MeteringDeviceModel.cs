@@ -2,13 +2,13 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDev
 {
     public class MeteringDeviceModel : BaseModel<HouseManagementModel>
     {
-        public MeteringDeviceModel(HouseManagementModel baseModel) : base (baseModel)
+        public MeteringDeviceModel(HouseManagementModel baseModel) : base(baseModel)
         {
         }
 
-        public MeteringDeviceImport Create()
+        public MeteringDeviceImport Import(string fiasHouseGuid)
         {
-            return new MeteringDeviceImport(BaseModelEntity);
+            return new MeteringDeviceImport(BaseModelEntity, fiasHouseGuid);
         }
 
         public MeteringDeviceExport Export()

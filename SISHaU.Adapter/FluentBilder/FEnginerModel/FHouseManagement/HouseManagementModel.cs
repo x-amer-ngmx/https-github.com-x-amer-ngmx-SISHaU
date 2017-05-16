@@ -12,12 +12,12 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
     public class HouseManagementModel : Requester<HouseManagementPortsTypeClient, HouseManagementPortsTypeAsyncClient>
     {
         public IList<importAccountRequestAccount> Accounts { get; set; }
-        public IList<importMeteringDeviceDataRequest> MeteringDeviceImport { get; set; }
+        public IDictionary<string, importMeteringDeviceDataRequest> MeteringDeviceImport { get; set; }
         public IList<exportMeteringDeviceDataRequest> MeteringDeviceExport { get; set; }
 
         public ImportResult ImportAccountResult { get; set; }
-        public ImportResult ImportMeteringDeviceResult { get; set; }
         public IList<exportMeteringDeviceDataResult> MetringDeviceExportResult { get; set; }
+        public IList<ImportResult> MetringDeviceImportResult { get; set; }
 
         public AccountModel Account()
         {
@@ -40,9 +40,10 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
                     Accounts.Clear();
             }
 
-            if (MeteringDeviceExport.Any())
+            if (null != MeteringDeviceExport && MeteringDeviceExport.Any())
             {
-                MetringDeviceExportResult = new List<exportMeteringDeviceDataResult>();
+                if (null == MetringDeviceExportResult)
+                    MetringDeviceExportResult = new List<exportMeteringDeviceDataResult>();
                 foreach (var meteringDeviceHouseExport in MeteringDeviceExport)
                 {
                     MetringDeviceExportResult.Add(ProcessRequest<exportMeteringDeviceDataResult>(meteringDeviceHouseExport));
@@ -50,6 +51,19 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
 
                 if (clearPool)
                     MeteringDeviceExport.Clear();
+            }
+
+            if (null != MeteringDeviceImport && MeteringDeviceImport.Any())
+            {
+                if (null == MetringDeviceImportResult)
+                    MetringDeviceImportResult = new List<ImportResult>();
+                foreach (var importRequest in MeteringDeviceImport)
+                {
+                    MetringDeviceImportResult.Add(ProcessRequest<ImportResult>(importRequest.Value));
+                }
+
+                if (clearPool)
+                    MeteringDeviceImport.Clear();
             }
 
             return this;
