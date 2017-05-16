@@ -16,7 +16,7 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDev
         public DeviceDataToCreate()
         {
             MeteringDevice = new importMeteringDeviceDataRequestMeteringDevice{
-                TransportGUID = NewTransportGuid,
+                TransportGUID = TransportGuid,
                 DeviceDataToCreate = new MeteringDeviceFullInformationType
                 {
                     NotLinkedWithMetering = true,
