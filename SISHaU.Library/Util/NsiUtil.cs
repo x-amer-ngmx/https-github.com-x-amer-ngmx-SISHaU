@@ -5,80 +5,36 @@ using Integration.NsiCommon;
 
 namespace SISHaU.Library.Util
 {
-    public class NsiUtil : GisUtil
+    public class NsiUtil : TypeUtils
     {
+        /// <summary>
+        /// Рефлексия творит чудеса
+        /// </summary>
         protected nsiRef GetNsiRef(exportNsiItemResult response, string strFilter, string strFilterItem)
         {
-            var res = from t in response.NsiItem.NsiElement.Where(ne => ne.IsActual)
-                select new
-                {
-                    type =
-                    t.NsiElementField.OfType<NsiElementStringFieldType>()
-                        .First(nt => string.IsNullOrEmpty(strFilter) || nt.Name.Equals(strFilter))
-                        .Value,
-                    name =
-                    t.NsiElementField.OfType<NsiElementStringFieldType>()
-                        .First(nt => string.IsNullOrEmpty(strFilter) || nt.Name.Equals(strFilter))
-                        .Name,
-                    guid = t.GUID,
-                    code = t.Code
-                }
-                into g
-                where string.IsNullOrEmpty(strFilter) || g.name.Equals(strFilter) && g.type.Equals(strFilterItem)
-                select new nsiRef { Name = g.type, GUID = g.guid, Code = g.code };
-
-            var nsiRefs = res as nsiRef[] ?? res.ToArray();
-            return nsiRefs.Any() ? nsiRefs.First() : null;
+            var list = GetNsiRefList(response, strFilter);
+            return list.ContainsKey(strFilterItem) ? list[strFilterItem] : null;
         }
 
         public Dictionary<string, nsiRef> GetNsiRefList(exportNsiItemResult response, string strFilter)
         {
-            var res = from t in response.NsiItem.NsiElement.Where(ne => ne.IsActual)
-                select new
-                {
-                    type =
-                    t.NsiElementField.OfType<NsiElementStringFieldType>()
-                        .First(nt => string.IsNullOrEmpty(strFilter) || nt.Name.Equals(strFilter))
-                        .Value,
-                    name =
-                    t.NsiElementField.OfType<NsiElementStringFieldType>()
-                        .First(nt => string.IsNullOrEmpty(strFilter) || nt.Name.Equals(strFilter))
-                        .Name,
-                    guid = t.GUID,
-                    code = t.Code
-                }
-                into g
-                where string.IsNullOrEmpty(strFilter) || g.name.Equals(strFilter)
-                select new
-                {
-                    key = g.type,
-                    value = new nsiRef { Name = g.type, GUID = g.guid, Code = g.code }
-
-                };
-
-            return res.ToDictionary(t => t.key, t => t.value);
+            return GetNsiObjs(response, strFilter)
+                .ToDictionary(t => GetPropValue(t.NsiElementField.First(f => f.Name.Equals(strFilter)), "Value") as string,
+                    t => new nsiRef { Code = t.Code, Name = GetPropValue(t, "Name") as string, GUID = t.GUID });
         }
 
         public Dictionary<string, string> GetNsiList(exportNsiItemResult response, string strFilter)
         {
-            var res = from t in response.NsiItem.NsiElement.Where(ne => ne.IsActual)
-                select new
-                {
-                    type =
-                    t.NsiElementField.OfType<NsiElementStringFieldType>()
-                        .First(nt => string.IsNullOrEmpty(strFilter) || nt.Name.Equals(strFilter))
-                        .Value,
-                    name =
-                    t.NsiElementField.OfType<NsiElementStringFieldType>()
-                        .First(nt => string.IsNullOrEmpty(strFilter) || nt.Name.Equals(strFilter))
-                        .Name,
-                    guid = t.GUID
-                }
-                into g
-                where string.IsNullOrEmpty(strFilter) || g.name.Equals(strFilter)
-                select new { key = g.type, value = g.guid };
+            return GetNsiObjs(response, strFilter)
+                .ToDictionary(t => GetPropValue(t.NsiElementField.First(f => f.Name.Equals(strFilter)), "Value") as string,
+                    t => t.GUID);
+        }
 
-            return res.ToDictionary(t => t.key, t => t.value);
+        private IEnumerable<NsiElementType> GetNsiObjs(exportNsiItemResult response, string strFilter)
+        {
+            return response.NsiItem.NsiElement
+                .Where(ne => ne.IsActual && ne.NsiElementField.Any(t => string.IsNullOrEmpty(strFilter) || t.Name.Equals(strFilter)))
+                .Select(t => t);
         }
     }
 }

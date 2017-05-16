@@ -16,7 +16,7 @@ namespace SISHaU.Library.API
         {
             GisIntegrationService = ServiceLocator.Current.GetInstance<IGisIntegrationService<T, TU>>();
             NsiModel = new NsiCommonDataModel();
-            SessionGuid = NewTransportGuid;
+            SessionGuid = TransportGuid;
         }
 
         public TS ProcessRequest<TS>(object request) where TS : class
