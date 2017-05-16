@@ -106,7 +106,7 @@ namespace SISHaU.Library.API
             var retInstance = attrs.Last();
 
             SetPropValue(retInstance, "Signature", null);
-            SetPropValue(retInstance, "Id", NewTransportGuid);
+            SetPropValue(retInstance, "Id", TransportGuid);
 
             return retInstance as TS;
         }
@@ -188,7 +188,7 @@ namespace SISHaU.Library.API
         {
             if (null == retInstance) return null;
             SetPropValue(retInstance, "Signature", null);
-            SetPropValue(retInstance, "Id", NewTransportGuid);
+            SetPropValue(retInstance, "Id", TransportGuid);
 
             return retInstance;
         }
