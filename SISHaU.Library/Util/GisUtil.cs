@@ -40,29 +40,8 @@ namespace SISHaU.Library.Util
         /// <returns></returns>
         protected virtual object GetHeader(MethodInfo method)
         {
-            //TODO: Не находишь ли ты это извращением? O_o
-            switch (method.GetParameters().First().ParameterType.Name)
-            {
-                case "HeaderType":
-                    return new HeaderType
-                    {
-                        MessageGUID = Guid.NewGuid().ToString(),
-                        Date = DateTime.Now,
-                    };
-                case "RequestHeader":
-                    return new RequestHeader
-                    {
-                        orgPPAGUID = OrgPPaidGuid,
-                        MessageGUID = Guid.NewGuid().ToString(),
-                        Date = DateTime.Now,
-                        IsOperatorSignature = true
-                    };
-            }
-
-            //TODO: А так разве не проканает?
-            /*
             var typeX = method.GetParameters().First().ParameterType;
-            var result = typeX == typeof(HeaderType)
+            return typeX == typeof(HeaderType)
                 ? new HeaderType
                 {
                     MessageGUID = Guid.NewGuid().ToString(),
@@ -77,10 +56,6 @@ namespace SISHaU.Library.Util
                         IsOperatorSignature = true
                     }
                     : null;
-            return result; 
-            */
-
-            return null;
         }
 
         /// <summary>
@@ -107,7 +82,6 @@ namespace SISHaU.Library.Util
             foreach (var prop in props)
             {
                 // ReSharper disable once SwitchStatementMissingSomeCases
-                //TODO: Опять порно?
                 switch (prop.Name)
                 {
                     case "Item":
@@ -152,7 +126,6 @@ namespace SISHaU.Library.Util
 
             foreach (var errorProp in errorInstanceProps)
             {
-                //TODO: Ну сколько же можно уже же...
                 switch (errorProp.Name)
                 {
                     case "Description":
