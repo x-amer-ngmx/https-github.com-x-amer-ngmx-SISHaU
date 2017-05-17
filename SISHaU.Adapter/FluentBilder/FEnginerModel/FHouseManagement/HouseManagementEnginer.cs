@@ -9,7 +9,7 @@ using SISHaU.Library.API;
 
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
 {
-    public class HouseManagementModel : Requester<HouseManagementPortsTypeClient, HouseManagementPortsTypeAsyncClient>
+    public class HouseManagementEnginer : Requester<HouseManagementPortsTypeClient, HouseManagementPortsTypeAsyncClient>
     {
         public IList<importAccountRequestAccount> Accounts { get; set; }
         public IDictionary<string, importMeteringDeviceDataRequest> MeteringDeviceImport { get; set; }
@@ -29,7 +29,7 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement
             return new MeteringDeviceModel(this);
         }
 
-        public HouseManagementModel Sync(bool clearPool = false)
+        public HouseManagementEnginer Sync(bool clearPool = false)
         {
             if (null != Accounts && Accounts.Any())
             {

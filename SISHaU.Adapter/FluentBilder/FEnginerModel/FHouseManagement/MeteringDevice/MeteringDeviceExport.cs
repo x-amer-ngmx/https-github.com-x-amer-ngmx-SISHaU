@@ -3,11 +3,11 @@ using Integration.HouseManagement;
 
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDevice
 {
-    public class MeteringDeviceExport : BaseModel<HouseManagementModel>
+    public class MeteringDeviceExport : BaseModel<HouseManagementEnginer>
     {
         private exportMeteringDeviceDataRequest ExportParameters { get; set; }
 
-        public MeteringDeviceExport(HouseManagementModel baseModel) : base(baseModel)
+        public MeteringDeviceExport(HouseManagementEnginer baseModel) : base(baseModel)
         {
             ExportParameters = GenerateGenericType<exportMeteringDeviceDataRequest>();
         }
@@ -19,7 +19,7 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDev
             return this;
         }
 
-        public override HouseManagementModel Pool()
+        public override HouseManagementEnginer Pool()
         {
             if (null == BaseModelEntity.MeteringDeviceExport)
                 BaseModelEntity.MeteringDeviceExport = new List<exportMeteringDeviceDataRequest>();

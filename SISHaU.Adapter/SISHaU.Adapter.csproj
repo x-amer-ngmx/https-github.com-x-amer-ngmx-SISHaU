@@ -46,11 +46,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FluentBilder\FEnginerModel\BaseModel.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FBillsOperation\BillsOperationEnginer.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHandbookManagement\HandbookManagementEnginer.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FPaymentOperation\PaymentEnginer.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FPaymentOperation\Payment\PaymentModel.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FResourceContractOperation\ResourceContractEnginer.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountModel.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountReason.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\PayerInfo.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseOperation\Class1.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseManagementModel.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseManagementEnginer.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristics.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristicsSetValues.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\DeviceDataToCreate.cs" />
@@ -58,8 +63,9 @@
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceImport.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceModel.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\ResidentialPremiseDevice.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FNotificationModel\INotification.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FNotificationModel\Notificator.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FNotification\INotification.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FNotification\Notificator.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FResourceContractOperation\ResourceContract\ResourceContractModel.cs" />
     <Compile Include="FluentBilder\FInterface\IBaseModelPooler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -77,14 +83,17 @@
       <Name>SISHaU.Library</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="FluentBilder\FEnginerModel\FBillsModel\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FHouseManagement\FContractModel\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FHandbookModel\Task.txt" />
+    <Folder Include="FluentBilder\FEnginerModel\FBillsOperation\BillsModel\" />
+    <Folder Include="FluentBilder\FEnginerModel\FHandbookManagement\HandbookModel\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FluentBilder\FEnginerModel\FBillsOperation\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FResourceContractOperation\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FHandbookManagement\Task.txt" />
     <Content Include="FluentBilder\FEnginerModel\FHouseManagement\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FNotificationModel\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FPayment\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FNotification\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FPaymentOperation\Task.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
