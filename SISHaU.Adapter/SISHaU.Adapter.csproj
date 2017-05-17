@@ -49,6 +49,7 @@
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountModel.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountReason.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\PayerInfo.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseOperation\Class1.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseManagementModel.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristics.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristicsSetValues.cs" />
@@ -57,6 +58,8 @@
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceImport.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceModel.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\ResidentialPremiseDevice.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FNotificationModel\INotification.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FNotificationModel\Notificator.cs" />
     <Compile Include="FluentBilder\FInterface\IBaseModelPooler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -73,6 +76,15 @@
       <Project>{dfcde107-c6c9-4364-823b-6401937e1480}</Project>
       <Name>SISHaU.Library</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="FluentBilder\FEnginerModel\FBillsModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FHouseManagement\FContractModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FHandbookModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FHouseManagement\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FNotificationModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FPayment\Task.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
