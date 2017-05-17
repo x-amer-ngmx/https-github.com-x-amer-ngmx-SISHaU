@@ -49,6 +49,7 @@
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountModel.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountReason.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\PayerInfo.cs" />
+    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HauseOperation\Class1.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseManagementModel.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristics.cs" />
     <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristicsSetValues.cs" />
@@ -73,6 +74,15 @@
       <Project>{dfcde107-c6c9-4364-823b-6401937e1480}</Project>
       <Name>SISHaU.Library</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="FluentBilder\FEnginerModel\FBillsModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FContractModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FHandbookModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FHouseManagement\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FNotificationModel\Task.txt" />
+    <Content Include="FluentBilder\FEnginerModel\FPayment\Task.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,0 +1,5 @@
+﻿Обработка оплат
+
+1. exportPaymentDocumentDetails (экспорт сведений о платежном документе);
+2. importPaymentDocumentData (импорт платежных документов);
+3. exportPaymentDocumentData (экспорт платежных документов);
