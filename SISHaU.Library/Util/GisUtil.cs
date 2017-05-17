@@ -10,28 +10,19 @@ using Newtonsoft.Json;
 
 namespace SISHaU.Library.Util
 {
-    public class GisUtil
+    public class GisUtil : TypeUtils
     {
         public IMapper UtilMapper;
         public static readonly string CurrentPlatform = ConfigurationManager.AppSettings["current_platform"];
-        public string OrgPPaidGuid = ConfigurationManager.AppSettings["org_ppaid_guid_" + CurrentPlatform];
-        public string RootOrgId = ConfigurationManager.AppSettings["root_org_id_" + CurrentPlatform];
-        public string OrgOgrn = ConfigurationManager.AppSettings["org_ogrn"];
-        public string SignId = ConfigurationManager.AppSettings["sign_id"];
-        public readonly bool IsLogging = ConfigurationManager.AppSettings["has_logging"] != null && Boolean.Parse(ConfigurationManager.AppSettings["has_logging"]);
+        public static string OrgPPaidGuid = ConfigurationManager.AppSettings["org_ppaid_guid_" + CurrentPlatform];
+        public static string RootOrgId = ConfigurationManager.AppSettings["root_org_id_" + CurrentPlatform];
+        public static string OrgOgrn = ConfigurationManager.AppSettings["org_ogrn"];
+        public static readonly bool IsLogging = ConfigurationManager.AppSettings["has_logging"] != null && Boolean.Parse(ConfigurationManager.AppSettings["has_logging"]);
 
-        public string NewTransportGuid => Guid.NewGuid().ToString();
         public void InitMapper(MapperConfiguration cfg)
         {
             if (null == cfg || null != UtilMapper) return;
             UtilMapper = cfg.CreateMapper();
-        }
-
-        public T GenerateGenericType<T>() where T : class
-        {
-            return FillInstance<T>(new Dictionary<string, object> {
-                { "Id", SignId }
-            });
         }
 
         /// <summary>
@@ -40,47 +31,19 @@ namespace SISHaU.Library.Util
         /// <returns></returns>
         protected virtual object GetHeader(MethodInfo method)
         {
-            //TODO: Не находишь ли ты это извращением? O_o
-            switch (method.GetParameters().First().ParameterType.Name)
+            var testType = method.GetParameters().First().ParameterType;
+
+            return testType == typeof(HeaderType) ? new HeaderType
             {
-                case "HeaderType":
-                    return new HeaderType
-                    {
-                        MessageGUID = Guid.NewGuid().ToString(),
-                        Date = DateTime.Now,
-                    };
-                case "RequestHeader":
-                    return new RequestHeader
-                    {
-                        orgPPAGUID = OrgPPaidGuid,
-                        MessageGUID = Guid.NewGuid().ToString(),
-                        Date = DateTime.Now,
-                        IsOperatorSignature = true
-                    };
-            }
-
-            //TODO: А так разве не проканает?
-            /*
-            var typeX = method.GetParameters().First().ParameterType;
-            var result = typeX == typeof(HeaderType)
-                ? new HeaderType
-                {
-                    MessageGUID = Guid.NewGuid().ToString(),
-                    Date = DateTime.Now,
-                }
-                : typeX == typeof(RequestHeader)
-                    ? new RequestHeader
-                    {
-                        orgPPAGUID = OrgPPaidGuid,
-                        MessageGUID = Guid.NewGuid().ToString(),
-                        Date = DateTime.Now,
-                        IsOperatorSignature = true
-                    }
-                    : null;
-            return result; 
-            */
-
-            return null;
+                MessageGUID = TransportGuid,
+                Date = DateTime.Now,
+            } : testType == typeof(RequestHeader) ? new RequestHeader
+            {
+                orgPPAGUID = OrgPPaidGuid,
+                MessageGUID = TransportGuid,
+                Date = DateTime.Now,
+                IsOperatorSignature = true
+            } : null;
         }
 
         /// <summary>
@@ -209,78 +172,6 @@ namespace SISHaU.Library.Util
             }
 
             return instanceTo;
-        }
-
-        /// <summary>
-        /// Заполняет простую сущность данными по словарю
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static T FillInstance<T>(Dictionary<string, object> data = null)
-        {
-            var instance = Activator.CreateInstance<T>();
-            return null == data ? instance : FillInstance(instance, data);
-        }
-
-        /// <summary>
-        /// Перегрузка
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="instance"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static T FillInstance<T>(T instance, Dictionary<string, object> data)
-        {
-            var props = typeof(T).GetProperties();
-            foreach (var prop in props.Where(prop => data.ContainsKey(prop.Name)))
-            {
-                prop.SetValue(instance, data[prop.Name]);
-            }
-            return instance;
-        }
-
-        /// <summary>
-        /// Возвращает словарь с данными для простого типа
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static Dictionary<string, object> GetInstance<T>(Dictionary<string, object> data)
-        {
-            var instance = Activator.CreateInstance<T>();
-            var props = typeof(T).GetProperties();
-            return props.Where(prop => data.ContainsKey(prop.Name)).ToDictionary(prop => prop.Name, prop => prop.GetValue(instance));
-        }
-
-        public static object GetPropValue(object obj, string name)
-        {
-            foreach (var part in name.Split('.'))
-            {
-                if (obj == null) { return null; }
-
-                var type = obj.GetType();
-                var info = type.GetProperty(part);
-                if (info == null) { return null; }
-
-                obj = info.GetValue(obj, null);
-            }
-            return obj;
-        }
-
-        public static T GetPropValue<T>(object obj, string name)
-        {
-            var retval = GetPropValue(obj, name);
-            if (retval == null) { return default(T); }
-            return (T)retval;
-        }
-
-        public static void SetPropValue(object obj, string name, object val)
-        {
-            if (null == obj) return;
-            var type = obj.GetType();
-            var info = type.GetProperty(name);
-            info?.SetValue(obj, val);
         }
 
         /// <summary>

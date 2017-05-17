@@ -21,7 +21,7 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDev
 
         public override HouseManagementModel Pool()
         {
-            if(null == BaseModelEntity.MeteringDeviceExport)
+            if (null == BaseModelEntity.MeteringDeviceExport)
                 BaseModelEntity.MeteringDeviceExport = new List<exportMeteringDeviceDataRequest>();
 
             BaseModelEntity.MeteringDeviceExport.Add(ExportParameters);
