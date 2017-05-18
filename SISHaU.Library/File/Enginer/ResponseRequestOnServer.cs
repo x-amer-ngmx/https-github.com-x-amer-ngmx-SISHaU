@@ -182,7 +182,6 @@ namespace SISHaU.Library.File.Enginer
                 Version = HttpVersion.Version11,
                 Headers =
                 {
-                    Host = host.Host,
                     Date = DateTimeOffset.Now,
                     Authorization = ConstantModel.XAutent
                 }

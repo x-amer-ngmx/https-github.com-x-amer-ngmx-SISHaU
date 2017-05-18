@@ -23,7 +23,7 @@ namespace SISHaU.Library.File
 
         public IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository)
         {
-            if (patch==null || !patch.Any()) throw new Exception("Параметр {patch} не должен быть пустым"); 
+            if (patch==null || !patch.Any()) throw new Exception($"Параметр {patch} не должен быть пустым"); 
 
             var result = new ConcurrentBag<UploadeResultModel>();
 

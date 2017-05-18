@@ -16,8 +16,10 @@ namespace SISHaU.Tests
         {
             using (var jsonClient = GetClient)
             {
-                UploadFilesResponse result=null;
-                try { 
+                UploadFilesResponse result = null;
+                DownloadFileResponse downResult = null;
+                try {
+                    /*
                 result = jsonClient.Post(new UploadFiles
                 {
                     FilesPathList = new List<string>()
@@ -26,20 +28,21 @@ namespace SISHaU.Tests
                     },
                     RepositoryMarker = Repo.Homemanagement
                 });
+                    */
+                downResult = jsonClient.Get(new DownloadFile()
+                {
+                    DownloadModel = new DownloadModel
+                    {
+                        Repository = Repo.Homemanagement,
+                        FileGuid = "4fb96f1d-7aff-4408-9b69-dc62abd49654",
+                        //Parts = result.Result[0].Parts // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
+                    }
+                });
                 }
                 catch (Exception x)
                 {
                     var err = x.Message;
                 }
-                var downResult = jsonClient.Post(new DownloadFile()
-                {
-                    DownloadModel = new DownloadModel
-                    {
-                        Repository = Repo.Homemanagement,
-                        FileGuid = result.Result[0].FileGuid,
-                        Parts = result.Result[0].Parts // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
-                    }
-                });
 
                 var dRes = downResult;
                 //var res = result;
