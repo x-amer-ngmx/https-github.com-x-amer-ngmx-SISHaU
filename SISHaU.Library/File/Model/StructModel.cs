@@ -95,6 +95,8 @@ namespace SISHaU.Library.File.Model
         /// </summary>
         X_Upload_Dataprovider,
 
+        X_Upload_OrgPPAGUID,
+
         /// <summary>
         /// Определяет имя загружаемого файла. Допустимы следующие расширения:
         /// pdf,

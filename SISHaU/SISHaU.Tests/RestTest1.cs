@@ -21,7 +21,7 @@ namespace SISHaU.Tests
                     {
                         { @"D:\test.zip" }
                     },
-                    RepositoryMarker = Repo.Agreements
+                    RepositoryMarker = Repo.Homemanagement
                 });
 
                 var downResult = jsonClient.Post(new DownloadFile()
