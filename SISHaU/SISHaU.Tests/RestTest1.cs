@@ -16,8 +16,9 @@ namespace SISHaU.Tests
         {
             using (var jsonClient = GetClient)
             {
+                UploadFilesResponse result=null;
                 try { 
-                var result = jsonClient.Post(new UploadFiles
+                result = jsonClient.Post(new UploadFiles
                 {
                     FilesPathList = new List<string>()
                     {
@@ -35,8 +36,8 @@ namespace SISHaU.Tests
                     DownloadModel = new DownloadModel
                     {
                         Repository = Repo.Homemanagement,
-                        FileGuid = "GUID FILE",
-                        Parts = null // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
+                        FileGuid = result.Result[0].FileGuid,
+                        Parts = result.Result[0].Parts // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
                     }
                 });
 

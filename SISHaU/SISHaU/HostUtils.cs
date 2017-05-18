@@ -4,6 +4,7 @@ using Autofac;
 using Autofac.Extras.CommonServiceLocator;
 using Microsoft.Practices.ServiceLocation;
 using SISHaU.Library.API;
+using SISHaU.Library.File;
 
 namespace SISHaU.Web
 {
@@ -19,10 +20,13 @@ namespace SISHaU.Web
         }
 
         public static void InitializeServices()
-        {/*
+        {
             var builder = new ContainerBuilder();
-            ServiceRegistrator.RegisterServices(builder);
-            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(builder.Build()));*/
+
+            var fileExchangeBuilder = new Builder();
+            builder.RegisterInstance(fileExchangeBuilder).As<IBuilder>().SingleInstance();
+            //ServiceRegistrator.RegisterServices(builder);
+            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(builder.Build()));
         }
 
     }

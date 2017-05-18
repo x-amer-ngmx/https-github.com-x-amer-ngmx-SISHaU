@@ -158,6 +158,14 @@ namespace SISHaU.Library.File
 
             var typeSwitcher = new Dictionary<Type, Action>
             {
+                { typeof(ResponseModel), () =>
+                {
+                    result = new ResponseIdModel
+                    {
+                        ResultDate = respons.Headers.Date,
+                        ServerError = error
+                    } as T;
+                }},
                 { typeof(ResponseIdModel), () =>
                 {
 
