@@ -8,6 +8,9 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FResourceContractOperation.R
     {
         private importSupplyResourceContractRequestContract SupplyContract { get; }
 
+        private exportSupplyResourceContractRequest GetSupplyContract;
+
+
         public ResourceContractModel(ResourceContractEnginer baseModel) : base(baseModel)
         {
             SupplyContract = new importSupplyResourceContractRequestContract
@@ -38,9 +41,18 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FResourceContractOperation.R
             return this;
         }
 
-        public ResourceContractModel Cancelation(string reason)
+        public ResourceContractModel Annulate(string reason)
         {
             SupplyContract.AnnulmentContract.ReasonOfAnnulment = reason;
+            return this;
+        }
+
+        public ResourceContractModel Terminate(DateTime dateTerm, Integration.NsiBase.nsiRef reasonRef)
+        {
+
+            SupplyContract.TerminateContract.Terminate = dateTerm;
+            SupplyContract.TerminateContract.ReasonRef = reasonRef;
+
             return this;
         }
     }

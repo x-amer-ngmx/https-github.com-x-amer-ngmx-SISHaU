@@ -10,11 +10,24 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FPaymentOperation.Payment
 {
     public class PaymentModel : BaseModel<PaymentEnginer>
     {
-        private importNotificationsOfOrderExecutionRequestNotificationOfOrderExecutionType PaymentDocument { get; }
+        //Передать перечень документов "Извещение о принятии к исполнению распоряжения"
+        private importNotificationsOfOrderExecutionRequestNotificationOfOrderExecutionType PaymentDocuments { get; }
+
+        //Импорт документов "Извещение об аннулировании извещения о принятии к исполнению распоряжения"
+        private importNotificationsOfOrderExecutionCancellationRequest ConcellationDocuments;
+
+        //Импорт пакета документов «Извещение о принятии к исполнению распоряжения», размещаемых исполнителем
+        private importSupplierNotificationsOfOrderExecutionRequestSupplierNotificationOfOrderExecution ExecutionDocuments;
+
+
+        private exportPaymentDocumentDetailsRequest GetDocumentInfo;
+
+
+
 
         public PaymentModel(PaymentEnginer baseModel) : base(baseModel)
         {
-            PaymentDocument = new importNotificationsOfOrderExecutionRequestNotificationOfOrderExecutionType
+            PaymentDocuments = new importNotificationsOfOrderExecutionRequestNotificationOfOrderExecutionType
             {
                 TransportGUID = Guid.NewGuid().ToString()
             };
@@ -22,15 +35,15 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FPaymentOperation.Payment
 
         public PaymentModel PayerInfo(string idPayer, string namePayer)
         {
-            PaymentDocument.SupplierInfo.SupplierID = idPayer;
-            PaymentDocument.SupplierInfo.SupplierName = namePayer;
+            PaymentDocuments.SupplierInfo.SupplierID = idPayer;
+            PaymentDocuments.SupplierInfo.SupplierName = namePayer;
             return this;
         }
 
         public PaymentModel DocumentInfo(string idPayer, string namePayer)
         {
             //TODO: Разобраться и реализовать.
-            PaymentDocument.OrderInfo = new NotificationOfOrderExecutionTypeOrderInfo();
+            PaymentDocuments.OrderInfo = new NotificationOfOrderExecutionTypeOrderInfo();
             return this;
         }
     }
