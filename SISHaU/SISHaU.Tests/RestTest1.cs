@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SISHaU.Library.File.Model;
 using SISHaU.ServiceInterface.Services;
 using SISHaU.ServiceModel.Types;
+using System;
 
 namespace SISHaU.Tests
 {
@@ -15,6 +16,7 @@ namespace SISHaU.Tests
         {
             using (var jsonClient = GetClient)
             {
+                try { 
                 var result = jsonClient.Post(new UploadFiles
                 {
                     FilesPathList = new List<string>()
@@ -23,7 +25,11 @@ namespace SISHaU.Tests
                     },
                     RepositoryMarker = Repo.Homemanagement
                 });
-
+                }
+                catch (Exception x)
+                {
+                    var err = x.Message;
+                }
                 var downResult = jsonClient.Post(new DownloadFile()
                 {
                     DownloadModel = new DownloadModel
@@ -35,7 +41,7 @@ namespace SISHaU.Tests
                 });
 
                 var dRes = downResult;
-                var res = result;
+                //var res = result;
             }
         }
 

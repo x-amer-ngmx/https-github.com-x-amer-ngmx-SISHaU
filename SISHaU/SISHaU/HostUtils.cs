@@ -19,10 +19,10 @@ namespace SISHaU.Web
         }
 
         public static void InitializeServices()
-        {
+        {/*
             var builder = new ContainerBuilder();
             ServiceRegistrator.RegisterServices(builder);
-            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(builder.Build()));
+            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(builder.Build()));*/
         }
 
     }
