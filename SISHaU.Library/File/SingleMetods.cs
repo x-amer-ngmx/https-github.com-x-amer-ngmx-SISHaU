@@ -31,7 +31,7 @@ namespace SISHaU.Library.File
             int[] result;
             try
             {
-                result = parts.Split(sp).Select(int.Parse).ToArray();
+                result = parts.Split(sp).Select(int.Parse).OrderBy(x=>x).ToArray();
             }
             catch (Exception)
             {

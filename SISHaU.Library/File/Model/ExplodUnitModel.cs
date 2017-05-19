@@ -6,7 +6,8 @@
 
         public ByteDetectorModel PartDetect { get; set; }
 
-        public byte[] Unit {
+        public byte[] Unit
+        {
             get => _unit;
             set
             {
@@ -16,6 +17,14 @@
             }
         }
 
-        public byte[] Md5Hash{ get; private set; }
+        public byte[] Md5Hash { get; private set; }
+    }
+
+    public class PrivateExplodUnitModel
+    {
+        public ByteDetectorModel PartDetect { get; set; }
+
+        public byte[] Unit { get; set; }
+
     }
 }

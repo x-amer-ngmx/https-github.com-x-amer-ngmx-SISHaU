@@ -10,11 +10,18 @@ namespace SISHaU.Library.File.Model
     {
         public Repo Repository { get; set; }
         public string FileGuid { get; set; }
+    }
+
+    public class PrivateDownloadModel
+    {
+        public ResultModel FileInfo { get; set; }
 
         /// <summary>
         /// Параметр принимает значение в случае если файл превышает 5мб и соответственно разделён на части
         /// </summary>
-        public IList<ByteDetectorModel> Parts { get; set; }
+        public IList<PrivateExplodUnitModel> Parts { get; set; }
+
+        public RequestErrorModel ErrorMessage { get; set; }
+    }
 
     }
-}

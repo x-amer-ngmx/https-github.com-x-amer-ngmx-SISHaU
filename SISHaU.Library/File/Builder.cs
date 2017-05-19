@@ -95,7 +95,7 @@ namespace SISHaU.Library.File
             
             var bild = new EnginerFileRun(model.Repository);
 
-            var file = bild.DownloadFile(model.FileGuid, model.Parts);
+            var file = bild.DownloadFile(model.FileGuid);
 
             var result=new DownloadResultModel
             {

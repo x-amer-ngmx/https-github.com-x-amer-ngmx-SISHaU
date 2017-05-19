@@ -81,7 +81,7 @@ namespace SISHaU.Library.File.Enginer
         /// </summary>
         /// <param name="units">последовательнось типа ExplodUnitModel</param>
         /// <returns>Массив байт файла</returns>
-        public byte[] CollectFile(IEnumerable<ExplodUnitModel> units)
+        public byte[] CollectFile(IEnumerable<PrivateExplodUnitModel> units)
         {
             if (units == null || !units.Any()) return null;
 

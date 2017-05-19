@@ -127,31 +127,47 @@ namespace SISHaU.Library.File.Enginer
 
         #region Загрузка файлов
 
-        public UploadeModel DownloadFile(string fileId, IEnumerable<ByteDetectorModel> part)
+        public PrivateDownloadModel DownloadFile(string fileId)
         {
-            UploadeModel result = null;
+            PrivateDownloadModel result = new PrivateDownloadModel();
 
             _request = _serverConnect.RequestLoadingUnitInfo(fileId);
             _response = _serverConnect.SendRequest(_request).Result;
 
             var fileInfo = _response.ResultEnginer<ResponseInfoModel>();
 
+
             var modes = fileInfo.FileSize % ConstantModel.MaxPartSize;
             var parts = new List<RangeModel>();
             long partFromSize = 0;
 
-            foreach (var unused in fileInfo.FileCompleateParts)
+
+
+            foreach (var part in fileInfo.FileCompleateParts)
             {
                 var thisPartSize = (partFromSize + ConstantModel.MaxPartSize);
                 var partToSize = modes > thisPartSize ? modes : thisPartSize;
 
+                var to = partToSize - 1;
 
                 _request = _serverConnect.RequestDownLoading(fileId, new RangeModel
                 {
                     From = partFromSize,
-                    To = partToSize - 1
+                    To = to
                 });
                 _response = _serverConnect.SendRequest(_request).Result;
+                
+
+                result.Parts.Add(new PrivateExplodUnitModel {
+                    PartDetect = new ByteDetectorModel
+                    {
+                        Part = part,
+                        From = partFromSize,
+                        To = to
+                    },
+                    Unit = _response.Content.ReadAsByteArrayAsync().Result
+                    
+                });
 
 
                 partFromSize = thisPartSize;
@@ -159,11 +175,6 @@ namespace SISHaU.Library.File.Enginer
 
 
             var x = fileInfo;
-
-            RangeModel range = null;
-
-
-
 
 
             return result;
