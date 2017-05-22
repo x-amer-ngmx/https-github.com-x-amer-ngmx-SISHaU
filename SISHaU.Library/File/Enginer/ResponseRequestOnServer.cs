@@ -148,7 +148,7 @@ namespace SISHaU.Library.File.Enginer
             RequestUri.UriRequest = $"{fileId}?getfile";
 
             var result = RequestHead();
-
+                        
             if(range!=null) result.Headers.Range = new RangeHeaderValue(range.From, range.To);
 
             return result;
@@ -199,13 +199,17 @@ namespace SISHaU.Library.File.Enginer
         /// </summary>
         /// <param name="message"></param>
         /// <returns>Асинхронную операция</returns>
-        public Task<HttpResponseMessage> SendRequest(HttpRequestMessage message)
+        public Task<HttpResponseMessage> SendRequest(HttpRequestMessage message, string cType = null)
         {
             Task<HttpResponseMessage> result = null;
 
             try
             {
-                result = new HttpClient().SendAsync(message, HttpCompletionOption.ResponseContentRead);
+                var client = new HttpClient();
+
+                if(cType!=null) client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(cType));
+
+                result = client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
             }
             catch (Exception)
             {

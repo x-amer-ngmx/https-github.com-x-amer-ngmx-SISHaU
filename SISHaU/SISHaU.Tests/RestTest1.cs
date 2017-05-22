@@ -5,6 +5,7 @@ using SISHaU.Library.File.Model;
 using SISHaU.ServiceInterface.Services;
 using SISHaU.ServiceModel.Types;
 using System;
+using System.IO;
 
 namespace SISHaU.Tests
 {
@@ -44,6 +45,7 @@ namespace SISHaU.Tests
                     var err = x.Message;
                 }
 
+                File.WriteAllBytes(@"D:\result.zip", downResult.Result.FileBytes);
                 var dRes = downResult;
                 //var res = result;
             }

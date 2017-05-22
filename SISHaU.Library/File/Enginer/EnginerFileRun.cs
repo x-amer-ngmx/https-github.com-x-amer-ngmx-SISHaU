@@ -141,12 +141,12 @@ namespace SISHaU.Library.File.Enginer
             var parts = new List<RangeModel>();
             long partFromSize = 0;
 
-
+            if (fileInfo.FileCompleateParts.Length > 0) { result.Parts = new List<PrivateExplodUnitModel>(); }
 
             foreach (var part in fileInfo.FileCompleateParts)
             {
                 var thisPartSize = (partFromSize + ConstantModel.MaxPartSize);
-                var partToSize = modes > thisPartSize ? modes : thisPartSize;
+                var partToSize = fileInfo.FileSize < thisPartSize ? fileInfo.FileSize : thisPartSize;
 
                 var to = partToSize - 1;
 
@@ -155,26 +155,34 @@ namespace SISHaU.Library.File.Enginer
                     From = partFromSize,
                     To = to
                 });
-                _response = _serverConnect.SendRequest(_request).Result;
-                
+                _response = _serverConnect.SendRequest(_request, "application/zip").Result;
+
+                var stream = _response.Content.ReadAsByteArrayAsync().Result;
+
+
 
                 result.Parts.Add(new PrivateExplodUnitModel {
+                    
                     PartDetect = new ByteDetectorModel
                     {
                         Part = part,
                         From = partFromSize,
                         To = to
                     },
-                    Unit = _response.Content.ReadAsByteArrayAsync().Result
                     
+                    Unit = stream
+
                 });
 
 
                 partFromSize = thisPartSize;
             }
 
-
-            var x = fileInfo;
+            result.FileInfo = new ResultModel {
+                FileName = fileInfo.FileName,
+                FileSize = fileInfo.FileSize
+            };
+            
 
 
             return result;
