@@ -136,13 +136,11 @@ namespace SISHaU.Library.File.Enginer
 
             var fileInfo = _response.ResultEnginer<ResponseInfoModel>();
 
-
-            var modes = fileInfo.FileSize % ConstantModel.MaxPartSize;
-            var parts = new List<RangeModel>();
             long partFromSize = 0;
 
             if (fileInfo.FileCompleateParts.Length > 0) { result.Parts = new List<PrivateExplodUnitModel>(); }
 
+            //TODO: Ваще необходим рефакторинг и я бы подумал над тем чтобы это всё распоточить, если есть в этом смысл...
             foreach (var part in fileInfo.FileCompleateParts)
             {
                 var thisPartSize = (partFromSize + ConstantModel.MaxPartSize);
@@ -155,7 +153,7 @@ namespace SISHaU.Library.File.Enginer
                     From = partFromSize,
                     To = to
                 });
-                _response = _serverConnect.SendRequest(_request, "application/zip").Result;
+                _response = _serverConnect.SendRequest(_request).Result;
 
                 var stream = _response.Content.ReadAsByteArrayAsync().Result;
 

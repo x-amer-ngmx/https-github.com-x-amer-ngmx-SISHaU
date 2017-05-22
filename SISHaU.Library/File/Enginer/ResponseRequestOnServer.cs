@@ -199,7 +199,7 @@ namespace SISHaU.Library.File.Enginer
         /// </summary>
         /// <param name="message"></param>
         /// <returns>Асинхронную операция</returns>
-        public Task<HttpResponseMessage> SendRequest(HttpRequestMessage message, string cType = null)
+        public Task<HttpResponseMessage> SendRequest(HttpRequestMessage message)
         {
             Task<HttpResponseMessage> result = null;
 
@@ -207,7 +207,8 @@ namespace SISHaU.Library.File.Enginer
             {
                 var client = new HttpClient();
 
-                if(cType!=null) client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(cType));
+                // Возможно когданибудь пригодится
+                //if(cType!=null) client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(cType));
 
                 result = client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
             }

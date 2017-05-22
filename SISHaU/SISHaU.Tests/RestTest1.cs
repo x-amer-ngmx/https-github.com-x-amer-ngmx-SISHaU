@@ -45,8 +45,9 @@ namespace SISHaU.Tests
                     var err = x.Message;
                 }
 
-                File.WriteAllBytes(@"D:\result.zip", downResult.Result.FileBytes);
-                var dRes = downResult;
+                if(downResult!=null)
+                File.WriteAllBytes($@"D:\result\{downResult.Result.FileName}", downResult.Result.FileBytes);
+
                 //var res = result;
             }
         }
