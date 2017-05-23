@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
+using System.Threading;
 
 namespace SISHaU.Library.File.Enginer
 {
@@ -46,7 +47,7 @@ namespace SISHaU.Library.File.Enginer
                 _request = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
                     count);
 
-                _response = _serverConnect.SendRequest(_request).Result;
+                _response = _serverConnect.SendRequest(_request);
                 var content = _response.Content.ReadAsStringAsync().Result;
                 var session = _response.ResultEnginer<ResponseIdModel>();
 
@@ -55,11 +56,12 @@ namespace SISHaU.Library.File.Enginer
 
                 //возможно эту часть необходимо вынести в отдельный метод для потдержки докачки частей в случае сбоя
                 //и нужно рассмотреть возможность рекурсивной работы этого метода
-                Parallel.ForEach(uploadeMod.Parts, (part, state) =>
+                foreach(var part in uploadeMod.Parts)
+                //Parallel.ForEach(uploadeMod.Parts, (part, state) =>
                 {
                     //распаралелить
                     _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId);
-                    _response = _serverConnect.SendRequest(_request).Result;
+                    _response = _serverConnect.SendRequest(_request);
 
                     var stateUploaded = _response.ResultEnginer<ResponseModel>();
                     if (stateUploaded.ServerError != null)
@@ -67,11 +69,11 @@ namespace SISHaU.Library.File.Enginer
                         //Возникла ошибка при загрузке части
                     }
 
-                });
+                }//);
 
                 _request = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId);
 
-                _response = _serverConnect.SendRequest(_request).Result;
+                _response = _serverConnect.SendRequest(_request);
 
                 var closeSess = _response.ResultEnginer<ResponseSessionCloseModel>();
 
@@ -97,7 +99,7 @@ namespace SISHaU.Library.File.Enginer
 
                 _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash,
                     uploadeMod.FileInfo.FileName);
-                _response = _serverConnect.SendRequest(_request).Result;
+                _response = _serverConnect.SendRequest(_request);
                 var uploadeId = _response.ResultEnginer<ResponseIdModel>(false);
 
                 // Проверка на ошибку... это уже надо делать при непосредственных запросах... Ибо мой компилятор в мозгу физически ограничен, ну или я его сам ограничиваю))))
@@ -132,7 +134,7 @@ namespace SISHaU.Library.File.Enginer
             PrivateDownloadModel result = new PrivateDownloadModel();
 
             _request = _serverConnect.RequestLoadingUnitInfo(fileId);
-            _response = _serverConnect.SendRequest(_request).Result;
+            _response = _serverConnect.SendRequest(_request);
 
             var fileInfo = _response.ResultEnginer<ResponseInfoModel>();
 
@@ -153,7 +155,7 @@ namespace SISHaU.Library.File.Enginer
                     From = partFromSize,
                     To = to
                 });
-                _response = _serverConnect.SendRequest(_request).Result;
+                _response = _serverConnect.SendRequest(_request);
 
                 //TODO: Реализовать проверку ошибок ответа (BadReqest/BadResponse)
                 var stream = _response.Content.ReadAsByteArrayAsync().Result;

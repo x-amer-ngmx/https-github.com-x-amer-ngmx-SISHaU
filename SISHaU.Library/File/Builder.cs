@@ -55,6 +55,7 @@ namespace SISHaU.Library.File
 
                 var parts = Operation.ExplodingFile(stream);
 
+                Operation.Dispose();
 
                 upFile.Add(new UploadeModel
                 {
@@ -71,7 +72,10 @@ namespace SISHaU.Library.File
 
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
-                result.Add(new EnginerFileRun(repository).UploadFile(cupFile));
+                var upl = new EnginerFileRun(repository);
+                var res = upl.UploadFile(cupFile);
+                upl.Dispose();
+                result.Add(res);
                 Thread.Sleep(100);
             });
 
@@ -107,6 +111,8 @@ namespace SISHaU.Library.File
             var bild = new EnginerFileRun(model.Repository);
 
             var file = bild.DownloadFile(model.FileGuid);
+
+            bild.Dispose();
 
             var result=new DownloadResultModel
             {

@@ -20,6 +20,7 @@ namespace SISHaU.Tests
 
             using (var jsonClient = GetClient)
             {
+                
                 jsonClient.Timeout = new TimeSpan(1, 0, 0);
 
                 try
@@ -32,9 +33,9 @@ namespace SISHaU.Tests
                         @"D:\test0.zip",
                         @"D:\test1.zip",
                         @"D:\test2.zip",
-                        @"D:\test3.zip",
-                        @"D:\test4.zip",
-                        @"D:\test5.zip",
+                        //@"D:\test3.zip",
+                        //@"D:\test4.zip",
+                        //@"D:\test5.zip",
                     },
                         RepositoryMarker = Repo.Homemanagement
                     });
@@ -44,7 +45,7 @@ namespace SISHaU.Tests
                     var err = x.Message;
                 }
 
-
+                
                 try
                 {
 
@@ -55,7 +56,7 @@ namespace SISHaU.Tests
                         dmodel.Add(new DownloadModel
                         {
                             FileGuid = res.FileGuid,
-                            Repository = Repo.Homemanagement
+                            Repository = res.Repository.Value
                         });
                     }
 
@@ -64,14 +65,14 @@ namespace SISHaU.Tests
                         DownloadModelList = dmodel
                     });
 
-
+                    
                     /*
                     downResult = jsonClient.Get(new DownloadFile()
                     {
                         DownloadModel = new DownloadModel
                         {
                             Repository = Repo.Homemanagement,
-                            FileGuid = "4fb96f1d-7aff-4408-9b69-dc62abd49654",
+                            FileGuid = "13e56042-5159-4a18-a9ae-11add9566ee7",
                             //Parts = result.Result[0].Parts // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
                         }
                     });
@@ -83,11 +84,16 @@ namespace SISHaU.Tests
                 }
 
                 if (downResult != null)
+                {
+                    
+                        //File.WriteAllBytes($@"D:\result\{downResult.Result.FileName}", downResult.Result.FileBytes);
+                    
+                    
                     foreach (var dow in downResult.Result)
                     {
                         File.WriteAllBytes($@"D:\result\{dow.FileName}", dow.FileBytes);
                     }
-
+                }
 
                 //var res = result;
             }

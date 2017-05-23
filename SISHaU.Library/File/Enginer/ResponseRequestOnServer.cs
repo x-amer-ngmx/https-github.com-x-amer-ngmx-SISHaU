@@ -199,22 +199,27 @@ namespace SISHaU.Library.File.Enginer
         /// </summary>
         /// <param name="message"></param>
         /// <returns>Асинхронную операция</returns>
-        public Task<HttpResponseMessage> SendRequest(HttpRequestMessage message)
+        public HttpResponseMessage SendRequest(HttpRequestMessage message)
         {
-            Task<HttpResponseMessage> result = null;
+            HttpResponseMessage result = null;
 
             try
-            {
+            {/*
+                var hand = new WebRequestHandler();
+                hand.ClientCertificates.a
+                    */
                 var client = new HttpClient();
 
                 // Возможно когданибудь пригодится
                 //if(cType!=null) client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(cType));
 
-                result = client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
+                var sender = client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
+                sender.Wait();
+                result = sender.Result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //var resMess = ex.Message;
+                var resMess = ex.Message;
                 //
             }
 
