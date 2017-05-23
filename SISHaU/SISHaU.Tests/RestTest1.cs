@@ -15,38 +15,79 @@ namespace SISHaU.Tests
         [TestMethod]
         public void TestUploadFileByRest()
         {
+            UploadFilesResponse result = null;
+            DownloadFilesResponse downResult = null;
+
             using (var jsonClient = GetClient)
             {
-                UploadFilesResponse result = null;
-                DownloadFileResponse downResult = null;
-                try {
-                    /*
-                result = jsonClient.Post(new UploadFiles
+                jsonClient.Timeout = new TimeSpan(1, 0, 0);
+
+                try
                 {
-                    FilesPathList = new List<string>()
+
+                    result = jsonClient.Post(new UploadFiles
                     {
-                        { @"D:\test.zip" }
+                        FilesPathList = new List<string>()
+                    {
+                        @"D:\test0.zip",
+                        @"D:\test1.zip",
+                        @"D:\test2.zip",
+                        @"D:\test3.zip",
+                        @"D:\test4.zip",
+                        @"D:\test5.zip",
                     },
-                    RepositoryMarker = Repo.Homemanagement
-                });
-                    */
-                downResult = jsonClient.Get(new DownloadFile()
-                {
-                    DownloadModel = new DownloadModel
-                    {
-                        Repository = Repo.Homemanagement,
-                        FileGuid = "4fb96f1d-7aff-4408-9b69-dc62abd49654",
-                        //Parts = result.Result[0].Parts // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
-                    }
-                });
+                        RepositoryMarker = Repo.Homemanagement
+                    });
                 }
                 catch (Exception x)
                 {
                     var err = x.Message;
                 }
 
-                if(downResult!=null)
-                File.WriteAllBytes($@"D:\result\{downResult.Result.FileName}", downResult.Result.FileBytes);
+
+                try
+                {
+
+                    var dmodel = new List<DownloadModel>();
+
+                    foreach (var res in result.Result)
+                    {
+                        dmodel.Add(new DownloadModel
+                        {
+                            FileGuid = res.FileGuid,
+                            Repository = Repo.Homemanagement
+                        });
+                    }
+
+                    downResult = jsonClient.Get(new DownloadFiles()
+                    {
+                        DownloadModelList = dmodel
+                    });
+
+
+                    /*
+                    downResult = jsonClient.Get(new DownloadFile()
+                    {
+                        DownloadModel = new DownloadModel
+                        {
+                            Repository = Repo.Homemanagement,
+                            FileGuid = "4fb96f1d-7aff-4408-9b69-dc62abd49654",
+                            //Parts = result.Result[0].Parts // null if [<= 5mb] or [> 5mb] new List<ByteDetectorModel>()
+                        }
+                    });
+                    */
+                }
+                catch (Exception x)
+                {
+                    var err = x.Message;
+                }
+
+                if (downResult != null)
+                    foreach (var dow in downResult.Result)
+                    {
+                        File.WriteAllBytes($@"D:\result\{dow.FileName}", dow.FileBytes);
+                    }
+
 
                 //var res = result;
             }

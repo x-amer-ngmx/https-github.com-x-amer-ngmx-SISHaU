@@ -155,8 +155,8 @@ namespace SISHaU.Library.File.Enginer
                 });
                 _response = _serverConnect.SendRequest(_request).Result;
 
+                //TODO: Реализовать проверку ошибок ответа (BadReqest/BadResponse)
                 var stream = _response.Content.ReadAsByteArrayAsync().Result;
-
 
 
                 result.Parts.Add(new PrivateExplodUnitModel {

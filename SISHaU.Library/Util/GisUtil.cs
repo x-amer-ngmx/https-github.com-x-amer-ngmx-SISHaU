@@ -70,7 +70,6 @@ namespace SISHaU.Library.Util
             foreach (var prop in props)
             {
                 // ReSharper disable once SwitchStatementMissingSomeCases
-                //TODO: Опять порно?
                 switch (prop.Name)
                 {
                     case "Item":
@@ -115,7 +114,6 @@ namespace SISHaU.Library.Util
 
             foreach (var errorProp in errorInstanceProps)
             {
-                //TODO: Ну сколько же можно уже же...
                 switch (errorProp.Name)
                 {
                     case "Description":

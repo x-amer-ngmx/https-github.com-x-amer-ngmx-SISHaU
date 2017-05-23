@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Enginer;
 using SISHaU.Library.File.Model;
@@ -71,6 +72,7 @@ namespace SISHaU.Library.File
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
                 result.Add(new EnginerFileRun(repository).UploadFile(cupFile));
+                Thread.Sleep(100);
             });
 
             return result.ToList();
@@ -85,9 +87,18 @@ namespace SISHaU.Library.File
 
         public IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model)
         {
-            if(model==null || !model.Any()) throw new Exception("Параметр model не должен быть пустым");
+            if (model == null || !model.Any()) throw new Exception("Параметр model не должен быть пустым");
 
-            return model.Select(DownloadFiles).ToList();
+            var collect = new ConcurrentBag<DownloadModel>(model);
+            var result = new List<DownloadResultModel>();
+
+            Parallel.ForEach(collect, (download, state) =>
+            {
+                result.Add(DownloadFiles(download));
+                Thread.Sleep(100);
+            });
+
+            return result;
         }
 
         public DownloadResultModel DownloadFiles(DownloadModel model)
