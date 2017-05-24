@@ -13,8 +13,6 @@ namespace SISHaU.Library.File.Enginer
     public class EnginerFileRun : IDisposable
     {
         private readonly ResponseRequestOnServer _serverConnect;
-        private HttpRequestMessage _request;
-        private HttpResponseMessage _response;
 
         private readonly Repo _repository;
 
@@ -44,12 +42,11 @@ namespace SISHaU.Library.File.Enginer
 
             if (count > 1)
             {
-                _request = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
-                    count);
+                var response = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
+                    count).SendRequest();
 
-                _response = _serverConnect.SendRequest(_request);
-                var content = _response.Content.ReadAsStringAsync().Result;
-                var session = _response.ResultEnginer<ResponseIdModel>();
+                var content = response.Content.ReadAsStringAsync().Result;
+                var session = response.ResultEnginer<ResponseIdModel>();
 
                 //Убираю лимит на количество одновременных запросов.
                 ServicePointManager.DefaultConnectionLimit = 15;
@@ -60,10 +57,9 @@ namespace SISHaU.Library.File.Enginer
                 //Parallel.ForEach(uploadeMod.Parts, (part, state) =>
                 {
                     //распаралелить
-                    _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId);
-                    _response = _serverConnect.SendRequest(_request);
-
-                    var stateUploaded = _response.ResultEnginer<ResponseModel>();
+                    response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId).SendRequest();
+                    //Thread.Sleep(5000);
+                    var stateUploaded = response.ResultEnginer<ResponseModel>();
                     if (stateUploaded.ServerError != null)
                     {
                         //Возникла ошибка при загрузке части
@@ -71,11 +67,9 @@ namespace SISHaU.Library.File.Enginer
 
                 }//);
 
-                _request = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId);
+                response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
 
-                _response = _serverConnect.SendRequest(_request);
-
-                var closeSess = _response.ResultEnginer<ResponseSessionCloseModel>();
+                var closeSess = response.ResultEnginer<ResponseSessionCloseModel>();
 
                 if (closeSess.IsClose == false)
                 {
@@ -97,10 +91,9 @@ namespace SISHaU.Library.File.Enginer
                 //это никогда не наступит но решарпер предупреждает...
                 if (part == null) return null;
 
-                _request = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash,
-                    uploadeMod.FileInfo.FileName);
-                _response = _serverConnect.SendRequest(_request);
-                var uploadeId = _response.ResultEnginer<ResponseIdModel>(false);
+                var response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash,
+                    uploadeMod.FileInfo.FileName).SendRequest();
+                var uploadeId = response.ResultEnginer<ResponseIdModel>(false);
 
                 // Проверка на ошибку... это уже надо делать при непосредственных запросах... Ибо мой компилятор в мозгу физически ограничен, ну или я его сам ограничиваю))))
                 
@@ -133,10 +126,9 @@ namespace SISHaU.Library.File.Enginer
         {
             PrivateDownloadModel result = new PrivateDownloadModel();
 
-            _request = _serverConnect.RequestLoadingUnitInfo(fileId);
-            _response = _serverConnect.SendRequest(_request);
+            var response = _serverConnect.RequestLoadingUnitInfo(fileId).SendRequest();
 
-            var fileInfo = _response.ResultEnginer<ResponseInfoModel>();
+            var fileInfo = response.ResultEnginer<ResponseInfoModel>();
 
             long partFromSize = 0;
 
@@ -150,15 +142,14 @@ namespace SISHaU.Library.File.Enginer
 
                 var to = partToSize - 1;
 
-                _request = _serverConnect.RequestDownLoading(fileId, new RangeModel
+                response = _serverConnect.RequestDownLoading(fileId, new RangeModel
                 {
                     From = partFromSize,
                     To = to
-                });
-                _response = _serverConnect.SendRequest(_request);
+                }).SendRequest();
 
                 //TODO: Реализовать проверку ошибок ответа (BadReqest/BadResponse)
-                var stream = _response.Content.ReadAsByteArrayAsync().Result;
+                var stream = response.Content.ReadAsByteArrayAsync().Result;
 
 
                 result.Parts.Add(new PrivateExplodUnitModel {
@@ -193,11 +184,7 @@ namespace SISHaU.Library.File.Enginer
         private void Dispose(bool disposing)
         {
             if (!disposing) return;
-
             _serverConnect?.Dispose();
-            _request?.Dispose();
-            _response?.Dispose();
-
         }
 
         public void Dispose()

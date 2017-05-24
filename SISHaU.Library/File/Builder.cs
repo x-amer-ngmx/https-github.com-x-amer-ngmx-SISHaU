@@ -70,14 +70,15 @@ namespace SISHaU.Library.File
 
             }
 
-            Parallel.ForEach(upFile, (cupFile, state) =>
+            foreach(var cupFile in upFile)
+            //Parallel.ForEach(upFile, (cupFile, state) =>
             {
                 var upl = new EnginerFileRun(repository);
                 var res = upl.UploadFile(cupFile);
                 upl.Dispose();
                 result.Add(res);
-                Thread.Sleep(100);
-            });
+                Thread.Sleep(5000);
+            }//);
 
             return result.ToList();
         }
@@ -96,11 +97,12 @@ namespace SISHaU.Library.File
             var collect = new ConcurrentBag<DownloadModel>(model);
             var result = new List<DownloadResultModel>();
 
-            Parallel.ForEach(collect, (download, state) =>
+            foreach(var download in collect)
+            //Parallel.ForEach(collect, (download, state) =>
             {
                 result.Add(DownloadFiles(download));
-                Thread.Sleep(100);
-            });
+                //Thread.Sleep(5000);
+            }//);
 
             return result;
         }
