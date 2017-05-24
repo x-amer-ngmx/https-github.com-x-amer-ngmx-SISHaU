@@ -267,8 +267,16 @@ namespace SISHaU.Library.File
 
                 var client = new HttpClient(httpClientHandler);
 
-                var sender = client.SendAsync(message, HttpCompletionOption.ResponseContentRead, new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(5)).Token);
+                client.Timeout = TimeSpan.FromMinutes(15);
+
+                var sender = client.SendAsync(
+                    message,
+                    HttpCompletionOption.ResponseContentRead,
+                    new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(15)).Token
+                    );
+
                 sender.Wait();
+
                 result = sender.Result;
             }
             catch (Exception ex)
