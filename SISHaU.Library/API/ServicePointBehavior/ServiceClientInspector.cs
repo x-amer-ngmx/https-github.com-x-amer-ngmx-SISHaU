@@ -7,6 +7,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using System.Text;
 using System.Xml;
+using SISHaU.Library.File.Model;
 using SISHaU.Signature.Gis;
 
 namespace SISHaU.Library.API.ServicePointBehavior
@@ -16,7 +17,7 @@ namespace SISHaU.Library.API.ServicePointBehavior
         private static readonly string BasicUser = ConfigurationManager.AppSettings["basic_user"];
         private static readonly string BasicPassword = ConfigurationManager.AppSettings["basic_password"];
         private static readonly string SignId = ConfigurationManager.AppSettings["sign_id"];
-        private static string BaseUrl = ConfigurationManager.AppSettings["base_url"];
+        private static readonly string BaseUrl = ConfigurationManager.AppSettings["base_url"];
 
         private readonly bool IsLogging = ConfigurationManager.AppSettings["has_logging"] != null &&
                                           Boolean.Parse(ConfigurationManager.AppSettings["has_logging"]);
@@ -60,9 +61,8 @@ namespace SISHaU.Library.API.ServicePointBehavior
             var httpRequestMessage = new HttpRequestMessageProperty();
 
             //Если нужен отпечаток
-            var tp = ConfigurationManager.AppSettings["certificate-thumbprint"];
 
-            httpRequestMessage.Headers.Add("X-Client-Cert-Fingerprint", tp.Replace(" ", ""));
+            httpRequestMessage.Headers.Add("X-Client-Cert-Fingerprint", ConstantModel.CertificateFingerPrint.Replace(" ", ""));
             httpRequestMessage.Headers.Add("Authorization", GetAuthHeaderValue().ToString());
 
             request.Properties.Add(HttpRequestMessageProperty.Name, httpRequestMessage);
