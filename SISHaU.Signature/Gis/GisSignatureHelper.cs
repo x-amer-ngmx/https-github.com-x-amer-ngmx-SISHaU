@@ -122,31 +122,31 @@ namespace SISHaU.Signature.Gis
             {
                 switch (pair.Key.ToLower())
                 {
-                    case "E=":
+                    case "e":
                         pair.Key = "1.2.840.113549.1.9.1";
                         break;
-                    case "t=":
-                    case "title=":
+                    case "t":
+                    case "title":
                         pair.Key = "2.5.4.12";
                         break;
 
-                    case "g=":
-                    case "givenname=":
+                    case "g":
+                    case "givenname":
                         pair.Key = "2.5.4.42";
                         break;
 
-                    case "sn=":
-                    case "surname=":
+                    case "sn":
+                    case "surname":
                         pair.Key = "2.5.4.4";
                         break;
 
-                    case "ou=":
-                    case "orgunit=":
+                    case "ou":
+                    case "orgunit":
                         pair.Key = "2.5.4.11";
                         break;
 
-                    case "unstructured-name=":
-                    case "unstructuredname=":
+                    case "unstructured-name":
+                    case "unstructuredname":
                         pair.Key = "1.2.840.113549.1.9.2";
                         break;
                 }
