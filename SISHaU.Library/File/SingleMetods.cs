@@ -5,8 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using CryptoPro.Sharpei;
 using SISHaU.Library.File.Model;
 
@@ -260,41 +258,16 @@ namespace SISHaU.Library.File
             {
                 string proxyUri ="http://127.0.0.1:8888";
 
-                /* NetworkCredential proxyCreds = new NetworkCredential();
-
-                 WebProxy proxy = new WebProxy(proxyUri, false)
-                 {
-                     UseDefaultCredentials = false,
-                     //Credentials = proxyCreds,
-                 };
-
-                 // Now create a client handler which uses that proxy
-
-                 HttpClient client = null;*/
                 HttpClientHandler httpClientHandler = new HttpClientHandler()
                 {
-                    //CookieContainer = new CookieContainer(),
                     Proxy = new WebProxy(proxyUri, false),
                     UseProxy = true,
-                    UseDefaultCredentials = false,
-                    //Credentials = new NetworkCredential("1", "1")
+                    UseDefaultCredentials = false
                 };
 
-                // You only need this part if the server wants a username and password:
-
-
-                //httpClientHandler.Credentials = new NetworkCredential(ConstantModel.CredentName, ConstantModel.CredentPass);
-
-                /*
-                var hand = new WebRequestHandler();
-                hand.ClientCertificates.a
-                    */
                 var client = new HttpClient(httpClientHandler);
 
-                // Возможно когданибудь пригодится
-                //if(cType!=null) client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(cType));
-
-                var sender = client.SendAsync(message, HttpCompletionOption.ResponseContentRead, new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                var sender = client.SendAsync(message, HttpCompletionOption.ResponseContentRead, new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(5)).Token);
                 sender.Wait();
                 result = sender.Result;
             }
@@ -303,7 +276,7 @@ namespace SISHaU.Library.File
                 var resMess = ex.Message;
                 //
             }
-
+            message.Dispose();
             return result;
         }
     }

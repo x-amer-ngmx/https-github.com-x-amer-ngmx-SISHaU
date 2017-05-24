@@ -187,7 +187,7 @@ namespace SISHaU.Library.File.Enginer
                 }
             };
 
-            result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), "654da58971a8a856effdc057c98bb1a2ab0c7611".ToUpper());
+            if(!string.IsNullOrEmpty(ConstantModel.CertificateFingerPrint)) result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), ConstantModel.CertificateFingerPrint.ToUpper());
 
             result.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), ConstantModel.DateproviderId);
 

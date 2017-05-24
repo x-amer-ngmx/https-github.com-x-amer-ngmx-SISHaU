@@ -29,8 +29,9 @@ namespace SISHaU.Library.File
             var result = new ConcurrentBag<UploadeResultModel>();
 
             var upFile = new List<UploadeModel>();
-
-            foreach (var file in patch)
+            var fpatch = new ConcurrentBag<string>(patch);
+            Parallel.ForEach(fpatch, (file, state) =>
+            //foreach (var file in patch)
             {
                 if (!System.IO.File.Exists(file))
                 {
@@ -43,15 +44,16 @@ namespace SISHaU.Library.File
                             PointErrorDescript = $"Предупреждение произошло в {{UploadFilesList}}"
                         }
                     });
-                    continue;
+                    //continue;
+                    return;
                 }
 
                 var stream = System.IO.File.ReadAllBytes(file);
                 var info = new FileInfo(file);
 
-                Logger.InitLogger();//инициализация - требуется один раз в начале
+                /*Logger.InitLogger();//инициализация - требуется один раз в начале
 
-                Logger.Log.Info("Ура заработало!");
+                Logger.Log.Info("Ура заработало!");*/
 
                 var parts = Operation.ExplodingFile(stream);
 
@@ -68,17 +70,20 @@ namespace SISHaU.Library.File
                     Parts = parts
                 });
 
-            }
+            });
 
-            foreach(var cupFile in upFile)
-            //Parallel.ForEach(upFile, (cupFile, state) =>
+            //foreach(var cupFile in upFile)
+            Parallel.ForEach(upFile, (cupFile, state) =>
             {
-                var upl = new EnginerFileRun(repository);
-                var res = upl.UploadFile(cupFile);
-                upl.Dispose();
-                result.Add(res);
-                Thread.Sleep(5000);
-            }//);
+                lock (result)
+                {
+                    var upl = new EnginerFileRun(repository);
+                    var res = upl.UploadFile(cupFile);
+                    upl.Dispose();
+                    result.Add(res);
+                }
+                //Thread.Sleep(5000);
+            });
 
             return result.ToList();
         }
@@ -97,12 +102,12 @@ namespace SISHaU.Library.File
             var collect = new ConcurrentBag<DownloadModel>(model);
             var result = new List<DownloadResultModel>();
 
-            foreach(var download in collect)
-            //Parallel.ForEach(collect, (download, state) =>
+            //foreach(var download in collect)
+            Parallel.ForEach(collect, (download, state) =>
             {
                 result.Add(DownloadFiles(download));
                 //Thread.Sleep(5000);
-            }//);
+            });
 
             return result;
         }

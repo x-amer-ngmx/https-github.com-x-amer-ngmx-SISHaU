@@ -53,19 +53,29 @@ namespace SISHaU.Library.File.Enginer
 
                 //возможно эту часть необходимо вынести в отдельный метод для потдержки докачки частей в случае сбоя
                 //и нужно рассмотреть возможность рекурсивной работы этого метода
-                foreach(var part in uploadeMod.Parts)
-                //Parallel.ForEach(uploadeMod.Parts, (part, state) =>
-                {
-                    //распаралелить
-                    response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId).SendRequest();
-                    //Thread.Sleep(5000);
-                    var stateUploaded = response.ResultEnginer<ResponseModel>();
-                    if (stateUploaded.ServerError != null)
-                    {
-                        //Возникла ошибка при загрузке части
-                    }
 
-                }//);
+                var partRes = new List<ResponseModel>();
+
+                //foreach(var part in uploadeMod.Parts)
+                Parallel.ForEach(uploadeMod.Parts, (part, state) =>
+                {
+/*
+                    lock (partRes)
+                    {*/
+                        //распаралелить
+                        response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId).SendRequest();
+                        //Thread.Sleep(5000);
+                        var stateUploaded = response.ResultEnginer<ResponseModel>();
+
+                        if (stateUploaded.ServerError != null)
+                        {
+                            partRes.Add(stateUploaded);
+                            //Возникла ошибка при загрузке части
+                        }
+                        
+                    //}
+
+                });
 
                 response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
 
@@ -82,6 +92,7 @@ namespace SISHaU.Library.File.Enginer
                     fileParts = uploadeMod.Parts.Select(p => p.PartDetect).ToList();
                     fileDate = closeSess.ResultDate?.DateTime;
                 }
+                response.Dispose();
 
             }
             else if (count == 1)
@@ -114,7 +125,7 @@ namespace SISHaU.Library.File.Enginer
                 UTime = fileDate
             };
 
-
+            
             return result;
         }
 
@@ -152,15 +163,16 @@ namespace SISHaU.Library.File.Enginer
                 var stream = response.Content.ReadAsByteArrayAsync().Result;
 
 
-                result.Parts.Add(new PrivateExplodUnitModel {
-                    
+                result.Parts.Add(new PrivateExplodUnitModel
+                {
+
                     PartDetect = new ByteDetectorModel
                     {
                         Part = part,
                         From = partFromSize,
                         To = to
                     },
-                    
+
                     Unit = stream
 
                 });
@@ -168,6 +180,8 @@ namespace SISHaU.Library.File.Enginer
 
                 partFromSize = thisPartSize;
             }
+
+            response.Dispose();
 
             result.FileInfo = new ResultModel {
                 FileName = fileInfo.FileName,
