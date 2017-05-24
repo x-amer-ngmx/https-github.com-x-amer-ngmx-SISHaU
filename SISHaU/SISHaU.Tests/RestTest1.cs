@@ -10,7 +10,7 @@ using System.IO;
 namespace SISHaU.Tests
 {
     [TestClass]
-    public class RestTest1 : TestBase
+    public class RestTest1
     {
         [TestMethod]
         public void TestUploadFileByRest()
@@ -18,9 +18,9 @@ namespace SISHaU.Tests
             UploadFilesResponse result = null;
             DownloadFilesResponse downResult = null;
 
-            using (var jsonClient = GetClient)
+            using (var jsonClient = new TestBase().GetClient)
             {
-                
+
                 jsonClient.Timeout = new TimeSpan(1, 0, 0);
 
                 try
@@ -44,10 +44,30 @@ namespace SISHaU.Tests
                 {
                     var err = x.Message;
                 }
+            }
 
-                
+            using (var jsonClient = new TestBase().GetClient)
+            {
+                jsonClient.Timeout = new TimeSpan(1, 0, 0);
                 try
                 {
+                    /*
+                var dmodel = new List<DownloadModel> {
+                    new DownloadModel{
+                        FileGuid = "d0380637-4b01-4c07-8c19-2a4c42929e1a",
+                        Repository = Repo.Homemanagement
+                    },
+                    new DownloadModel{
+                        FileGuid = "ced9dd6e-9752-45ec-ac87-55da9b0513f2",
+                        Repository = Repo.Homemanagement
+                    },
+                    new DownloadModel{
+                        FileGuid = "1554573a-c560-4f8e-a123-a7be42c85fe0",
+                        Repository = Repo.Homemanagement
+                    }
+                };
+                    */
+
 
                     var dmodel = new List<DownloadModel>();
 
@@ -65,7 +85,7 @@ namespace SISHaU.Tests
                         DownloadModelList = dmodel
                     });
 
-                    
+
                     /*
                     downResult = jsonClient.Get(new DownloadFile()
                     {
@@ -85,10 +105,10 @@ namespace SISHaU.Tests
 
                 if (downResult != null)
                 {
-                    
-                        //File.WriteAllBytes($@"D:\result\{downResult.Result.FileName}", downResult.Result.FileBytes);
-                    
-                    
+
+                    //File.WriteAllBytes($@"D:\result\{downResult.Result.FileName}", downResult.Result.FileBytes);
+
+
                     foreach (var dow in downResult.Result)
                     {
                         File.WriteAllBytes($@"D:\result\{dow.FileName}", dow.FileBytes);
@@ -97,7 +117,9 @@ namespace SISHaU.Tests
 
                 //var res = result;
             }
+            
         }
+        
 
         [TestMethod]
         public void TestUploadFileByService()

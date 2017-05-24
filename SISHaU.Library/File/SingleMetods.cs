@@ -31,7 +31,7 @@ namespace SISHaU.Library.File
             int[] result;
             try
             {
-                result = parts.Split(sp).Select(int.Parse).OrderBy(x=>x).ToArray();
+                result = parts.Split(sp).Select(int.Parse).OrderBy(x => x).ToArray();
             }
             catch (Exception)
             {
@@ -68,7 +68,7 @@ namespace SISHaU.Library.File
             var x3 = respons.Headers.GetVal(HeadParam.X_Upload_Completed_Parts.GetName());
             var x4 = respons.Headers.GetVal(HeadParam.X_Upload_Completed.GetName());
             var x5 = respons.Headers.GetVal(HeadParam.X_Upload_FileGUID.GetName());
-            
+
 
             /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
  * Date -
@@ -87,7 +87,7 @@ namespace SISHaU.Library.File
  */
             object result = null;
 
-            return (T) result;
+            return (T)result;
         }
 
         public static T ResultEnginer<T>(this HttpResponseMessage respons, bool isSession = true) where T : class
@@ -243,6 +243,66 @@ namespace SISHaU.Library.File
             string result;
             var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
             result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Метод отправляет http-запрос асинхронно в отдельном потоке
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>Асинхронную операция</returns>
+        public static HttpResponseMessage SendRequest(this HttpRequestMessage message)
+        {
+            HttpResponseMessage result = null;
+
+            try
+            {
+                string proxyUri ="http://127.0.0.1:8888";
+
+                /* NetworkCredential proxyCreds = new NetworkCredential();
+
+                 WebProxy proxy = new WebProxy(proxyUri, false)
+                 {
+                     UseDefaultCredentials = false,
+                     //Credentials = proxyCreds,
+                 };
+
+                 // Now create a client handler which uses that proxy
+
+                 HttpClient client = null;*/
+                HttpClientHandler httpClientHandler = new HttpClientHandler()
+                {
+                    //CookieContainer = new CookieContainer(),
+                    Proxy = new WebProxy(proxyUri, false),
+                    UseProxy = true,
+                    UseDefaultCredentials = false,
+                    //Credentials = new NetworkCredential("1", "1")
+                };
+
+                // You only need this part if the server wants a username and password:
+
+
+                //httpClientHandler.Credentials = new NetworkCredential(ConstantModel.CredentName, ConstantModel.CredentPass);
+
+                /*
+                var hand = new WebRequestHandler();
+                hand.ClientCertificates.a
+                    */
+                var client = new HttpClient(httpClientHandler);
+
+                // Возможно когданибудь пригодится
+                //if(cType!=null) client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(cType));
+
+                var sender = client.SendAsync(message, HttpCompletionOption.ResponseContentRead, new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                sender.Wait();
+                result = sender.Result;
+            }
+            catch (Exception ex)
+            {
+                var resMess = ex.Message;
+                //
+            }
 
             return result;
         }

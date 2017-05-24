@@ -194,38 +194,6 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        /// <summary>
-        /// Метод отправляет http-запрос асинхронно в отдельном потоке
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns>Асинхронную операция</returns>
-        public HttpResponseMessage SendRequest(HttpRequestMessage message)
-        {
-            HttpResponseMessage result = null;
-
-            try
-            {/*
-                var hand = new WebRequestHandler();
-                hand.ClientCertificates.a
-                    */
-                var client = new HttpClient();
-
-                // Возможно когданибудь пригодится
-                //if(cType!=null) client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(cType));
-
-                var sender = client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
-                sender.Wait();
-                result = sender.Result;
-            }
-            catch (Exception ex)
-            {
-                var resMess = ex.Message;
-                //
-            }
-
-            return result;
-        }
-
         private void Dispose(bool disposing)
         {
             if (!disposing) return;
