@@ -1,4 +1,5 @@
-﻿using SISHaU.Library.File.Model;
+﻿using SISHaU.Library.File;
+using SISHaU.Library.File.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,39 +21,47 @@ namespace SISHaU.FileStreamIdea
                 @"D:\test3.zip",
                 @"D:\test4.zip",
                 @"D:\test5.zip",
-                @"D:\test6.zip"
+                @"D:\test6.zip",
+                @"D:\test7.zip", //350mb
+                @"D:\test8.zip" //1 386 mb
             };
+
             var tmpPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-
-
+            var result = new List<UploadeResultModel>();
 
             foreach (var patch in files)
             {
+                result.Add(SplitFiles(tmpPath, patch));
+            }
 
-                var res = SplitFiles(tmpPath, patch);
 
-
-                using (var tmpFile = new FileStream($@"{tmpPath}\{Path.GetFileName(patch)}", FileMode.Create, FileAccess.Write))
+            foreach (var re in result) {
+                using (var tmpFile = new FileStream($@"{tmpPath}\{re.FileName}", FileMode.Create, FileAccess.Write))
                 {
-                    foreach (var pat in res)
+                    foreach (var pat in re.Parts)
                     {
                         var buff = File.ReadAllBytes(pat.Patch);
 
                         tmpFile.Write(buff, 0, buff.Length);
 
-                        if (pat.Patch.IndexOf(".tmp") > 0) File.Delete(pat.Patch);
+                        if (pat.Patch.IndexOf(".tmpart") > 0) File.Delete(pat.Patch);
                     }
                 }
             }
         }
 
-        private static IList<ByteDetectorModel> SplitFiles(string tmpPath, string patch)
+        private static UploadeResultModel SplitFiles(string tmpPath, string patch)
         {
+            var resultX = new UploadeResultModel();
             var result = new List<ByteDetectorModel>();
             var fName = Path.GetFileNameWithoutExtension(patch);
 
+            resultX.FileName = Path.GetFileName(patch);
+
             using (var file = new FileStream(patch, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
+
+                
 
                 var parts = (int)(file.Length / ConstantModel.MaxPartSize) + 1;
 
@@ -66,8 +75,11 @@ namespace SISHaU.FileStreamIdea
                             Patch = patch
                         }
                     };
+                    resultX.FileGuid = file.FileGost();
                     file.Dispose();
-                    return result;
+
+                    resultX.Parts = result;
+                    return resultX;
                 }
 
                 var part = 1;
@@ -94,20 +106,23 @@ namespace SISHaU.FileStreamIdea
                     var buffer = new byte[buffSize];
                     var partSize = file.Read(buffer, 0, buffSize);
 
-                    var pat = $@"{tmpPath}\{file.Length}_{fName}.{part}.tmp";
+                    var pat = $@"{tmpPath}\{file.Length}_{fName}.{part}.tmpart";
 
                     using (var tmpFile = new FileStream(pat, FileMode.Create, FileAccess.Write))
                     {
                         tmpFile.Write(buffer, 0, partSize);
                     }
 
-                    result.Add(new ByteDetectorModel { Part = part, From = partTo, To = from - 1, Patch = pat });
+                    result.Add(new ByteDetectorModel { Part = part, From = partTo, To = from - 1, Patch = pat, Md5Hash = buffer.FileMd5() });
                     part++;
                 }
-
+                resultX.FileGuid = file.FileGost();
+                file.Dispose();
             }
+            
+            resultX.Parts = result;
 
-            return result;
+            return resultX;
         }
     }
 }

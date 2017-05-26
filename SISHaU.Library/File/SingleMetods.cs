@@ -204,6 +204,15 @@ namespace SISHaU.Library.File
             return result;
         }
 
+        public static string FileGost(this System.IO.Stream stream)
+        {
+            string result;
+            var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
+            result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+
+            return result;
+        }
+
         /// <summary>
         /// Метод отправляет http-запрос асинхронно в отдельном потоке
         /// </summary>
