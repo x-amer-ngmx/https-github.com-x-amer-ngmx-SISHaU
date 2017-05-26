@@ -1,16 +1,14 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
-using System.Threading;
 
 namespace SISHaU.Library.File.Enginer
 {
-    public class EnginerFileRun : IDisposable
+    //TODO: EnginerFileRun - Нужен рефакторинг, и реализация дозагрузки\довыгрузки
+    sealed public class EnginerFileRun : IDisposable
     {
         private readonly ResponseRequestOnServer _serverConnect;
 
@@ -59,22 +57,16 @@ namespace SISHaU.Library.File.Enginer
                 //foreach(var part in uploadeMod.Parts)
                 Parallel.ForEach(uploadeMod.Parts, (part, state) =>
                 {
-/*
-                    lock (partRes)
-                    {*/
-                        //распаралелить
-                        response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId).SendRequest();
-                        //Thread.Sleep(5000);
-                        var stateUploaded = response.ResultEnginer<ResponseModel>();
+                    //распаралелить
+                    response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId).SendRequest();
+                    //Thread.Sleep(5000);
+                    var stateUploaded = response.ResultEnginer<ResponseModel>();
 
-                        if (stateUploaded.ServerError != null)
-                        {
-                            partRes.Add(stateUploaded);
-                            //Возникла ошибка при загрузке части
-                        }
-                        
-                    //}
-
+                    if (stateUploaded.ServerError != null)
+                    {
+                        partRes.Add(stateUploaded);
+                        //Возникла ошибка при загрузке части
+                    }
                 });
 
                 response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();

@@ -2,16 +2,14 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File.Enginer
 {
-    public class ResponseRequestOnServer : IDisposable
+    sealed public class ResponseRequestOnServer : IDisposable
     {
 
         private UriRequestModel RequestUri { get; }
-
 
         public ResponseRequestOnServer(Repo rep)
         {
@@ -20,35 +18,31 @@ namespace SISHaU.Library.File.Enginer
                 Repository = rep
             };
         }
-
-        //Uploade
-        // Простая загрузка PUT /ext-bus-file-store-service/rest/homemanagement/ HTTP/1.1
-
-        // Инициализация сессии POST /ext-bus-file-store-service/rest/homemanagement/?upload HTTP/1.1
-        // Загрузка части PUT /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
-        // Завершение сессии POST /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?completed HTTP/1.1
-
-        // Получение сведение о загружаемом файле HEAD /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
-
-        //Downloade
-        // GET /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?getfile HTTP/1.1
-
         /*
+         * Uploade
+         * Простая загрузка PUT /ext-bus-file-store-service/rest/homemanagement/ HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
+         * Инициализация сессии POST /ext-bus-file-store-service/rest/homemanagement/?upload HTTP/1.1
+         * Загрузка части PUT /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
+         * Завершение сессии POST /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?completed HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
+         * Получение сведение о загружаемом файле HEAD /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
+         * Downloade
+         * GET /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?getfile HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
          *Тип построени адресного запроса
          * global EndPointShare
-         * 
          * Repo Repository
          * HttpMethod Method
          * Uri UriRequest = {EndPointShare}{Repository}/{param}
-         * 
+         *         
+         -------------------------------------------------------
+         * UriPartLoader = $"{XSrvLocation}{dir.Name()}";
+         * UriStartSessionPart = $"{UriPartLoader}/?upload";
+         * UriSessionID = $"{UriPartLoader}/{_sessionId}";
+         * UriCloseSessionPart = $"{UriSessionID}?compleate";
         */
-
-
-
-        // UriPartLoader = $"{XSrvLocation}{dir.Name()}";
-        // UriStartSessionPart = $"{UriPartLoader}/?upload";
-        // UriSessionID = $"{UriPartLoader}/{_sessionId}";
-        // UriCloseSessionPart = $"{UriSessionID}?compleate";
 
         /// <summary>
         /// Метод формирует HTTP запрос на запуск сессии при передачи файла частями.
@@ -137,7 +131,7 @@ namespace SISHaU.Library.File.Enginer
         /// <summary>
         /// Метод формирует HTTP запрос на загрузку файла.
         /// 
-        /// Если файл больше 5мб то параметр range не задаються.
+        /// Если файл меньше 5мб то параметр range не задаётся.
         /// </summary>
         /// <param name="fileId">Идентификатор файла, он же идентификатор сессии</param>
         /// <param name="range">Параметр задаёт диапазон размерности, загружаемого, массива байт</param>

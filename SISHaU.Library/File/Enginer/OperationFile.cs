@@ -5,6 +5,7 @@ using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File.Enginer
 {
+    //TODO: OperationFile - необходим рефакторинг...
     public class OperationFile : IDisposable
     {
         /// <summary>
@@ -38,7 +39,6 @@ namespace SISHaU.Library.File.Enginer
             var res = new List<ByteDetectorModel>();
 
             parts = pprs;
-
 
             while (parts > 0)
             {

@@ -5,5 +5,6 @@
         public int Part { get; set; }
         public long From { get; set; }
         public long To { get; set; }
+        public string Patch { get; set; }
     }
 }

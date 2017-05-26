@@ -46,47 +46,6 @@ namespace SISHaU.Library.File
             return result;
         }
 
-        //Возможно это лишнее
-        public static T ResponseConverter<T>(this HttpResponseMessage respons)
-        {
-            var a = respons.StatusCode;
-            var b = respons.Headers.Date;
-            var c = respons.Headers.Location; //получить UploadeID
-            var d = respons.Headers.ConnectionClose;
-
-            var e = respons.Content.Headers.ContentLength;
-            var f = respons.Content.Headers.ContentType?.MediaType;
-            var g = respons.Content.ReadAsByteArrayAsync().Result; // byt[]
-            var h = respons.Content.ReadAsStringAsync().Result; // get error if respons.StatusCode == HttpStatusCode.BadRequest
-            var j = respons.Content.Headers.LastModified;
-
-            var x = respons.Headers.GetVal(HeadParam.X_Upload_UploadID.GetName());
-            var x1 = respons.Headers.GetVal(HeadParam.X_Upload_Filename.GetName());
-            var x2 = respons.Headers.GetVal(HeadParam.X_Upload_Length.GetName());
-            var x3 = respons.Headers.GetVal(HeadParam.X_Upload_Completed_Parts.GetName());
-            var x4 = respons.Headers.GetVal(HeadParam.X_Upload_Completed.GetName());
-            var x5 = respons.Headers.GetVal(HeadParam.X_Upload_FileGUID.GetName());
-
-
-            /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
- * Date -
- * Location -
- * X-Upload-UploadID
- * Connection -
- * X-Upload-Filename
- * X-Upload-Length
- * X-Upload-Completed-Parts
- * X-Upload-Completed
- * Last-Modified -
- * Content-Length -
- * Content-Type -
- * X-Upload-FileGUID
- * Content - X-Upload-Error / byte[]
- */
-            object result = null;
-
-            return (T)result;
-        }
 
         public static T ResultEnginer<T>(this HttpResponseMessage respons, bool isSession = true) where T : class
         {
@@ -256,6 +215,7 @@ namespace SISHaU.Library.File
 
             try
             {
+                //Fiddler loop
                 string proxyUri ="http://127.0.0.1:8888";
 
                 HttpClientHandler httpClientHandler = new HttpClientHandler()
@@ -267,6 +227,7 @@ namespace SISHaU.Library.File
 
                 var client = new HttpClient(httpClientHandler);
 
+                //Для узкого канала желательно установить 15мин
                 client.Timeout = TimeSpan.FromMinutes(15);
 
                 var sender = client.SendAsync(
