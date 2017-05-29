@@ -22,8 +22,8 @@ namespace SISHaU.FileStreamIdea
                 @"D:\test4.zip",
                 @"D:\test5.zip",
                 @"D:\test6.zip",
-                @"D:\test7.zip", //350mb
-                @"D:\test8.zip" //1 386 mb
+                //@"D:\test7.zip", //350mb
+                //@"D:\test8.zip" //1 386 mb
             };
 
             var tmpPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -35,7 +35,8 @@ namespace SISHaU.FileStreamIdea
             }
 
 
-            foreach (var re in result) {
+            foreach (var re in result)
+            {
                 using (var tmpFile = new FileStream($@"{tmpPath}\{re.FileName}", FileMode.Create, FileAccess.Write))
                 {
                     foreach (var pat in re.Parts)
@@ -50,79 +51,93 @@ namespace SISHaU.FileStreamIdea
             }
         }
 
+        /// <summary>
+        /// Операция расщипления файла. Получает поток файла и определяет больше ли он заданного предела или нет, и возвращает путь либо к самому файлу либо к его нарезанным частям...
+        /// </summary>
+        /// <param name="tmpPath">Можно вынести в константу, так как это локальное хранилище временных частей файла.</param>
+        /// <param name="patch">Путь к файлу</param>
+        /// <returns>Объект определяющий размер и массив частей.</returns>
         private static UploadeResultModel SplitFiles(string tmpPath, string patch)
         {
             var resultX = new UploadeResultModel();
-            var result = new List<ByteDetectorModel>();
+            IList<ByteDetectorModel> result = null;
             var fName = Path.GetFileNameWithoutExtension(patch);
 
             resultX.FileName = Path.GetFileName(patch);
 
+            //Используем поток файла не загружая оперативу, ненужными байтами
             using (var file = new FileStream(patch, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-
-                
-
+                //Определяем кол-во частей
                 var parts = (int)(file.Length / ConstantModel.MaxPartSize) + 1;
-
-                if (parts == 1)
-                {
-                    result = new List<ByteDetectorModel> {
+                
+                //Применение рефакторинг-кунгфу....
+                result = parts == 1 ? new ByteDetectorModel[] {
                         new ByteDetectorModel{
                             From = 0,
                             To = file.Length,
                             Part = 1,
-                            Patch = patch
+                            Patch = patch,
+                            Md5Hash = file.FileMd5()
                         }
-                    };
-                    resultX.FileGuid = file.FileGost();
-                    file.Dispose();
-
-                    resultX.Parts = result;
-                    return resultX;
-                }
-
-                var part = 1;
-                long partTo = 0;
-
-                while (part <= parts)
-                {
-                    partTo = part == 1 ? 0 : partTo + ConstantModel.MaxPartSize;
-
-                    long from;
-                    var buffSize = 0;
-
-                    if (part != parts)
-                    {
-                        from = partTo + ConstantModel.MaxPartSize;
-                        buffSize = (int)(ConstantModel.MaxPartSize);
-                    }
-                    else
-                    {
-                        from = file.Length;
-                        buffSize = (int)(file.Length - partTo);
-                    }
-
-                    var buffer = new byte[buffSize];
-                    var partSize = file.Read(buffer, 0, buffSize);
-
-                    var pat = $@"{tmpPath}\{file.Length}_{fName}.{part}.tmpart";
-
-                    using (var tmpFile = new FileStream(pat, FileMode.Create, FileAccess.Write))
-                    {
-                        tmpFile.Write(buffer, 0, partSize);
-                    }
-
-                    result.Add(new ByteDetectorModel { Part = part, From = partTo, To = from - 1, Patch = pat, Md5Hash = buffer.FileMd5() });
-                    part++;
-                }
+                    } : SingleFiles(parts, file, fName, tmpPath);
+                
+                //Определяем и сохраняем хеш-по-госту файла
                 resultX.FileGuid = file.FileGost();
                 file.Dispose();
             }
-            
+
             resultX.Parts = result;
 
             return resultX;
         }
+
+
+        private static IList<ByteDetectorModel> SingleFiles(int parts, Stream file, string fName, string tmpPath)
+        {
+            var result = new List<ByteDetectorModel>();
+            var part = 1;
+            long partTo = 0;
+
+            while (part <= parts)
+            {
+                partTo = part == 1 ? 0 : partTo + ConstantModel.MaxPartSize;
+
+                long from;
+                var buffSize = 0;
+
+                if (part != parts)
+                {
+                    from = partTo + ConstantModel.MaxPartSize;
+                    buffSize = (int)(ConstantModel.MaxPartSize);
+                }
+                else
+                {
+                    from = file.Length;
+                    buffSize = (int)(file.Length - partTo);
+                }
+
+                //выделение буферной памяти для создания части
+                var buffer = new byte[buffSize];
+                //запись части в буфер и возврат её реального размера
+                var partSize = file.Read(buffer, 0, buffSize);
+
+                //путь к временно-созданной части
+                var pat = $@"{tmpPath}\{file.Length}_{fName}.{part}.tmpart";
+
+                //Создание части, если часть уже существует то она будет перезаписанна
+                using (var tmpFile = new FileStream(pat, FileMode.Create, FileAccess.Write))
+                {
+                    tmpFile.Write(buffer, 0, partSize);
+                }
+
+                //Формируем коллекцию частей(в языке C# несуществует простых массивов)
+                result.Add(new ByteDetectorModel { Part = part, From = partTo, To = from - 1, Patch = pat, Md5Hash = buffer.FileMd5() });
+                part++;
+            }
+
+            return result;
+        }
+
     }
 }

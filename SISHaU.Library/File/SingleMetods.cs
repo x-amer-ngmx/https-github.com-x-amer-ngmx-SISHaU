@@ -194,6 +194,10 @@ namespace SISHaU.Library.File
         {
             return MD5.Create().ComputeHash(stream);
         }
+        public static byte[] FileMd5(this System.IO.Stream stream)
+        {
+            return MD5.Create().ComputeHash(stream);
+        }
 
         public static string FileGost(this byte[] stream)
         {
