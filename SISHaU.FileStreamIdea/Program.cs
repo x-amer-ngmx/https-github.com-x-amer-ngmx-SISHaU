@@ -10,10 +10,36 @@ using System.Threading.Tasks;
 
 namespace SISHaU.FileStreamIdea
 {
+    public class ConsoleSpiner
+    {
+        int counter;
+        string[] sequence;
+
+        public ConsoleSpiner()
+        {
+            counter = 0;
+            //sequence = new string[] { "/", "-", "\\", "|" };
+            //sequence = new string[] { ".", "o", "0", "o" };
+            //sequence = new string[] { "+", "x" };
+            sequence = new string[] { "V", "<", "^", ">" };
+            //sequence = new string[] { ".   ", "..  ", "... ", "...." };
+        }
+        public void Turn()
+        {
+            //System.Threading.Thread.Sleep(100);
+            counter++;
+
+            if (counter >= sequence.Length) counter = 0;
+
+            Console.Write(sequence[counter]);
+            Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
+#if DEBUG
             var files = new[] {
                 @"D:\test0.zip",
                 @"D:\test1.zip",
@@ -22,33 +48,48 @@ namespace SISHaU.FileStreamIdea
                 @"D:\test4.zip",
                 @"D:\test5.zip",
                 @"D:\test6.zip",
-                //@"D:\test7.zip", //350mb
+                @"D:\test7.zip", //350mb
                 //@"D:\test8.zip" //1 386 mb
             };
 
             var tmpPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var result = new List<UploadeResultModel>();
-
+            Console.CursorVisible = false;
             foreach (var patch in files)
             {
+                Console.WriteLine($"Обработка файла {{{patch}}}");
                 result.Add(SplitFiles(tmpPath, patch));
             }
+
+            Console.WriteLine();
+
+            Console.WriteLine(new string('/',25));
+            Console.WriteLine($"Сборка файлов.");
+            Console.WriteLine(new string('/', 25));
+
+            Console.WriteLine();
 
 
             foreach (var re in result)
             {
+                Console.WriteLine($"Собираем файл: {{{re.FileName}}}, кол-во частей: {{{re.Parts.Count}}}");
+                var spin = new ConsoleSpiner();
                 using (var tmpFile = new FileStream($@"{tmpPath}\{re.FileName}", FileMode.Create, FileAccess.Write))
                 {
                     foreach (var pat in re.Parts)
                     {
                         var buff = File.ReadAllBytes(pat.Patch);
-
+                        spin.Turn();
                         tmpFile.Write(buff, 0, buff.Length);
 
                         if (pat.Patch.IndexOf(".tmpart") > 0) File.Delete(pat.Patch);
                     }
                 }
             }
+            Console.CursorVisible = true;
+            Console.WriteLine("Программа выполнена.");
+            Console.ReadKey();
+#endif
         }
 
         /// <summary>
@@ -68,9 +109,12 @@ namespace SISHaU.FileStreamIdea
             //Используем поток файла не загружая оперативу, ненужными байтами
             using (var file = new FileStream(patch, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
+                Console.WriteLine(new string('=', 20));
+
                 //Определяем кол-во частей
                 var parts = (int)(file.Length / ConstantModel.MaxPartSize) + 1;
-                
+                Console.WriteLine($"= Размер файла {{{file.Length}}}, кол-во частей {{{parts}}}");
+
                 //Применение рефакторинг-кунгфу....
                 result = parts == 1 ? new ByteDetectorModel[] {
                         new ByteDetectorModel{
@@ -89,6 +133,8 @@ namespace SISHaU.FileStreamIdea
 
             resultX.Parts = result;
 
+            Console.WriteLine(new string('=',20));
+
             return resultX;
         }
 
@@ -98,24 +144,15 @@ namespace SISHaU.FileStreamIdea
             var result = new List<ByteDetectorModel>();
             var part = 1;
             long partTo = 0;
-
+            Console.WriteLine(new string('*',15));
+            Console.WriteLine($"Расщипление файла.");
+            var spin = new ConsoleSpiner();
             while (part <= parts)
             {
                 partTo = part == 1 ? 0 : partTo + ConstantModel.MaxPartSize;
 
-                long from;
-                var buffSize = 0;
-
-                if (part != parts)
-                {
-                    from = partTo + ConstantModel.MaxPartSize;
-                    buffSize = (int)(ConstantModel.MaxPartSize);
-                }
-                else
-                {
-                    from = file.Length;
-                    buffSize = (int)(file.Length - partTo);
-                }
+                var from = part != parts ? partTo + ConstantModel.MaxPartSize : file.Length;
+                var buffSize = part != parts ? (int)(ConstantModel.MaxPartSize) : (int)(file.Length - partTo);
 
                 //выделение буферной памяти для создания части
                 var buffer = new byte[buffSize];
@@ -123,18 +160,30 @@ namespace SISHaU.FileStreamIdea
                 var partSize = file.Read(buffer, 0, buffSize);
 
                 //путь к временно-созданной части
-                var pat = $@"{tmpPath}\{file.Length}_{fName}.{part}.tmpart";
+                var splitPatch = $@"{tmpPath}\{file.Length}_{fName}.{part}.tmpart";
+
+                Console.WriteLine($" Часть {{{splitPatch}}}, размер {{{partSize}}}");
+                spin.Turn();
 
                 //Создание части, если часть уже существует то она будет перезаписанна
-                using (var tmpFile = new FileStream(pat, FileMode.Create, FileAccess.Write))
+                using (var tmpFile = new FileStream(splitPatch, FileMode.Create, FileAccess.Write))
                 {
                     tmpFile.Write(buffer, 0, partSize);
                 }
 
                 //Формируем коллекцию частей(в языке C# несуществует простых массивов)
-                result.Add(new ByteDetectorModel { Part = part, From = partTo, To = from - 1, Patch = pat, Md5Hash = buffer.FileMd5() });
+                result.Add(
+                    new ByteDetectorModel
+                    {
+                        Part = part,
+                        From = partTo,
+                        To = from - 1,
+                        Patch = splitPatch,
+                        Md5Hash = buffer.FileMd5()
+                    });
                 part++;
             }
+            Console.WriteLine(new string('*', 15));
 
             return result;
         }
