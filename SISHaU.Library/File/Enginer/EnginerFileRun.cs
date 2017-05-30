@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
+using System.Net.Http;
 
 namespace SISHaU.Library.File.Enginer
 {
@@ -24,7 +25,7 @@ namespace SISHaU.Library.File.Enginer
 
         public UploadeResultModel UploadFile(SplitFileModel uploadeMod)
         {
-            if (uploadeMod ==null || !uploadeMod.Parts.Any())
+            if (uploadeMod == null || !uploadeMod.Parts.Any())
             {
                 return null;
             }
@@ -32,108 +33,124 @@ namespace SISHaU.Library.File.Enginer
 
             var count = uploadeMod.Parts.Count();
 
-            var fileGuid = string.Empty;
-            IList<ByteDetectorModel> fileParts = null;
-            DateTime? fileDate = null;
-
-            RequestErrorModel error = null;
 
             if (count > 1)
             {
-                var response = _serverConnect.RequestLoadingUnitStartSession(uploadeMod.FileInfo.FileName, uploadeMod.FileInfo.FileSize,
-                    count).SendRequest();
-
-                var content = response.Content.ReadAsStringAsync().Result;
-                var session = response.ResultEnginer<ResponseIdModel>();
-
-                //Убираю лимит на количество одновременных запросов.
-                ServicePointManager.DefaultConnectionLimit = 15;
-
-                //возможно эту часть необходимо вынести в отдельный метод для потдержки докачки частей в случае сбоя
-                //и нужно рассмотреть возможность рекурсивной работы этого метода
-
-                var partRes = new List<ResponseModel>();
-
-                //foreach(var part in uploadeMod.Parts)
-                Parallel.ForEach(uploadeMod.Parts, (part, state) =>
-                {
-                    var partByte = System.IO.File.OpenRead(part.Patch);
-
-                    //распаралелить
-                    response = _serverConnect.RequestLoadingPart(
-                        partByte,
-                        partByte.Length,
-                        part.Md5Hash,
-                        part.Part,
-                        session.UploadId).SendRequest();
-                    //Thread.Sleep(5000);
-                    var stateUploaded = response.ResultEnginer<ResponseModel>();
-
-                    if (stateUploaded.ServerError != null)
-                    {
-                        partRes.Add(stateUploaded);
-                        //Возникла ошибка при загрузке части
-                    }
-                    else
-                    {
-                        partByte = null;
-                        if (part.Patch.IndexOf(".tmpart") > 0) System.IO.File.Delete(part.Patch);
-                    }
-
-                });
-
-                response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
-
-                var closeSess = response.ResultEnginer<ResponseSessionCloseModel>();
-
-                if (closeSess.IsClose == false)
-                {
-                    //Ошибка сессию по какой-то причине не удалось закрыть
-                    error = new RequestErrorModel();
-                }
-                else
-                {
-                    
-                    fileGuid = session.UploadId;
-                    fileParts = uploadeMod.Parts;
-                    fileDate = closeSess.ResultDate?.DateTime;
-                }
-                response.Dispose();
+                result = BigUploadeFile(uploadeMod.FileInfo, count, uploadeMod.Parts, uploadeMod.GostHash);
 
             }
             else if (count == 1)
             {
-                var part = uploadeMod.Parts.FirstOrDefault();
-
-                //это никогда не наступит но решарпер предупреждает...
-                if (part == null) return null;
-
-                var partByte = System.IO.File.OpenRead(part.Patch);
-
-                var response = _serverConnect.RequestLoadingPart(partByte, partByte.Length, part.Md5Hash,
-                    uploadeMod.FileInfo.FileName).SendRequest();
-                var uploadeId = response.ResultEnginer<ResponseIdModel>(false);
-
-                // Проверка на ошибку... это уже надо делать при непосредственных запросах... Ибо мой компилятор в мозгу физически ограничен, ну или я его сам ограничиваю))))
-                
-                fileGuid = uploadeId.UploadId;
-                fileDate = uploadeId.ResultDate?.DateTime;
+                result = SmaillUploadeFile(uploadeMod.FileInfo, uploadeMod.Parts.FirstOrDefault(), uploadeMod.GostHash);
             }
             else throw new Exception("Что-то пошло не так, количество частей меньше одной.");
 
+            return result;
+        }
 
-            result = error != null ? new UploadeResultModel{ ErrorMessage = error } : new UploadeResultModel
+        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<ByteDetectorModel> parts, string gostHash)
+        {
+
+            UploadeResultModel result;
+
+            var response = _serverConnect.RequestLoadingUnitStartSession(
+                fileInfo.FileName,
+                fileInfo.FileSize,
+                partCount).SendRequest();
+
+            var content = response.Content.ReadAsStringAsync().Result;
+            var session = response.ResultEnginer<ResponseIdModel>();
+
+            //Убираю лимит на количество одновременных запросов.
+            ServicePointManager.DefaultConnectionLimit = 15;
+
+            var partRes = new List<ResponseModel>();
+
+            Parallel.ForEach(parts, (part, state) =>
             {
-                FileName = uploadeMod.FileInfo.FileName,
-                FileSize = uploadeMod.FileInfo.FileSize,
-                GostHash = uploadeMod.GostHash,
+
+                response = UpLoadePart(part, sessId: session.UploadId);
+
+                var stateUploaded = response.ResultEnginer<ResponseModel>();
+
+                if (stateUploaded.ServerError != null)
+                {
+                    partRes.Add(stateUploaded);
+                    //Возникла ошибка при загрузке части
+                }
+                else
+                {
+                    
+                    if (part.Patch.IndexOf(".tmpart") > 0) System.IO.File.Delete(part.Patch);
+                }
+
+            });
+
+            response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
+
+            var closeSess = response.ResultEnginer<ResponseSessionCloseModel>();
+            
+                //Ошибка сессию по какой-то причине не удалось закрыть
+
+                result = closeSess.IsClose == false ? new UploadeResultModel
+                {
+                    ErrorMessage = new RequestErrorModel()
+                } : new UploadeResultModel
+                {
+                    FileGuid = session.UploadId,
+                    FileName = fileInfo.FileName,
+                    FileSize = fileInfo.FileSize,
+                    Parts = parts,
+                    GostHash = gostHash,
+                    Repository = _repository,
+                    UTime = closeSess.ResultDate?.DateTime
+                };
+            
+            response.Dispose();
+
+            return result;
+        }
+
+        private UploadeResultModel SmaillUploadeFile(ResultModel fileInfo, ByteDetectorModel part, string gostHash)
+        {
+            UploadeResultModel result;
+
+            var response = UpLoadePart(part, fileInfo.FileName);
+            var uploadeId = response.ResultEnginer<ResponseIdModel>(false);
+
+
+            result = uploadeId.ServerError != null ? new UploadeResultModel { ErrorMessage = new RequestErrorModel() }
+            : new UploadeResultModel
+            {
+                FileName = fileInfo.FileName,
+                FileSize = fileInfo.FileSize,
+                GostHash = gostHash,
                 Repository = _repository,
-                FileGuid = fileGuid,
-                Parts = fileParts,
-                UTime = fileDate
+                FileGuid = uploadeId.UploadId,
+                Parts = new[] { part },
+                UTime = uploadeId.ResultDate?.DateTime
             };
 
-            
+            return result;
+
+        }
+
+        private HttpResponseMessage UpLoadePart(ByteDetectorModel part, string name = null, string sessId = null)
+        {
+            var partStream = System.IO.File.OpenRead(part.Patch);
+
+            object param = (!string.IsNullOrEmpty(name) ? (object)name : part.Part);
+
+            var result = _serverConnect.RequestLoadingPart(
+                partStream,
+                partStream.Length,
+                part.Md5Hash,
+                param,
+                sessId).SendRequest();
+
+            partStream.Close();
+            partStream.Dispose();
+
             return result;
         }
 

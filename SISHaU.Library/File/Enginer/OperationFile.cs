@@ -143,7 +143,6 @@ namespace SISHaU.Library.File.Enginer
             return resultX;
         }
 
-
         private static IList<ByteDetectorModel> SingleFiles(int parts, Stream file, string fName, string tmpPath)
         {
             var result = new List<ByteDetectorModel>();
