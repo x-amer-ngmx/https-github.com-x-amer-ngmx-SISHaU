@@ -1,8 +1,8 @@
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDevice
 {
-    public class MeteringDeviceModel : BaseModel<HouseManagementModel>
+    public class MeteringDeviceModel : BaseModel<HouseManagementEnginer>
     {
-        public MeteringDeviceModel(HouseManagementModel baseModel) : base(baseModel)
+        public MeteringDeviceModel(HouseManagementEnginer baseModel) : base(baseModel)
         {
         }
 

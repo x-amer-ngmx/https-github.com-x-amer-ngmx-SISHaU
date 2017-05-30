@@ -29,6 +29,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchitectDiagram", "Archite
 		GlobalGraph.dgml = GlobalGraph.dgml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.UnitTests", "SISHaU.UnitTests\SISHaU.UnitTests.csproj", "{35BDFBA3-E294-41D8-91FF-51DF8290C2B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SISHaU.FileStreamIdea", "SISHaU.FileStreamIdea\SISHaU.FileStreamIdea.csproj", "{5CF28392-53C5-4EC5-8B01-5B8202DC998E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +75,14 @@ Global
 		{AC23E862-4CA2-4B6E-864A-4DB7C582D7D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC23E862-4CA2-4B6E-864A-4DB7C582D7D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC23E862-4CA2-4B6E-864A-4DB7C582D7D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35BDFBA3-E294-41D8-91FF-51DF8290C2B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35BDFBA3-E294-41D8-91FF-51DF8290C2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35BDFBA3-E294-41D8-91FF-51DF8290C2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35BDFBA3-E294-41D8-91FF-51DF8290C2B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CF28392-53C5-4EC5-8B01-5B8202DC998E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CF28392-53C5-4EC5-8B01-5B8202DC998E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CF28392-53C5-4EC5-8B01-5B8202DC998E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CF28392-53C5-4EC5-8B01-5B8202DC998E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

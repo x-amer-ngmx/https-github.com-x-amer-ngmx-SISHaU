@@ -94,6 +94,7 @@
     <Compile Include="TestAppHost.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="DatabaseTest.cs" />
+    <Compile Include="FileTester.cs" />
     <Compile Include="XadesTests.cs" />
   </ItemGroup>
   <ItemGroup>

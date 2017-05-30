@@ -19,7 +19,10 @@ namespace SISHaU.ServiceInterface.Services
 
         public DownloadFileResponse Get(DownloadFile fileInfo)
         {
-            return new DownloadFileResponse();
+            return new DownloadFileResponse
+            {
+                Result = _fileExchange.DownloadFiles(fileInfo.DownloadModel)
+            };
         }
 
         public UploadFilesResponse Post(UploadFiles filesInfo)

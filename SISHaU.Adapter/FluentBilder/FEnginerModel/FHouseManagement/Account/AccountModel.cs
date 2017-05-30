@@ -3,16 +3,16 @@ using Integration.HouseManagement;
 
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.Account
 {
-    public class AccountModel : BaseModel<HouseManagementModel>
+    public class AccountModel : BaseModel<HouseManagementEnginer>
     {
         private importAccountRequestAccount Account { get; }
 
-        public AccountModel(HouseManagementModel baseModel) : base(baseModel)
+        public AccountModel(HouseManagementEnginer baseModel) : base(baseModel)
         {
             Account = new importAccountRequestAccount
             {
                 TransportGUID = Guid.NewGuid().ToString(),
-                isRSOAccount = true,
+                isRSOAccount = true
             };
         }
 
@@ -76,7 +76,7 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.Account
             return new PayerInfo();
         }
 
-        public override HouseManagementModel Pool()
+        public override HouseManagementEnginer Pool()
         {
             BaseModelEntity.Accounts.Add(Account);
             return BaseModelEntity;

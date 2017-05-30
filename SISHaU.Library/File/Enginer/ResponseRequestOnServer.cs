@@ -2,16 +2,14 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File.Enginer
 {
-    public class ResponseRequestOnServer : IDisposable
+    sealed public class ResponseRequestOnServer : IDisposable
     {
 
         private UriRequestModel RequestUri { get; }
-
 
         public ResponseRequestOnServer(Repo rep)
         {
@@ -20,35 +18,31 @@ namespace SISHaU.Library.File.Enginer
                 Repository = rep
             };
         }
-
-        //Uploade
-        // Простая загрузка PUT /ext-bus-file-store-service/rest/homemanagement/ HTTP/1.1
-
-        // Инициализация сессии POST /ext-bus-file-store-service/rest/homemanagement/?upload HTTP/1.1
-        // Загрузка части PUT /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
-        // Завершение сессии POST /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?completed HTTP/1.1
-
-        // Получение сведение о загружаемом файле HEAD /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
-
-        //Downloade
-        // GET /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?getfile HTTP/1.1
-
         /*
+         * Uploade
+         * Простая загрузка PUT /ext-bus-file-store-service/rest/homemanagement/ HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
+         * Инициализация сессии POST /ext-bus-file-store-service/rest/homemanagement/?upload HTTP/1.1
+         * Загрузка части PUT /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
+         * Завершение сессии POST /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?completed HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
+         * Получение сведение о загружаемом файле HEAD /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
+         * Downloade
+         * GET /ext-bus-file-store-service/rest/homemanagement/dc9441c7-312a-4210-b77f-ea368359795f?getfile HTTP/1.1
+         -----------------------------------------------------------------------------------------------------------------------------------
          *Тип построени адресного запроса
          * global EndPointShare
-         * 
          * Repo Repository
          * HttpMethod Method
          * Uri UriRequest = {EndPointShare}{Repository}/{param}
-         * 
+         *         
+         -------------------------------------------------------
+         * UriPartLoader = $"{XSrvLocation}{dir.Name()}";
+         * UriStartSessionPart = $"{UriPartLoader}/?upload";
+         * UriSessionID = $"{UriPartLoader}/{_sessionId}";
+         * UriCloseSessionPart = $"{UriSessionID}?compleate";
         */
-
-
-
-        // UriPartLoader = $"{XSrvLocation}{dir.Name()}";
-        // UriStartSessionPart = $"{UriPartLoader}/?upload";
-        // UriSessionID = $"{UriPartLoader}/{_sessionId}";
-        // UriCloseSessionPart = $"{UriSessionID}?compleate";
 
         /// <summary>
         /// Метод формирует HTTP запрос на запуск сессии при передачи файла частями.
@@ -107,7 +101,7 @@ namespace SISHaU.Library.File.Enginer
         /// <param name="param">Принимает либо string FileName, либо int PartNumber</param>
         /// <param name="sessionId">Параметр задаётся в случае загрузки частями и является идентификатором сессии</param>
         /// <returns>Возврашает http-сообщение</returns>
-        public HttpRequestMessage RequestLoadingPart(byte[] part, long partSize, byte[] md5, object param, string sessionId = null)
+        public HttpRequestMessage RequestLoadingPart(System.IO.Stream part, long partSize, byte[] md5, object param, string sessionId = null)
         {
             string name;
 
@@ -129,7 +123,7 @@ namespace SISHaU.Library.File.Enginer
 
             result.Headers.Add(name, $"{param}");
 
-            result.Content = GetHttpContent(part, partSize, md5);
+            result.Content =  GetHttpContent(part, partSize, md5);
 
             return result;
         }
@@ -137,7 +131,7 @@ namespace SISHaU.Library.File.Enginer
         /// <summary>
         /// Метод формирует HTTP запрос на загрузку файла.
         /// 
-        /// Если файл больше 5мб то параметр range не задаються.
+        /// Если файл меньше 5мб то параметр range не задаётся.
         /// </summary>
         /// <param name="fileId">Идентификатор файла, он же идентификатор сессии</param>
         /// <param name="range">Параметр задаёт диапазон размерности, загружаемого, массива байт</param>
@@ -148,7 +142,7 @@ namespace SISHaU.Library.File.Enginer
             RequestUri.UriRequest = $"{fileId}?getfile";
 
             var result = RequestHead();
-
+                        
             if(range!=null) result.Headers.Range = new RangeHeaderValue(range.From, range.To);
 
             return result;
@@ -161,9 +155,11 @@ namespace SISHaU.Library.File.Enginer
         /// <param name="partSize">размер части или файла</param>
         /// <param name="md5">хэш сумма части или файла</param>
         /// <returns>Массив байт http-content</returns>
-        private ByteArrayContent GetHttpContent(byte[] part, long partSize, byte[] md5)
+        private StreamContent GetHttpContent(System.IO.Stream part, long partSize, byte[] md5)
         {
-            var result = new ByteArrayContent(part);
+            //var streamContent = new StreamContent(part);
+
+            var result = new StreamContent(part);
             result.Headers.ContentLength = partSize;
             result.Headers.ContentMD5 = md5;
  
@@ -182,37 +178,14 @@ namespace SISHaU.Library.File.Enginer
                 Version = HttpVersion.Version11,
                 Headers =
                 {
-                    Host = host.Host,
                     Date = DateTimeOffset.Now,
                     Authorization = ConstantModel.XAutent
                 }
             };
 
-            //result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), "654da58971a8a856effdc057c98bb1a2ab0c7611".ToUpper());
+            if(!string.IsNullOrEmpty(ConstantModel.CertificateFingerPrint)) result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), ConstantModel.CertificateFingerPrint.ToUpper());
 
-            result.Headers.Add(HeadParam.X_Upload_Dataprovider.GetName(), ConstantModel.DateproviderId);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Метод отправляет http-запрос асинхронно в отдельном потоке
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns>Асинхронную операция</returns>
-        public Task<HttpResponseMessage> SendRequest(HttpRequestMessage message)
-        {
-            Task<HttpResponseMessage> result = null;
-
-            try
-            {
-                result = new HttpClient().SendAsync(message, HttpCompletionOption.ResponseContentRead);
-            }
-            catch (Exception)
-            {
-                //var resMess = ex.Message;
-                //
-            }
+            result.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), ConstantModel.DateproviderId);
 
             return result;
         }

@@ -11,7 +11,7 @@ namespace SISHaU.Web
         /// Base constructor requires a Name and Assembly where web service implementation is located
         /// </summary>
         public AppHost()
-            : base("SISHaU", typeof(FileExchangeService).Assembly) { }
+            : base("SISHaU.Web", typeof(FileExchangeService).Assembly) { }
 
         /// <summary>
         /// Application specific configuration

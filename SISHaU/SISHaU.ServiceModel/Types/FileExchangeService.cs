@@ -31,7 +31,8 @@ namespace SISHaU.ServiceModel.Types
     }
 
     public class DownloadFileResponse{
-    
+        public DownloadResultModel Result { get; set; }
+
     }
 
     [Api("Выгрузить несколько файлов подряд из ГИС ЖКХ")]

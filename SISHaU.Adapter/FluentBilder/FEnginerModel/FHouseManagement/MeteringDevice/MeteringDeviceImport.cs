@@ -4,14 +4,14 @@ using Integration.HouseManagement;
 
 namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDevice
 {
-    public class MeteringDeviceImport : BaseModel<HouseManagementModel>
+    public class MeteringDeviceImport : BaseModel<HouseManagementEnginer>
     {
         private importMeteringDeviceDataRequest Request { get; }
         private MeteringDeviceFullInformationType DeviceData { get; set; }
         private IList<importMeteringDeviceDataRequestMeteringDevice> MeteringDevice { get; }
         private string FiasHouseGuid { get; set; }
 
-        public MeteringDeviceImport(HouseManagementModel baseModel, string fiasHouseGuid) : base(baseModel)
+        public MeteringDeviceImport(HouseManagementEnginer baseModel, string fiasHouseGuid) : base(baseModel)
         {
             Request = GenerateGenericType<importMeteringDeviceDataRequest>();
             Request.FIASHouseGuid = fiasHouseGuid;
@@ -25,7 +25,7 @@ namespace SISHaU.Adapter.FluentBilder.FEnginerModel.FHouseManagement.MeteringDev
             return this;
         }
 
-        public override HouseManagementModel Pool()
+        public override HouseManagementEnginer Pool()
         {
             Request.MeteringDevice = MeteringDevice.ToArray();
 

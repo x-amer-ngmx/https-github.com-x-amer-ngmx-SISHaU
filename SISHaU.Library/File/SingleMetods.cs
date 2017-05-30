@@ -5,8 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using CryptoPro.Sharpei;
 using SISHaU.Library.File.Model;
 
@@ -31,7 +29,7 @@ namespace SISHaU.Library.File
             int[] result;
             try
             {
-                result = parts.Split(sp).Select(int.Parse).ToArray();
+                result = parts.Split(sp).Select(int.Parse).OrderBy(x => x).ToArray();
             }
             catch (Exception)
             {
@@ -48,47 +46,6 @@ namespace SISHaU.Library.File
             return result;
         }
 
-        //Возможно это лишнее
-        public static T ResponseConverter<T>(this HttpResponseMessage respons)
-        {
-            var a = respons.StatusCode;
-            var b = respons.Headers.Date;
-            var c = respons.Headers.Location; //получить UploadeID
-            var d = respons.Headers.ConnectionClose;
-
-            var e = respons.Content.Headers.ContentLength;
-            var f = respons.Content.Headers.ContentType?.MediaType;
-            var g = respons.Content.ReadAsByteArrayAsync().Result; // byt[]
-            var h = respons.Content.ReadAsStringAsync().Result; // get error if respons.StatusCode == HttpStatusCode.BadRequest
-            var j = respons.Content.Headers.LastModified;
-
-            var x = respons.Headers.GetVal(HeadParam.X_Upload_UploadID.GetName());
-            var x1 = respons.Headers.GetVal(HeadParam.X_Upload_Filename.GetName());
-            var x2 = respons.Headers.GetVal(HeadParam.X_Upload_Length.GetName());
-            var x3 = respons.Headers.GetVal(HeadParam.X_Upload_Completed_Parts.GetName());
-            var x4 = respons.Headers.GetVal(HeadParam.X_Upload_Completed.GetName());
-            var x5 = respons.Headers.GetVal(HeadParam.X_Upload_FileGUID.GetName());
-            
-
-            /* Вынисти анализатор HttpResponse для большей наглядности и меньшего написания повторного кода
- * Date -
- * Location -
- * X-Upload-UploadID
- * Connection -
- * X-Upload-Filename
- * X-Upload-Length
- * X-Upload-Completed-Parts
- * X-Upload-Completed
- * Last-Modified -
- * Content-Length -
- * Content-Type -
- * X-Upload-FileGUID
- * Content - X-Upload-Error / byte[]
- */
-            object result = null;
-
-            return (T) result;
-        }
 
         public static T ResultEnginer<T>(this HttpResponseMessage respons, bool isSession = true) where T : class
         {
@@ -158,6 +115,14 @@ namespace SISHaU.Library.File
 
             var typeSwitcher = new Dictionary<Type, Action>
             {
+                { typeof(ResponseModel), () =>
+                {
+                    result = new ResponseIdModel
+                    {
+                        ResultDate = respons.Headers.Date,
+                        ServerError = error
+                    } as T;
+                }},
                 { typeof(ResponseIdModel), () =>
                 {
 
@@ -229,6 +194,10 @@ namespace SISHaU.Library.File
         {
             return MD5.Create().ComputeHash(stream);
         }
+        public static byte[] FileMd5(this System.IO.Stream stream)
+        {
+            return MD5.Create().ComputeHash(stream);
+        }
 
         public static string FileGost(this byte[] stream)
         {
@@ -236,6 +205,60 @@ namespace SISHaU.Library.File
             var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
             result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
 
+            return result;
+        }
+
+        public static string FileGost(this System.IO.Stream stream)
+        {
+            string result;
+            var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
+            result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Метод отправляет http-запрос асинхронно в отдельном потоке
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>Асинхронную операция</returns>
+        public static HttpResponseMessage SendRequest(this HttpRequestMessage message)
+        {
+            HttpResponseMessage result = null;
+
+            try
+            {
+                //Fiddler loop
+                string proxyUri ="http://127.0.0.1:8888";
+
+                HttpClientHandler httpClientHandler = new HttpClientHandler()
+                {
+                    Proxy = new WebProxy(proxyUri, false),
+                    UseProxy = true,
+                    UseDefaultCredentials = false
+                };
+
+                var client = new HttpClient(httpClientHandler);
+
+                //Для узкого канала желательно установить 15мин
+                client.Timeout = TimeSpan.FromMinutes(15);
+
+                var sender = client.SendAsync(
+                    message,
+                    HttpCompletionOption.ResponseContentRead,
+                    new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(15)).Token
+                    );
+
+                sender.Wait();
+
+                result = sender.Result;
+            }
+            catch (Exception ex)
+            {
+                var resMess = ex.Message;
+                //
+            }
+            message.Dispose();
             return result;
         }
     }

@@ -3,9 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Enginer;
 using SISHaU.Library.File.Model;
+using System.Reflection;
 
 namespace SISHaU.Library.File
 {
@@ -23,14 +25,16 @@ namespace SISHaU.Library.File
 
         public IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository)
         {
-            if (patch==null || !patch.Any()) throw new Exception("Параметр {patch} не должен быть пустым"); 
+            if (patch==null || !patch.Any()) throw new Exception($"Параметр {patch} не должен быть пустым"); 
 
             var result = new ConcurrentBag<UploadeResultModel>();
 
-            var upFile = new List<UploadeModel>();
+            var upFile = new ConcurrentBag<SplitFileModel>();
+            var fpatch = new ConcurrentBag<string>(patch);
 
-            foreach (var file in patch)
+            Parallel.ForEach(fpatch, (file, state) =>
             {
+
                 if (!System.IO.File.Exists(file))
                 {
                     result.Add(new UploadeResultModel
@@ -42,35 +46,25 @@ namespace SISHaU.Library.File
                             PointErrorDescript = $"Предупреждение произошло в {{UploadFilesList}}"
                         }
                     });
-                    continue;
+                    return;
                 }
 
-                var stream = System.IO.File.ReadAllBytes(file);
-                var info = new FileInfo(file);
+                var operation = new OperationFile();
 
-                Logger.InitLogger();//инициализация - требуется один раз в начале
+                upFile.Add(operation.SplitFile(file));
 
-                Logger.Log.Info("Ура заработало!");
-
-                var parts = Operation.ExplodingFile(stream);
-
-
-                upFile.Add(new UploadeModel
-                {
-                    FileInfo = new ResultModel
-                    {
-                        FileName = info.Name,
-                        FileSize = info.Length
-                    },
-                    GostHash = stream.FileGost(),
-                    Parts = parts
-                });
-
-            }
+                operation.Dispose();
+            });
 
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
-                result.Add(new EnginerFileRun(repository).UploadFile(cupFile));
+                lock (result)
+                {
+                    var upl = new EnginerFileRun(repository);
+                    var res = upl.UploadFile(cupFile);
+                    upl.Dispose();
+                    result.Add(res);
+                }
             });
 
             return result.ToList();
@@ -85,9 +79,19 @@ namespace SISHaU.Library.File
 
         public IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model)
         {
-            if(model==null || !model.Any()) throw new Exception("Параметр model не должен быть пустым");
+            if (model == null || !model.Any()) throw new Exception("Параметр model не должен быть пустым");
 
-            return model.Select(DownloadFiles).ToList();
+            var collect = new ConcurrentBag<DownloadModel>(model);
+            var result = new List<DownloadResultModel>();
+
+            //foreach(var download in collect)
+            Parallel.ForEach(collect, (download, state) =>
+            {
+                result.Add(DownloadFiles(download));
+                //Thread.Sleep(5000);
+            });
+
+            return result;
         }
 
         public DownloadResultModel DownloadFiles(DownloadModel model)
@@ -95,7 +99,9 @@ namespace SISHaU.Library.File
             
             var bild = new EnginerFileRun(model.Repository);
 
-            var file = bild.DownloadFile(model.FileGuid, model.Parts);
+            var file = bild.DownloadFile(model.FileGuid);
+
+            bild.Dispose();
 
             var result=new DownloadResultModel
             {
