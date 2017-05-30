@@ -101,7 +101,7 @@ namespace SISHaU.Library.File.Enginer
         /// <param name="param">Принимает либо string FileName, либо int PartNumber</param>
         /// <param name="sessionId">Параметр задаётся в случае загрузки частями и является идентификатором сессии</param>
         /// <returns>Возврашает http-сообщение</returns>
-        public HttpRequestMessage RequestLoadingPart(byte[] part, long partSize, byte[] md5, object param, string sessionId = null)
+        public HttpRequestMessage RequestLoadingPart(System.IO.Stream part, long partSize, byte[] md5, object param, string sessionId = null)
         {
             string name;
 
@@ -123,7 +123,7 @@ namespace SISHaU.Library.File.Enginer
 
             result.Headers.Add(name, $"{param}");
 
-            result.Content = GetHttpContent(part, partSize, md5);
+            result.Content =  GetHttpContent(part, partSize, md5);
 
             return result;
         }
@@ -155,9 +155,11 @@ namespace SISHaU.Library.File.Enginer
         /// <param name="partSize">размер части или файла</param>
         /// <param name="md5">хэш сумма части или файла</param>
         /// <returns>Массив байт http-content</returns>
-        private ByteArrayContent GetHttpContent(byte[] part, long partSize, byte[] md5)
+        private StreamContent GetHttpContent(System.IO.Stream part, long partSize, byte[] md5)
         {
-            var result = new ByteArrayContent(part);
+            //var streamContent = new StreamContent(part);
+
+            var result = new StreamContent(part);
             result.Headers.ContentLength = partSize;
             result.Headers.ContentMD5 = md5;
  

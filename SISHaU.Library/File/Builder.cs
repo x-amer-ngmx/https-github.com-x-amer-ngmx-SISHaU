@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Enginer;
 using SISHaU.Library.File.Model;
+using System.Reflection;
 
 namespace SISHaU.Library.File
 {
@@ -24,15 +25,17 @@ namespace SISHaU.Library.File
 
         public IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository)
         {
+            var tmpPath = @"D:\Temp\Uploade\";
             if (patch==null || !patch.Any()) throw new Exception($"Параметр {patch} не должен быть пустым"); 
 
             var result = new ConcurrentBag<UploadeResultModel>();
 
-            var upFile = new List<UploadeModel>();
+            var upFile = new ConcurrentBag<SplitFileModel>();
             var fpatch = new ConcurrentBag<string>(patch);
+
             Parallel.ForEach(fpatch, (file, state) =>
-            //foreach (var file in patch)
             {
+
                 if (!System.IO.File.Exists(file))
                 {
                     result.Add(new UploadeResultModel
@@ -44,44 +47,24 @@ namespace SISHaU.Library.File
                             PointErrorDescript = $"Предупреждение произошло в {{UploadFilesList}}"
                         }
                     });
-                    //continue;
                     return;
                 }
 
-                var stream = System.IO.File.ReadAllBytes(file);
-                var info = new FileInfo(file);
-
-                /*Logger.InitLogger();//инициализация - требуется один раз в начале
-
-                Logger.Log.Info("Ура заработало!");*/
-
-                var parts = Operation.ExplodingFile(stream);
+                upFile.Add(Operation.SplitFile(tmpPath, file));
 
                 Operation.Dispose();
-
-                upFile.Add(new UploadeModel
-                {
-                    FileInfo = new ResultModel
-                    {
-                        FileName = info.Name,
-                        FileSize = info.Length
-                    },
-                    GostHash = stream.FileGost(),
-                    Parts = parts
-                });
-
             });
 
             //foreach(var cupFile in upFile)
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
-                lock (result)
-                {
+               // lock (result)
+               // {
                     var upl = new EnginerFileRun(repository);
                     var res = upl.UploadFile(cupFile);
                     upl.Dispose();
                     result.Add(res);
-                }
+                //}
                 //Thread.Sleep(5000);
             });
 

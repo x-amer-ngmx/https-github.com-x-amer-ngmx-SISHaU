@@ -77,6 +77,7 @@
     <Compile Include="API\NsiCommonDataModel.cs" />
     <Compile Include="API\NsiCommonServiceCaсhing.cs" />
     <Compile Include="API\ServiceRegistrator.cs" />
+    <Compile Include="File\Model\SplitFileModel.cs" />
     <Compile Include="Util\GisUtil.cs" />
     <Compile Include="API\Interfaces\IGisBinder.cs" />
     <Compile Include="API\Interfaces\IGisIntegrationService.cs" />

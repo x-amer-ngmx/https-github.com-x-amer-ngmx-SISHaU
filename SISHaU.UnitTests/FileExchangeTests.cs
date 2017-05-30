@@ -25,11 +25,12 @@ namespace SISHaU.UnitTests
                         @"D:\test3.zip",
                         @"D:\test4.zip",
                         @"D:\test5.zip",
+                        @"D:\test7.zip",
                 },
                 RepositoryMarker = Repo.Homemanagement
             };
             var result = fileServiceBuilder.UploadFilesList(doUpload.FilesPathList, doUpload.RepositoryMarker);
-
+            /*
             System.Threading.Thread.Sleep(15000);
 
             var down = result.Select(x => new DownloadModel { FileGuid = x.FileGuid, Repository = x.Repository.Value }).ToList();
@@ -42,7 +43,7 @@ namespace SISHaU.UnitTests
                 {
                     File.WriteAllBytes($@"D:\result\{dow.FileName}", dow.FileBytes);
                 }
-            }
+            }*/
 
         }
     }

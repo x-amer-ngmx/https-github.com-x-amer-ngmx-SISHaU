@@ -22,7 +22,7 @@ namespace SISHaU.Library.File.Enginer
             _serverConnect = new ResponseRequestOnServer(_repository);
         }
 
-        public UploadeResultModel UploadFile(UploadeModel uploadeMod)
+        public UploadeResultModel UploadFile(SplitFileModel uploadeMod)
         {
             if (uploadeMod ==null || !uploadeMod.Parts.Any())
             {
@@ -57,8 +57,15 @@ namespace SISHaU.Library.File.Enginer
                 //foreach(var part in uploadeMod.Parts)
                 Parallel.ForEach(uploadeMod.Parts, (part, state) =>
                 {
+                    var partByte = System.IO.File.OpenRead(part.Patch);
+
                     //распаралелить
-                    response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash, part.PartDetect.Part, session.UploadId).SendRequest();
+                    response = _serverConnect.RequestLoadingPart(
+                        partByte,
+                        partByte.Length,
+                        part.Md5Hash,
+                        part.Part,
+                        session.UploadId).SendRequest();
                     //Thread.Sleep(5000);
                     var stateUploaded = response.ResultEnginer<ResponseModel>();
 
@@ -67,6 +74,12 @@ namespace SISHaU.Library.File.Enginer
                         partRes.Add(stateUploaded);
                         //Возникла ошибка при загрузке части
                     }
+                    else
+                    {
+                        partByte = null;
+                        if (part.Patch.IndexOf(".tmpart") > 0) System.IO.File.Delete(part.Patch);
+                    }
+
                 });
 
                 response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
@@ -80,8 +93,9 @@ namespace SISHaU.Library.File.Enginer
                 }
                 else
                 {
+                    
                     fileGuid = session.UploadId;
-                    fileParts = uploadeMod.Parts.Select(p => p.PartDetect).ToList();
+                    fileParts = uploadeMod.Parts;
                     fileDate = closeSess.ResultDate?.DateTime;
                 }
                 response.Dispose();
@@ -94,7 +108,9 @@ namespace SISHaU.Library.File.Enginer
                 //это никогда не наступит но решарпер предупреждает...
                 if (part == null) return null;
 
-                var response = _serverConnect.RequestLoadingPart(part.Unit, part.Unit.Length, part.Md5Hash,
+                var partByte = System.IO.File.OpenRead(part.Patch);
+
+                var response = _serverConnect.RequestLoadingPart(partByte, partByte.Length, part.Md5Hash,
                     uploadeMod.FileInfo.FileName).SendRequest();
                 var uploadeId = response.ResultEnginer<ResponseIdModel>(false);
 
