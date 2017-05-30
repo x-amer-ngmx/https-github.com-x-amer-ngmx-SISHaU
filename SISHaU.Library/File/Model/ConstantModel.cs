@@ -11,8 +11,30 @@ namespace SISHaU.Library.File.Model
         public static string CertificateFingerPrint => $"{ConfigurationManager.AppSettings["certificate-thumbprint"]}";
 
         public static string ServerShare => $"{ConfigurationManager.AppSettings["uri-host"]}/ext-bus-file-store-service/rest/";
-        public static long MaxPartSize => ConfigurationManager.AppSettings["max-part-size"]==null ? 5242880 :
-                                          long.Parse(ConfigurationManager.AppSettings["max-part-size"]);
+
+        public static long MaxPartSize
+        {
+            get
+            {
+                var result = ConfigurationManager.AppSettings["max-part-size"] == null ? 5242880 : long.Parse(ConfigurationManager.AppSettings["max-part-size"]);
+
+                return result <= 0 ? 1 : result;
+            }
+        }
+
+        public static string TempPatch
+        {
+            get
+            {
+                var result = ConfigurationManager.AppSettings["temp-part-patch"] == null ? string.Empty : (string)ConfigurationManager.AppSettings["temp-part-patch"];
+                result = string.IsNullOrEmpty(result)
+                    ? throw new Exception("Путь к директории временных файлов не может быть пустым")
+                    : System.IO.Directory.Exists(result) ? result 
+                    : throw new Exception($"Путь \"{result}\" несушествует.");
+                return result;
+            }
+        }
+
 
         /// <summary>
         /// WWW-Autentification Login

@@ -24,4 +24,12 @@ namespace SISHaU.Library.File.Model
         public RequestErrorModel ErrorMessage { get; set; }
     }
 
+    public class PrivateExplodUnitModel
+    {
+        public ByteDetectorModel PartDetect { get; set; }
+
+        public byte[] Unit { get; set; }
+
     }
+
+}

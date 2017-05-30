@@ -8,8 +8,8 @@ using System.Net.Http;
 
 namespace SISHaU.Library.File.Enginer
 {
-    //TODO: EnginerFileRun - Нужен рефакторинг, и реализация дозагрузки\довыгрузки
-    sealed public class EnginerFileRun : IDisposable
+    //TODO: EnginerFileRun - Нужна реализация дозагрузки\довыгрузки
+    public sealed class EnginerFileRun : IDisposable
     {
         private readonly ResponseRequestOnServer _serverConnect;
 
@@ -29,9 +29,10 @@ namespace SISHaU.Library.File.Enginer
             {
                 return null;
             }
-            UploadeResultModel result = null;
 
-            var count = uploadeMod.Parts.Count();
+            UploadeResultModel result;
+
+            var count = uploadeMod.Parts.Count;
 
 
             if (count > 1)
@@ -50,21 +51,29 @@ namespace SISHaU.Library.File.Enginer
 
         private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<ByteDetectorModel> parts, string gostHash)
         {
+            HttpResponseMessage response;
 
-            UploadeResultModel result;
+            var index = 0;
+            while (true)
+            {
+                response = _serverConnect.RequestLoadingUnitStartSession(
+                    fileInfo.FileName,
+                    fileInfo.FileSize,
+                    partCount).SendRequest();
 
-            var response = _serverConnect.RequestLoadingUnitStartSession(
-                fileInfo.FileName,
-                fileInfo.FileSize,
-                partCount).SendRequest();
+                if (index > 0) System.Threading.Thread.Sleep(10000 * index);
+                if(index < 6) index++;
+                if(response.StatusCode == HttpStatusCode.OK) break;
+            }
+            
 
-            var content = response.Content.ReadAsStringAsync().Result;
+            //var content = response.Content.ReadAsStringAsync().Result;
             var session = response.ResultEnginer<ResponseIdModel>();
 
             //Убираю лимит на количество одновременных запросов.
             ServicePointManager.DefaultConnectionLimit = 15;
 
-            var partRes = new List<ResponseModel>();
+            //var partRes = new List<ResponseModel>();
 
             Parallel.ForEach(parts, (part, state) =>
             {
@@ -75,24 +84,31 @@ namespace SISHaU.Library.File.Enginer
 
                 if (stateUploaded.ServerError != null)
                 {
-                    partRes.Add(stateUploaded);
+                    //partRes.Add(stateUploaded);
                     //Возникла ошибка при загрузке части
                 }
                 else
                 {
                     
-                    if (part.Patch.IndexOf(".tmpart") > 0) System.IO.File.Delete(part.Patch);
+                    if (part.Patch.IndexOf(".tmpart", StringComparison.OrdinalIgnoreCase) > 0) System.IO.File.Delete(part.Patch);
                 }
 
             });
 
-            response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
+            while (true)
+            {
+                response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
 
+                if (index > 0) System.Threading.Thread.Sleep(10000 * index);
+                if (index < 6) index++;
+                if (response.StatusCode == HttpStatusCode.OK) break;
+            }
+            
             var closeSess = response.ResultEnginer<ResponseSessionCloseModel>();
             
                 //Ошибка сессию по какой-то причине не удалось закрыть
 
-                result = closeSess.IsClose == false ? new UploadeResultModel
+                var result = closeSess.IsClose == false ? new UploadeResultModel
                 {
                     ErrorMessage = new RequestErrorModel()
                 } : new UploadeResultModel
@@ -113,23 +129,21 @@ namespace SISHaU.Library.File.Enginer
 
         private UploadeResultModel SmaillUploadeFile(ResultModel fileInfo, ByteDetectorModel part, string gostHash)
         {
-            UploadeResultModel result;
-
             var response = UpLoadePart(part, fileInfo.FileName);
             var uploadeId = response.ResultEnginer<ResponseIdModel>(false);
 
 
-            result = uploadeId.ServerError != null ? new UploadeResultModel { ErrorMessage = new RequestErrorModel() }
-            : new UploadeResultModel
-            {
-                FileName = fileInfo.FileName,
-                FileSize = fileInfo.FileSize,
-                GostHash = gostHash,
-                Repository = _repository,
-                FileGuid = uploadeId.UploadId,
-                Parts = new[] { part },
-                UTime = uploadeId.ResultDate?.DateTime
-            };
+            var result = uploadeId.ServerError != null ? new UploadeResultModel { ErrorMessage = new RequestErrorModel() }
+                : new UploadeResultModel
+                {
+                    FileName = fileInfo.FileName,
+                    FileSize = fileInfo.FileSize,
+                    GostHash = gostHash,
+                    Repository = _repository,
+                    FileGuid = uploadeId.UploadId,
+                    Parts = new[] { part },
+                    UTime = uploadeId.ResultDate?.DateTime
+                };
 
             return result;
 
@@ -137,19 +151,33 @@ namespace SISHaU.Library.File.Enginer
 
         private HttpResponseMessage UpLoadePart(ByteDetectorModel part, string name = null, string sessId = null)
         {
-            var partStream = System.IO.File.OpenRead(part.Patch);
+            
+            var param = (!string.IsNullOrEmpty(name) ? (object) name : part.Part);
 
-            object param = (!string.IsNullOrEmpty(name) ? (object)name : part.Part);
+            HttpResponseMessage result;
 
-            var result = _serverConnect.RequestLoadingPart(
-                partStream,
-                partStream.Length,
-                part.Md5Hash,
-                param,
-                sessId).SendRequest();
+            var index = 0;
+            while (true)
+            {
+                using (var partStream = System.IO.File.OpenRead(part.Patch))
+                {
+                    result = _serverConnect.RequestLoadingPart(
+                            partStream,
+                            partStream.Length,
+                            part.Md5Hash,
+                            param,
+                            sessId)
+                        .SendRequest();
+                }
 
-            partStream.Close();
-            partStream.Dispose();
+                if (index > 0) System.Threading.Thread.Sleep(1000 * index);
+
+                if(index < 30) index++;
+
+                if (result.StatusCode == HttpStatusCode.OK) break;
+            }
+
+
 
             return result;
         }

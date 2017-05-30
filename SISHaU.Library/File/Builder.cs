@@ -25,7 +25,6 @@ namespace SISHaU.Library.File
 
         public IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository)
         {
-            var tmpPath = @"D:\Temp\Uploade\";
             if (patch==null || !patch.Any()) throw new Exception($"Параметр {patch} не должен быть пустым"); 
 
             var result = new ConcurrentBag<UploadeResultModel>();
@@ -50,22 +49,22 @@ namespace SISHaU.Library.File
                     return;
                 }
 
-                upFile.Add(Operation.SplitFile(tmpPath, file));
+                var operation = new OperationFile();
 
-                Operation.Dispose();
+                upFile.Add(operation.SplitFile(file));
+
+                operation.Dispose();
             });
 
-            //foreach(var cupFile in upFile)
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
-               // lock (result)
-               // {
+                lock (result)
+                {
                     var upl = new EnginerFileRun(repository);
                     var res = upl.UploadFile(cupFile);
                     upl.Dispose();
                     result.Add(res);
-                //}
-                //Thread.Sleep(5000);
+                }
             });
 
             return result.ToList();

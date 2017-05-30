@@ -21,7 +21,7 @@ namespace SISHaU.FileStreamIdea
             //sequence = new string[] { "/", "-", "\\", "|" };
             //sequence = new string[] { ".", "o", "0", "o" };
             //sequence = new string[] { "+", "x" };
-            sequence = new string[] { "V", "<", "^", ">" };
+            sequence = new [] { "V", "<", "^", ">" };
             //sequence = new string[] { ".   ", "..  ", "... ", "...." };
         }
         public void Turn()
@@ -57,7 +57,7 @@ namespace SISHaU.FileStreamIdea
                 where currentIndex > 0 && currentIndex < Console.WindowHeight
                 select new
                 {
-                    Text = new String(line.Skip(trimLeft).Take(Math.Min(Console.WindowWidth - x, line.Length - trimLeft)).ToArray()),
+                    Text = new string(line.Skip(trimLeft).Take(Math.Min(Console.WindowWidth - x, line.Length - trimLeft)).ToArray()),
                     X = x,
                     Y = y++
                 };
@@ -91,6 +91,8 @@ namespace SISHaU.FileStreamIdea
 
             var arr = new[]
             {
+                new string('*', 92),
+                string.Empty,
                 @"      ___                       ___                     ___         ___           ___",
                 @"     /\  \          ___        /\  \                   /\  \       /\__\         /\__\",
                 @"    /::\  \        /\  \      /::\  \                  \:\  \     /:/  /        /:/  /",
@@ -113,14 +115,16 @@ namespace SISHaU.FileStreamIdea
                 @"                \/__/     \:\/:/  /      |:|  |      \:\__\         |::/  /",
                 @"                           \::/  /       |:|  |       \/__/         /:/  /",
                 @"                            \/__/         \|__|                     \/__/",
+                string.Empty,
+                new string('*', 92), 
             };
 
             var maxLength = arr.Aggregate(0, (max, line) => Math.Max(max, line.Length));
             var x = Console.BufferWidth / 2 - maxLength / 2;
-            for (int y = -arr.Length; y < Console.WindowHeight + arr.Length; y++)
+            for (var y = -arr.Length; y < Console.WindowHeight + arr.Length; y++)
             {
                 ConsoleDraw(arr, x, y);
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(80);
             }
 
             foreach (var patch in files)
@@ -150,8 +154,10 @@ namespace SISHaU.FileStreamIdea
                         spin.Turn();
                         tmpFile.Write(buff, 0, buff.Length);
 
-                        if (pat.Patch.IndexOf(".tmpart") > 0) File.Delete(pat.Patch);
+                        if (pat.Patch.IndexOf(".tmpart",StringComparison.OrdinalIgnoreCase) > 0) File.Delete(pat.Patch);
                     }
+                    tmpFile.Close();
+                    tmpFile.Dispose();
                 }
             }
             Console.CursorVisible = true;
@@ -169,7 +175,7 @@ namespace SISHaU.FileStreamIdea
         private static UploadeResultModel SplitFiles(string tmpPath, string patch)
         {
             var resultX = new UploadeResultModel();
-            IList<ByteDetectorModel> result = null;
+            IList<ByteDetectorModel> result;
             var fName = Path.GetFileNameWithoutExtension(patch);
 
             resultX.FileName = Path.GetFileName(patch);

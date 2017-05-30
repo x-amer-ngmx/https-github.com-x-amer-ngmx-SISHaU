@@ -9,72 +9,44 @@ namespace SISHaU.Library.File.Enginer
     //TODO: OperationFile - необходим рефакторинг...
     public class OperationFile : IDisposable
     {
-        /// <summary>
-        /// Разделяем полученны поток файла 
-        /// </summary>
-        /// <param name="file">Массив байт файла</param>
-        /// <returns>коллекцию типа ExplodUnitModel</returns>
-        public List<ExplodUnitModel> ExplodingFile(byte[] file)
+        public SplitFileModel SplitFile(string patch)
         {
+            var resultX = new SplitFileModel();
+            IList<ByteDetectorModel> result;
+            var fName = Path.GetFileNameWithoutExtension(patch);
 
-            long sizeFile = file.Length;
-            var modes = sizeFile % ConstantModel.MaxPartSize;
-            var mod = modes == 0;
-
-            var parts = (int)(sizeFile / ConstantModel.MaxPartSize);
-            var pprs = !mod ? parts + 1 : parts;
-
-
-            if (pprs <= 1)
+            ResultModel fInfo;
+            //Используем поток файла не загружая оперативу, ненужными байтами
+            using (var file = new FileStream(patch, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                return new List<ExplodUnitModel>
+                fInfo = new ResultModel
                 {
-                    new ExplodUnitModel
-                    {
-                        Unit = file
-                    }
+                    FileName = Path.GetFileName(patch),
+                    FileSize = file.Length
                 };
 
+                //Определяем кол-во частей
+                var parts = (int)(file.Length / ConstantModel.MaxPartSize) + 1;
+
+                //Применение рефакторинг-кунгфу....
+                result = parts == 1 ? new List<ByteDetectorModel> {
+                    new ByteDetectorModel{
+                        From = 0,
+                        To = file.Length,
+                        Part = 1,
+                        Patch = patch,
+                        Md5Hash = file.FileMd5()
+                    }
+                } : SingleFiles(parts, file, fName);
+
+                //Определяем и сохраняем хеш-по-госту файла
+                resultX.GostHash = file.FileGost();
             }
 
-            var res = new List<ByteDetectorModel>();
+            resultX.FileInfo = fInfo;
+            resultX.Parts = result;
 
-            parts = pprs;
-
-            while (parts > 0)
-            {
-                var partTo = parts == pprs ? modes : ConstantModel.MaxPartSize;
-                var to = (int)partTo;
-                var from = (int)(sizeFile > ConstantModel.MaxPartSize ? sizeFile - partTo : 0);
-                res.Add(new ByteDetectorModel { Part = parts, From = from, To = to });
-                sizeFile = from;
-                parts--;
-            }
-
-            res = (from resx in res orderby resx.Part select resx).ToList();
-
-            var result = new List<ExplodUnitModel>();
-
-            long partFromSize = 0;
-            foreach (var detector in res)
-            {
-                var thisPartSize = (partFromSize + ConstantModel.MaxPartSize);
-                var partToSize = modes > thisPartSize ? modes : thisPartSize;
-                result.Add(new ExplodUnitModel
-                {
-                    PartDetect = new ByteDetectorModel
-                    {
-                        Part = detector.Part,
-                        From = partFromSize,
-                        To = partToSize - 1
-                    },
-                    Unit = file.Skip((int)detector.From).Take((int)detector.To).ToArray()
-                });
-
-                partFromSize = thisPartSize;
-            }
-
-            return result;
+            return resultX;
         }
 
         /// <summary>
@@ -82,7 +54,7 @@ namespace SISHaU.Library.File.Enginer
         /// </summary>
         /// <param name="units">последовательнось типа ExplodUnitModel</param>
         /// <returns>Массив байт файла</returns>
-        public byte[] CollectFile(IEnumerable<PrivateExplodUnitModel> units)
+        public byte[] CollectFile(IList<PrivateExplodUnitModel> units)
         {
             if (units == null || !units.Any()) return null;
 
@@ -101,49 +73,7 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-
-        public SplitFileModel SplitFile(string tmpPath, string patch)
-        {
-            var resultX = new SplitFileModel();
-            IList<ByteDetectorModel> result = null;
-            var fName = Path.GetFileNameWithoutExtension(patch);
-
-            ResultModel fInfo;
-            //Используем поток файла не загружая оперативу, ненужными байтами
-            using (var file = new FileStream(patch, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                fInfo = new ResultModel
-                {
-                    FileName = Path.GetFileName(patch),
-                    FileSize = file.Length
-                };
-
-                //Определяем кол-во частей
-                var parts = (int)(file.Length / ConstantModel.MaxPartSize) + 1;
-
-                //Применение рефакторинг-кунгфу....
-                result = parts == 1 ? new List<ByteDetectorModel> {
-                        new ByteDetectorModel{
-                            From = 0,
-                            To = file.Length,
-                            Part = 1,
-                            Patch = patch,
-                            Md5Hash = file.FileMd5()
-                        }
-                    } : SingleFiles(parts, file, fName, tmpPath);
-
-                //Определяем и сохраняем хеш-по-госту файла
-                resultX.GostHash = file.FileGost();
-                file.Dispose();
-            }
-
-            resultX.FileInfo = fInfo;
-            resultX.Parts = result;
-
-            return resultX;
-        }
-
-        private static IList<ByteDetectorModel> SingleFiles(int parts, Stream file, string fName, string tmpPath)
+        private static IList<ByteDetectorModel> SingleFiles(int parts, Stream file, string fName)
         {
             var result = new List<ByteDetectorModel>();
             var part = 1;
@@ -162,7 +92,7 @@ namespace SISHaU.Library.File.Enginer
                 var partSize = file.Read(buffer, 0, buffSize);
 
                 //путь к временно-созданной части
-                var splitPatch = $@"{tmpPath}\{file.Length}_{fName}.{part}.tmpart";
+                var splitPatch = $@"{ConstantModel.TempPatch}\{file.Length}_{fName}.{part}.tmpart";
 
                 //Создание части, если часть уже существует то она будет перезаписанна
                 using (var tmpFile = new FileStream(splitPatch, FileMode.Create, FileAccess.Write))
