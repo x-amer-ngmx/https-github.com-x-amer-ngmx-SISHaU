@@ -185,7 +185,7 @@ namespace SISHaU.Library.File.Enginer
 
             if(!string.IsNullOrEmpty(ConstantModel.CertificateFingerPrint)) result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), ConstantModel.CertificateFingerPrint.ToUpper());
 
-            result.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), ConstantModel.DateproviderId);
+            result.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), ConstantModel.DataProviderId);
 
             return result;
         }
