@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Enginer;
 using SISHaU.Library.File.Model;
+using System.Reflection;
 
 namespace SISHaU.Library.File
 {
@@ -27,7 +30,6 @@ namespace SISHaU.Library.File
             var result = new ConcurrentBag<UploadeResultModel>();
 
             var upFile = new ConcurrentBag<SplitFileModel>();
-
             var fpatch = new ConcurrentBag<string>(patch);
 
             Parallel.ForEach(fpatch, (file, state) =>
@@ -41,7 +43,7 @@ namespace SISHaU.Library.File
                         {
                             ErrorCode = 404,
                             ErrorInfo = $"По указанному пути {{{file}}} файл не был обнаружен.",
-                            PointErrorDescript = $"Предупреждение произошло в {{{nameof(UploadFilesList)}}}."
+                            PointErrorDescript = $"Предупреждение произошло в {{UploadFilesList}}"
                         }
                     });
                     return;
@@ -56,10 +58,13 @@ namespace SISHaU.Library.File
 
             Parallel.ForEach(upFile, (cupFile, state) =>
             {
-                var upl = new EnginerFileRun(repository);
-                var res = upl.UploadFile(cupFile);
-                upl.Dispose();
-                result.Add(res);
+                lock (result)
+                {
+                    var upl = new EnginerFileRun(repository);
+                    var res = upl.UploadFile(cupFile);
+                    upl.Dispose();
+                    result.Add(res);
+                }
             });
 
             return result.ToList();
@@ -74,7 +79,7 @@ namespace SISHaU.Library.File
 
         public IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model)
         {
-            if (model == null || !model.Any()) throw new Exception($"Параметр {{{nameof(model)}}} не должен быть пустым");
+            if (model == null || !model.Any()) throw new Exception("Параметр model не должен быть пустым");
 
             var collect = new ConcurrentBag<DownloadModel>(model);
             var result = new List<DownloadResultModel>();

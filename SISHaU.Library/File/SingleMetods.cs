@@ -208,11 +208,6 @@ namespace SISHaU.Library.File
             return result;
         }
 
-        /// <summary>
-        /// Определяем и сохраняем хеш-по-госту файла
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
         public static string FileGost(this System.IO.Stream stream)
         {
             string result;
