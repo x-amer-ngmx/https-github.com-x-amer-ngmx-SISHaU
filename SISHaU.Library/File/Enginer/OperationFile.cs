@@ -56,18 +56,24 @@ namespace SISHaU.Library.File.Enginer
 
         private static IEnumerable<ByteDetectorModel> SplitFiles(Stream file, string fName)
         {
-            var maxPartSize = (int)ConstantModel.MaxPartSize;
             
-            var buffer = new byte[maxPartSize];
             var result = new List<ByteDetectorModel>();
 
             var partNumber = 1;
-            var partLowerBound = 0;
-            var partUpperBound = 0;
 
-            while(true)
+            long partLowerBound = 0;
+            long partUpperBound = 0;
+            var parts = (int)(file.Length / ConstantModel.MaxPartSize) + 1;
+            long maxPartSize = 0;
+            byte[] buffer;
+
+            while (true)
             {
-                var partSize = file.Read(buffer, 0, maxPartSize);
+                maxPartSize = parts != partNumber ? ConstantModel.MaxPartSize : file.Length - partUpperBound;
+
+                buffer = new byte[maxPartSize];
+
+                var partSize = file.Read(buffer, 0, (int)maxPartSize);
                 if (partSize == 0) break;
 
                 var splitPartName = $@"{ConstantModel.TempPath}\{file.Length}_{fName}_{partNumber}.tmpart";
@@ -82,7 +88,7 @@ namespace SISHaU.Library.File.Enginer
                     {
                         Part = partNumber++,
                         From = partLowerBound,
-                        To = partUpperBound,
+                        To = partUpperBound-1,
                         Patch = splitPartName,
                         Md5Hash = buffer.FileMd5()
                     });

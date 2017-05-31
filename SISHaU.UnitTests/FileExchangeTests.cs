@@ -25,7 +25,8 @@ namespace SISHaU.UnitTests
                         @"D:\test3.zip",
                         @"D:\test4.zip",
                         @"D:\test5.zip",
-                        //@"D:\test7.zip",
+                        @"D:\test6.zip",
+                        @"D:\test7.zip",
                 },
                 RepositoryMarker = Repo.Homemanagement
             };

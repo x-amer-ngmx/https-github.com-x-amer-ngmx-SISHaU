@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
 using System.Net.Http;
+using System.Threading;
 
 namespace SISHaU.Library.File.Enginer
 {
@@ -61,10 +62,16 @@ namespace SISHaU.Library.File.Enginer
                     fileInfo.FileSize,
                     partCount).SendRequest();
 
-                if (index > 0) System.Threading.Thread.Sleep(10000 * index);
-                if (index > 2) {
+                if (index > 0) Thread.Sleep(10000 * index);
+                if (index > 6) {
                     qu.CancellationToken.ThrowIfCancellationRequested();
-                    return null;
+                    return new UploadeResultModel {
+                        ErrorMessage = new RequestErrorModel {
+                            ErrorCode = 400,
+                            ErrorInfo = "SereverTimeOut",
+                            PointErrorDescript = "Сервер не доступен или соединение было разорвано"
+                        }
+                    };
                 }
                 index++;
                 if (response.StatusCode == HttpStatusCode.OK) break;

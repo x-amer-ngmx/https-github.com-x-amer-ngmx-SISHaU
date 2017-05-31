@@ -64,7 +64,7 @@ namespace SISHaU.Library.File
              {
                  var upl = new EnginerFileRun(repository);
                  var res = upl.UploadFile(cupFile, ref poUp);
-
+                 upl.Dispose();
                  result.Add(res);
              });
 
