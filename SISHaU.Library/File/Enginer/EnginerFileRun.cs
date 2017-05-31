@@ -37,19 +37,19 @@ namespace SISHaU.Library.File.Enginer
 
             if (count > 1)
             {
-                result = BigUploadeFile(uploadeMod.FileInfo, count, uploadeMod.Parts, uploadeMod.GostHash);
+                result = BigUploadeFile(uploadeMod.FileInfo, count, uploadeMod.Parts);
 
             }
             else if (count == 1)
             {
-                result = SmaillUploadeFile(uploadeMod.FileInfo, uploadeMod.Parts.FirstOrDefault(), uploadeMod.GostHash);
+                result = SmaillUploadeFile(uploadeMod.FileInfo, uploadeMod.Parts.FirstOrDefault());
             }
             else throw new Exception("Что-то пошло не так, количество частей меньше одной.");
 
             return result;
         }
 
-        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<ByteDetectorModel> parts, string gostHash)
+        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<ByteDetectorModel> parts)
         {
             HttpResponseMessage response;
 
@@ -117,7 +117,7 @@ namespace SISHaU.Library.File.Enginer
                     FileName = fileInfo.FileName,
                     FileSize = fileInfo.FileSize,
                     Parts = parts,
-                    GostHash = gostHash,
+                    GostHash = fileInfo.GostHash,
                     Repository = _repository,
                     UTime = closeSess.ResultDate?.DateTime
                 };
@@ -127,7 +127,7 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private UploadeResultModel SmaillUploadeFile(ResultModel fileInfo, ByteDetectorModel part, string gostHash)
+        private UploadeResultModel SmaillUploadeFile(ResultModel fileInfo, ByteDetectorModel part)
         {
             var response = UpLoadePart(part, fileInfo.FileName);
             var uploadeId = response.ResultEnginer<ResponseIdModel>(false);
@@ -138,7 +138,7 @@ namespace SISHaU.Library.File.Enginer
                 {
                     FileName = fileInfo.FileName,
                     FileSize = fileInfo.FileSize,
-                    GostHash = gostHash,
+                    GostHash = fileInfo.GostHash,
                     Repository = _repository,
                     FileGuid = uploadeId.UploadId,
                     Parts = new[] { part },

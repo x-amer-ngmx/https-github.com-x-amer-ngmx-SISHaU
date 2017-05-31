@@ -2,35 +2,37 @@
 using System.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
+using NHibernate.Hql.Ast.ANTLR;
 
 namespace SISHaU.Library.File.Model
 {
     public static class ConstantModel
     {
-        public static string DateproviderId => $"{ConfigurationManager.AppSettings["data-provider-id"]}";
+        public static string DataProviderId => $"{ConfigurationManager.AppSettings["data-provider-id"]}";
         public static string CertificateFingerPrint => $"{ConfigurationManager.AppSettings["certificate-thumbprint"]}";
 
         public static string ServerShare => $"{ConfigurationManager.AppSettings["uri-host"]}/ext-bus-file-store-service/rest/";
 
-        public static long MaxPartSize
+        public static long MaxPartSize = ConfigurationManager.AppSettings["max-part-size"] == null
+            ? 5242880
+            : long.Parse(ConfigurationManager.AppSettings["max-part-size"]);
+
+        public static string TempPath 
         {
             get
             {
-                var result = ConfigurationManager.AppSettings["max-part-size"] == null ? 5242880 : long.Parse(ConfigurationManager.AppSettings["max-part-size"]);
+                var result = ConfigurationManager.AppSettings["temp-part-patch"] ?? ConfigurationManager.AppSettings["temp-part-patch"];
 
-                return result <= 0 ? 1 : result;
-            }
-        }
+                if (string.IsNullOrEmpty(result))
+                {
+                    throw new InvalidPathException("Путь к директории временных файлов не может быть пустым");
+                }
 
-        public static string TempPatch
-        {
-            get
-            {
-                var result = ConfigurationManager.AppSettings["temp-part-patch"] == null ? string.Empty : (string)ConfigurationManager.AppSettings["temp-part-patch"];
-                result = string.IsNullOrEmpty(result)
-                    ? throw new Exception("Путь к директории временных файлов не может быть пустым")
-                    : System.IO.Directory.Exists(result) ? result 
-                    : throw new Exception($"Путь \"{result}\" несушествует.");
+                if (!System.IO.Directory.Exists(result))
+                {
+                    throw new InvalidPathException($"Путь \"{result}\" несушествует.");
+                }
+
                 return result;
             }
         }
