@@ -23,7 +23,7 @@ namespace SISHaU.Library.File.Enginer
             _serverConnect = new ResponseRequestOnServer(_repository);
         }
 
-        public UploadeResultModel UploadFile(SplitFileModel uploadeMod)
+        public UploadeResultModel UploadFile(SplitFileModel uploadeMod, ref ParallelOptions qu)
         {
             if (uploadeMod == null || !uploadeMod.Parts.Any())
             {
@@ -37,7 +37,7 @@ namespace SISHaU.Library.File.Enginer
 
             if (count > 1)
             {
-                result = BigUploadeFile(uploadeMod.FileInfo, count, uploadeMod.Parts);
+                result = BigUploadeFile(uploadeMod.FileInfo, count, uploadeMod.Parts, ref qu);
 
             }
             else if (count == 1)
@@ -49,7 +49,7 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<ByteDetectorModel> parts)
+        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<ByteDetectorModel> parts, ref ParallelOptions qu)
         {
             HttpResponseMessage response;
 
@@ -62,8 +62,12 @@ namespace SISHaU.Library.File.Enginer
                     partCount).SendRequest();
 
                 if (index > 0) System.Threading.Thread.Sleep(10000 * index);
-                if(index < 6) index++;
-                if(response.StatusCode == HttpStatusCode.OK) break;
+                if (index > 2) {
+                    qu.CancellationToken.ThrowIfCancellationRequested();
+                    return null;
+                }
+                index++;
+                if (response.StatusCode == HttpStatusCode.OK) break;
             }
             
 

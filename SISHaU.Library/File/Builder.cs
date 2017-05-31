@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Enginer;
 using SISHaU.Library.File.Model;
+using System.Threading;
 
 namespace SISHaU.Library.File
 {
@@ -54,13 +55,20 @@ namespace SISHaU.Library.File
                 operation.Dispose();
             });
 
-            Parallel.ForEach(upFile, (cupFile, state) =>
-            {
-                    var upl = new EnginerFileRun(repository);
-                    var res = upl.UploadFile(cupFile);
-                    upl.Dispose();
-                    result.Add(res);
-            });
+            var ctsUp = new CancellationTokenSource();
+            var poUp = new ParallelOptions {
+                CancellationToken = ctsUp.Token
+            };
+
+            Parallel.ForEach(upFile, poUp, (cupFile, state) =>
+             {
+                 var upl = new EnginerFileRun(repository);
+                 var res = upl.UploadFile(cupFile, ref poUp);
+
+                 result.Add(res);
+             });
+
+            ctsUp.Dispose();
 
             return result.ToList();
         }

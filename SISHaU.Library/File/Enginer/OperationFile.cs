@@ -11,7 +11,7 @@ namespace SISHaU.Library.File.Enginer
         public SplitFileModel SplitFile(string splitFileName)
         {
             var resultX = new SplitFileModel();
-            
+
             //Используем поток файла не загружая оперативу, ненужными байтами
             using (var file = new FileStream(splitFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
@@ -21,6 +21,7 @@ namespace SISHaU.Library.File.Enginer
                     FileSize = file.Length,
                     GostHash = file.FileGost()
                 };
+                file.Seek(0, SeekOrigin.Begin);
 
                 resultX.AddParts(SplitFiles(file, Path.GetFileNameWithoutExtension(splitFileName)));
             }
