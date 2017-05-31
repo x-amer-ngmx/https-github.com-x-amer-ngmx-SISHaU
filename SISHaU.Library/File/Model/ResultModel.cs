@@ -10,5 +10,6 @@ namespace SISHaU.Library.File.Model
     {
         public string FileName { get; set; }
         public long FileSize { get; set; }
+        public string GostHash { get; set; }
     }
 }
