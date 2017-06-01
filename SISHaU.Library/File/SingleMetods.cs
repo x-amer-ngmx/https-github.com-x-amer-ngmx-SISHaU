@@ -218,9 +218,8 @@ namespace SISHaU.Library.File
         /// <returns></returns>
         public static string FileGost(this System.IO.Stream stream)
         {
-            string result;
             var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
-            result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+            var result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
 
             return result;
         }
@@ -249,12 +248,12 @@ namespace SISHaU.Library.File
                 var client = new HttpClient(httpClientHandler);
 
                 //Для узкого канала желательно установить 15мин
-                client.Timeout = TimeSpan.FromMinutes(15);
+                client.Timeout = TimeSpan.FromMinutes(60);
 
                 var sender = client.SendAsync(
                     message,
                     HttpCompletionOption.ResponseContentRead,
-                    new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(15)).Token
+                    new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(60)).Token
                     );
 
                 sender.Wait();

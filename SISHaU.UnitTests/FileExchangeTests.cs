@@ -27,7 +27,7 @@ namespace SISHaU.UnitTests
                         @"D:\test2.zip",
                         @"D:\test3.zip",
                         @"D:\test4.zip",
-                        //@"D:\test5.zip",
+                        @"D:\test5.zip",
                         @"D:\test6.zip",
                         //@"D:\test7.zip",
                 },
