@@ -92,7 +92,7 @@
     <Compile Include="File\Enginer\OperationFile.cs" />
     <Compile Include="File\Enginer\ResponseRequestOnServer.cs" />
     <Compile Include="File\Model\ByteDetectorModel.cs" />
-    <Compile Include="File\Model\ConstantModel.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="File\Model\DownloadeResultModel.cs" />
     <Compile Include="File\Model\RangeModel.cs" />
     <Compile Include="File\Model\RequestErrorModel.cs" />

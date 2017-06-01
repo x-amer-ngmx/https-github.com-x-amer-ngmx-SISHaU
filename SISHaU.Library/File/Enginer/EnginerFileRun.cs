@@ -50,7 +50,7 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<ByteDetectorModel> parts, ref ParallelOptions qu)
+        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<UpPartInfoModel> parts, ref ParallelOptions qu)
         {
             HttpResponseMessage response;
 
@@ -110,7 +110,7 @@ namespace SISHaU.Library.File.Enginer
             {
                 response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
 
-                if (index > 0) System.Threading.Thread.Sleep(10000 * index);
+                if (index > 0) Thread.Sleep(10000 * index);
                 if (index < 6) index++;
                 if (response.StatusCode == HttpStatusCode.OK) break;
             }
@@ -127,7 +127,7 @@ namespace SISHaU.Library.File.Enginer
                     FileGuid = session.UploadId,
                     FileName = fileInfo.FileName,
                     FileSize = fileInfo.FileSize,
-                    Parts = parts,
+                    //Parts = parts,
                     GostHash = fileInfo.GostHash,
                     Repository = _repository,
                     UTime = closeSess.ResultDate?.DateTime
@@ -138,7 +138,7 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private UploadeResultModel SmaillUploadeFile(ResultModel fileInfo, ByteDetectorModel part)
+        private UploadeResultModel SmaillUploadeFile(ResultModel fileInfo, UpPartInfoModel part)
         {
             var response = UpLoadePart(part, fileInfo.FileName);
             var uploadeId = response.ResultEnginer<ResponseIdModel>(false);
@@ -152,15 +152,18 @@ namespace SISHaU.Library.File.Enginer
                     GostHash = fileInfo.GostHash,
                     Repository = _repository,
                     FileGuid = uploadeId.UploadId,
-                    Parts = new[] { part },
+                    //Parts = new[] { part },
                     UTime = uploadeId.ResultDate?.DateTime
                 };
+
+            //обязательно мочим временный экземпляр файла
+            if (part.Patch.IndexOf(".tmpart", StringComparison.OrdinalIgnoreCase) > 0) System.IO.File.Delete(part.Patch);
 
             return result;
 
         }
 
-        private HttpResponseMessage UpLoadePart(ByteDetectorModel part, string name = null, string sessId = null)
+        private HttpResponseMessage UpLoadePart(UpPartInfoModel part, string name = null, string sessId = null)
         {
             
             var param = (!string.IsNullOrEmpty(name) ? (object) name : part.Part);
@@ -181,11 +184,11 @@ namespace SISHaU.Library.File.Enginer
                         .SendRequest();
                 }
 
-                if (index > 0) System.Threading.Thread.Sleep(1000 * index);
+                if (index > 0) Thread.Sleep(1000 * index);
 
                 if(index < 30) index++;
 
-                if (result.StatusCode == HttpStatusCode.OK) break;
+                if (result?.StatusCode == HttpStatusCode.OK) break;
             }
 
 
@@ -212,7 +215,7 @@ namespace SISHaU.Library.File.Enginer
             //TODO: Ваще необходим рефакторинг и я бы подумал над тем чтобы это всё распоточить, если есть в этом смысл...
             foreach (var part in fileInfo.FileCompleateParts)
             {
-                var thisPartSize = (partFromSize + ConstantModel.MaxPartSize);
+                var thisPartSize = (partFromSize + Config.MaxPartSize);
                 var partToSize = fileInfo.FileSize < thisPartSize ? fileInfo.FileSize : thisPartSize;
 
                 var to = partToSize - 1;

@@ -14,6 +14,9 @@ namespace SISHaU.UnitTests
         [TestMethod]
         public void TestUploadFiles()
         {
+            
+            Config.InitConfig();
+
             var fileServiceBuilder = new Builder();
             var doUpload = new UploadFiles
             {
@@ -24,9 +27,9 @@ namespace SISHaU.UnitTests
                         @"D:\test2.zip",
                         @"D:\test3.zip",
                         @"D:\test4.zip",
-                        @"D:\test5.zip",
+                        //@"D:\test5.zip",
                         @"D:\test6.zip",
-                        @"D:\test7.zip",
+                        //@"D:\test7.zip",
                 },
                 RepositoryMarker = Repo.Homemanagement
             };

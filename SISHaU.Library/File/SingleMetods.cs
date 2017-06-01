@@ -190,9 +190,12 @@ namespace SISHaU.Library.File
             return result;
         }
 
-        public static byte[] FileMd5(this byte[] stream)
+        public static byte[] FileMd5(this byte[] data, int? byteLeng = null)
         {
-            return MD5.Create().ComputeHash(stream);
+            if (byteLeng != null && data.Length > byteLeng)
+                Array.Resize(ref data, byteLeng.Value);
+
+            return MD5.Create().ComputeHash(data);
         }
         public static byte[] FileMd5(this System.IO.Stream stream)
         {

@@ -11,8 +11,6 @@ namespace SISHaU.Library.File.Model
 
         public DateTime? UTime { get; set; }
 
-        public IList<ByteDetectorModel> Parts { get; set; }
-
         public RequestErrorModel ErrorMessage { get; set; }
 
 

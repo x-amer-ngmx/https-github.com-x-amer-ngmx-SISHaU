@@ -30,6 +30,7 @@ namespace SISHaU.Library.File
             var upFile = new ConcurrentBag<SplitFileModel>();
 
             var fpatch = new ConcurrentBag<string>(patch);
+            var tempPatch = Config.TempPath(Config.TempType.Up);
 
             Parallel.ForEach(fpatch, (file, state) =>
             {
@@ -50,7 +51,7 @@ namespace SISHaU.Library.File
 
                 var operation = new OperationFile();
 
-                upFile.Add(operation.SplitFile(file));
+                upFile.Add(operation.SplitFile(file, tempPatch));
 
                 operation.Dispose();
             });

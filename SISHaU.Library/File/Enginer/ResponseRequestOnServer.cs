@@ -179,13 +179,13 @@ namespace SISHaU.Library.File.Enginer
                 Headers =
                 {
                     Date = DateTimeOffset.Now,
-                    Authorization = ConstantModel.XAutent
+                    Authorization = Config.XAutent
                 }
             };
 
-            if(!string.IsNullOrEmpty(ConstantModel.CertificateFingerPrint)) result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), ConstantModel.CertificateFingerPrint.ToUpper());
+            if(!string.IsNullOrEmpty(Config.CertificateFingerPrint)) result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), Config.CertificateFingerPrint.ToUpper());
 
-            result.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), ConstantModel.DataProviderId);
+            result.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), Config.DataProviderId);
 
             return result;
         }

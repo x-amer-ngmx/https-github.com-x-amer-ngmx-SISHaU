@@ -8,14 +8,19 @@ namespace SISHaU.Library.File.Enginer
 {
     public class OperationFile : IDisposable
     {
-        public SplitFileModel SplitFile(string splitFileName)
+        /// <summary>
+        /// Обработка коллекции путей к файлам
+        /// </summary>
+        /// <param name="splitFileName">Путь к файлу</param>
+        /// <returns>Возвращает объект с данными для формирование MessageRequest</returns>
+        public SplitFileModel SplitFile(string splitFileName, string temp)
         {
-            var resultX = new SplitFileModel();
+            var result = new SplitFileModel();
 
             //Используем поток файла не загружая оперативу, ненужными байтами
             using (var file = new FileStream(splitFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                resultX.FileInfo = new ResultModel
+                result.FileInfo = new ResultModel
                 {
                     FileName = Path.GetFileName(splitFileName),
                     FileSize = file.Length,
@@ -23,10 +28,10 @@ namespace SISHaU.Library.File.Enginer
                 };
                 file.Seek(0, SeekOrigin.Begin);
 
-                resultX.AddParts(SplitFiles(file, Path.GetFileNameWithoutExtension(splitFileName)));
+                result.AddParts(SplitFiles(file, temp, Path.GetFileNameWithoutExtension(splitFileName)));
             }
 
-            return resultX;
+            return result;
         }
 
         /// <summary>
@@ -54,51 +59,45 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private static IEnumerable<ByteDetectorModel> SplitFiles(Stream file, string fName)
+
+        #region Локальные методы
+        /// <summary>
+        /// Операция расщипления потока файла на буферные части
+        /// </summary>
+        /// <param name="file">Поток файла</param>
+        /// <param name="fName">Наименование файла с расширением</param>
+        /// <returns>Возвращает объект с данными для формирование MessageRequest</returns>
+        private static IEnumerable<UpPartInfoModel> SplitFiles(Stream file,string temp, string fName)
         {
-            
-            var result = new List<ByteDetectorModel>();
+            var result = new List<UpPartInfoModel>();
 
             var partNumber = 1;
 
-            long partLowerBound = 0;
-            long partUpperBound = 0;
-            var parts = (int)(file.Length / ConstantModel.MaxPartSize) + 1;
-            long maxPartSize = 0;
-            byte[] buffer;
+            var buffer = new byte[Config.MaxPartSize];            
 
             while (true)
             {
-                maxPartSize = parts != partNumber ? ConstantModel.MaxPartSize : file.Length - partUpperBound;
-
-                buffer = new byte[maxPartSize];
-
-                var partSize = file.Read(buffer, 0, (int)maxPartSize);
+                var partSize = file.Read(buffer, 0, (int)Config.MaxPartSize);
                 if (partSize == 0) break;
 
-                var splitPartName = $@"{ConstantModel.TempPath}\{file.Length}_{fName}_{partNumber}.tmpart";
-                using (var tmpFile = new FileStream(splitPartName, FileMode.Create, FileAccess.Write)){
+                var splitPartName = $@"{temp}\{fName}_{partNumber:D2}_{file.Length}.tmpart";
+                using (var tmpFile = new FileStream(splitPartName, FileMode.Create, FileAccess.Write))
+                {
                     tmpFile.Write(buffer, 0, partSize);
                 }
 
-                partUpperBound += partSize;
-
                 result.Add(
-                    new ByteDetectorModel
+                    new UpPartInfoModel
                     {
                         Part = partNumber++,
-                        From = partLowerBound,
-                        To = partUpperBound-1,
                         Patch = splitPartName,
-                        Md5Hash = buffer.FileMd5()
+                        Md5Hash = buffer.FileMd5(partSize)
                     });
-
-                partLowerBound += partSize;
-
             }
-            
+
             return result;
         }
+        #endregion
 
         public void Dispose()
         {
