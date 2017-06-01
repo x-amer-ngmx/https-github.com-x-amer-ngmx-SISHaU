@@ -8,4 +8,19 @@
         public string Patch { get; set; }
         public byte[] Md5Hash { get; set; }
     }
+
+    public class UpPartInfoModel
+    {
+        public int Part { get; set; }
+        public string Patch { get; set; }
+        public byte[] Md5Hash { get; set; }
+    }
+
+    public class DownPortInfoModel
+    {
+        public int Part { get; set; }
+        public long From { get; set; }
+        public long To { get; set; }
+    }
+
 }

@@ -143,7 +143,7 @@ namespace SISHaU.FileStreamIdea
 
 
             foreach (var re in result)
-            {
+            {/*
                 Console.WriteLine($"Собираем файл: {{{re.FileName}}}, кол-во частей: {{{re.Parts.Count}}}");
                 var spin = new ConsoleSpiner();
                 using (var tmpFile = new FileStream($@"{tmpPath}\{re.FileName}", FileMode.Create, FileAccess.Write))
@@ -158,7 +158,7 @@ namespace SISHaU.FileStreamIdea
                     }
                     tmpFile.Close();
                     tmpFile.Dispose();
-                }
+                }*/
             }
             Console.CursorVisible = true;
             Console.WriteLine("Программа выполнена.");
@@ -175,7 +175,7 @@ namespace SISHaU.FileStreamIdea
         private static UploadeResultModel SplitFiles(string tmpPath, string patch)
         {
             var resultX = new UploadeResultModel();
-            IList<ByteDetectorModel> result;
+            IList<UpPartInfoModel> result;
             var fName = Path.GetFileNameWithoutExtension(patch);
 
             resultX.FileName = Path.GetFileName(patch);
@@ -190,10 +190,8 @@ namespace SISHaU.FileStreamIdea
                 Console.WriteLine($"= Размер файла {{{file.Length}}}, кол-во частей {{{parts}}}");
 
                 //Применение рефакторинг-кунгфу....
-                result = parts == 1 ? new ByteDetectorModel[] {
-                        new ByteDetectorModel{
-                            From = 0,
-                            To = file.Length,
+                result = parts == 1 ? new UpPartInfoModel[] {
+                        new UpPartInfoModel{
                             Part = 1,
                             Patch = patch,
                             Md5Hash = file.FileMd5()
@@ -205,7 +203,7 @@ namespace SISHaU.FileStreamIdea
                 file.Dispose();
             }
 
-            resultX.Parts = result;
+            //resultX.Parts = result;
 
             Console.WriteLine(new string('=',20));
 
@@ -213,9 +211,9 @@ namespace SISHaU.FileStreamIdea
         }
 
 
-        private static IList<ByteDetectorModel> SingleFiles(int parts, Stream file, string fName, string tmpPath)
+        private static IList<UpPartInfoModel> SingleFiles(int parts, Stream file, string fName, string tmpPath)
         {
-            var result = new List<ByteDetectorModel>();
+            var result = new List<UpPartInfoModel>();
             var part = 1;
             long partTo = 0;
             Console.WriteLine(new string('*',15));
@@ -247,11 +245,9 @@ namespace SISHaU.FileStreamIdea
 
                 //Формируем коллекцию частей(в языке C# несуществует простых массивов)
                 result.Add(
-                    new ByteDetectorModel
+                    new UpPartInfoModel
                     {
                         Part = part,
-                        From = partTo,
-                        To = from - 1,
                         Patch = splitPatch,
                         Md5Hash = buffer.FileMd5()
                     });

@@ -11,7 +11,7 @@ namespace SISHaU.Library.File.Model
         public HttpMethod Method { get; set; }
         public string UriRequest {
             get => _uri;
-            set => _uri = $"{ConstantModel.ServerShare}{Repository.GetName()}/{value}";
+            set => _uri = $"{Config.ServerShare}{Repository.GetName()}/{value}";
         }
 
         private void Dispose(bool disposing)

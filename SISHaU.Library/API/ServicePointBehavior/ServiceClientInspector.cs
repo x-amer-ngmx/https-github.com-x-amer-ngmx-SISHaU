@@ -62,7 +62,7 @@ namespace SISHaU.Library.API.ServicePointBehavior
 
             //Если нужен отпечаток
 
-            httpRequestMessage.Headers.Add("X-Client-Cert-Fingerprint", ConstantModel.CertificateFingerPrint.Replace(" ", ""));
+            httpRequestMessage.Headers.Add("X-Client-Cert-Fingerprint", Config.CertificateFingerPrint.Replace(" ", ""));
             httpRequestMessage.Headers.Add("Authorization", GetAuthHeaderValue().ToString());
 
             request.Properties.Add(HttpRequestMessageProperty.Name, httpRequestMessage);

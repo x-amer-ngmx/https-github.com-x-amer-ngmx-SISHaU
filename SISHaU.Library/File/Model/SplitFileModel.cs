@@ -5,14 +5,14 @@ namespace SISHaU.Library.File.Model
     public class SplitFileModel
     {
         public ResultModel FileInfo { get; set; }
-        public IList<ByteDetectorModel> Parts { get; set; }
+        public IList<UpPartInfoModel> Parts { get; set; }
         public RequestErrorModel ErrorMessage { get; set; }
 
         public SplitFileModel(){
-            Parts = new List<ByteDetectorModel>();
+            Parts = new List<UpPartInfoModel>();
         }
 
-        public void AddParts(IEnumerable<ByteDetectorModel> parts)
+        public void AddParts(IEnumerable<UpPartInfoModel> parts)
         {
             foreach (var part in parts)
             {
