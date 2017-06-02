@@ -187,7 +187,7 @@ namespace SISHaU.Library.File
             };
 
             typeSwitcher[typeof(T)]();
-
+            respons.Dispose();
             return result;
         }
 
@@ -263,7 +263,9 @@ namespace SISHaU.Library.File
                 var resMess = ex.Message;
                 //
             }
-            message.Dispose();
+            message?.Dispose();
+            result?.RequestMessage.Dispose();
+            result.RequestMessage = null;
             return result;
         }
     }

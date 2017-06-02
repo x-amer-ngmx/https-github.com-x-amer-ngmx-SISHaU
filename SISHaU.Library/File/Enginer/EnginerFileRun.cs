@@ -50,23 +50,31 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<UpPartInfoModel> parts, ref ParallelOptions qu)
+        private UploadeResultModel BigUploadeFile(ResultModel fileInfo, int partCount, IList<UpPartInfoModel> parts, ref ParallelOptions quite)
         {
-            HttpResponseMessage response;
+            ResponseIdModel session;
+            ResponseSessionCloseModel sessionClose;
+
+            //Убираю лимит на количество одновременных запросов.
+            ServicePointManager.DefaultConnectionLimit = 15;
 
             var index = 0;
             while (true)
             {
-                response = _serverConnect.RequestLoadingUnitStartSession(
+                var response = _serverConnect.RequestLoadingUnitStartSession(
                     fileInfo.FileName,
                     fileInfo.FileSize,
                     partCount).SendRequest();
 
                 if (index > 0) Thread.Sleep(10000 * index);
-                if (index > 6) {
-                    qu.CancellationToken.ThrowIfCancellationRequested();
-                    return new UploadeResultModel {
-                        ErrorMessage = new RequestErrorModel {
+                if (index > 6)
+                {
+                    //Зывершаем поток
+                    quite.CancellationToken.ThrowIfCancellationRequested();
+                    return new UploadeResultModel
+                    {
+                        ErrorMessage = new RequestErrorModel
+                        {
                             ErrorCode = 400,
                             ErrorInfo = "SereverTimeOut",
                             PointErrorDescript = "Сервер не доступен или соединение было разорвано"
@@ -74,24 +82,22 @@ namespace SISHaU.Library.File.Enginer
                     };
                 }
                 index++;
-                if (response.StatusCode == HttpStatusCode.OK) break;
+                if (response?.StatusCode == HttpStatusCode.OK)
+                {
+                    session = response.ResultEnginer<ResponseIdModel>();
+                    break;
+                }
+                response.Dispose();
             }
-            
 
-            //var content = response.Content.ReadAsStringAsync().Result;
-            var session = response.ResultEnginer<ResponseIdModel>();
-
-            //Убираю лимит на количество одновременных запросов.
-            ServicePointManager.DefaultConnectionLimit = 15;
-
-            //var partRes = new List<ResponseModel>();
 
             Parallel.ForEach(parts, (part, state) =>
             {
 
-                response = UpLoadePart(part, sessId: session.UploadId);
+                var response = UpLoadePart(part, sessId: session.UploadId);
 
                 var stateUploaded = response.ResultEnginer<ResponseModel>();
+                response.Dispose();
 
                 if (stateUploaded.ServerError != null)
                 {
@@ -100,40 +106,41 @@ namespace SISHaU.Library.File.Enginer
                 }
                 else
                 {
-                    
+
                     if (part.Patch.IndexOf(".tmpart", StringComparison.OrdinalIgnoreCase) > 0) System.IO.File.Delete(part.Patch);
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             });
 
             while (true)
             {
-                response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
+                var response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();                
 
                 if (index > 0) Thread.Sleep(10000 * index);
                 if (index < 6) index++;
-                if (response.StatusCode == HttpStatusCode.OK) break;
+                if (response?.StatusCode == HttpStatusCode.OK)
+                {
+                    sessionClose = response.ResultEnginer<ResponseSessionCloseModel>();
+                    break;
+                }
+                response.Dispose();
             }
-            
-            var closeSess = response.ResultEnginer<ResponseSessionCloseModel>();
-            
-                //Ошибка сессию по какой-то причине не удалось закрыть
 
-                var result = closeSess.IsClose == false ? new UploadeResultModel
-                {
-                    ErrorMessage = new RequestErrorModel()
-                } : new UploadeResultModel
-                {
-                    FileGuid = session.UploadId,
-                    FileName = fileInfo.FileName,
-                    FileSize = fileInfo.FileSize,
-                    //Parts = parts,
-                    GostHash = fileInfo.GostHash,
-                    Repository = _repository,
-                    UTime = closeSess.ResultDate?.DateTime
-                };
-            
-            response.Dispose();
+
+
+            var result = sessionClose.IsClose == false ? new UploadeResultModel
+            {
+                ErrorMessage = new RequestErrorModel()
+            } : new UploadeResultModel
+            {
+                FileGuid = session.UploadId,
+                FileName = fileInfo.FileName,
+                FileSize = fileInfo.FileSize,
+                GostHash = fileInfo.GostHash,
+                Repository = _repository,
+                UTime = sessionClose.ResultDate?.DateTime
+            };
 
             return result;
         }
@@ -152,12 +159,14 @@ namespace SISHaU.Library.File.Enginer
                     GostHash = fileInfo.GostHash,
                     Repository = _repository,
                     FileGuid = uploadeId.UploadId,
-                    //Parts = new[] { part },
                     UTime = uploadeId.ResultDate?.DateTime
                 };
 
             //обязательно мочим временный экземпляр файла
             if (part.Patch.IndexOf(".tmpart", StringComparison.OrdinalIgnoreCase) > 0) System.IO.File.Delete(part.Patch);
+
+            GC.Collect();
+            //GC.WaitForPendingFinalizers();
 
             return result;
 
@@ -186,12 +195,10 @@ namespace SISHaU.Library.File.Enginer
 
                 if (index > 0) Thread.Sleep(1000 * index);
 
-                if(index < 30) index++;
+                if (index < 30) index++;
 
                 if (result?.StatusCode == HttpStatusCode.OK) break;
             }
-
-
 
             return result;
         }

@@ -50,7 +50,12 @@ namespace SISHaU.Library.File
 
                 var filePrefix = $@"{Config.TempPath(Config.TempType.Up)}\{Path.GetFileNameWithoutExtension(file)}";
                 upFile.Add(Operation.SplitFile(file, filePrefix));
+                
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             });
+
+            //После нарезки частей вызываем сборщик мусора, иначе память не будет освобождена
 
             var ctsUp = new CancellationTokenSource();
             var poUp = new ParallelOptions {

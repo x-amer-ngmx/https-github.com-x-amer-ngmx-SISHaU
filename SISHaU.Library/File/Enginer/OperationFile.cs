@@ -28,6 +28,7 @@ namespace SISHaU.Library.File.Enginer
                     GostHash = file.FileGost()
                 };
                 result.AddParts(SplitFiles(file, filePrefix));
+                file.Close();
             }
 
             return result;
