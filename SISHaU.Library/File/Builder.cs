@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SISHaU.Library.File.Enginer;
@@ -30,7 +31,6 @@ namespace SISHaU.Library.File
             var upFile = new ConcurrentBag<SplitFileModel>();
 
             var fpatch = new ConcurrentBag<string>(patch);
-            var tempPatch = Config.TempPath(Config.TempType.Up);
 
             Parallel.ForEach(fpatch, (file, state) =>
             {
@@ -48,7 +48,8 @@ namespace SISHaU.Library.File
                     return;
                 }
 
-                upFile.Add(Operation.SplitFile(file, tempPatch));
+                var filePrefix = $@"{Config.TempPath(Config.TempType.Up)}\{Path.GetFileNameWithoutExtension(file)}";
+                upFile.Add(Operation.SplitFile(file, filePrefix));
             });
 
             var ctsUp = new CancellationTokenSource();
@@ -58,10 +59,9 @@ namespace SISHaU.Library.File
 
             Parallel.ForEach(upFile, poUp, (cupFile, state) =>
              {
-                 var upl = new EnginerFileRun(repository);
-                 var res = upl.UploadFile(cupFile, ref poUp);
-                 upl.Dispose();
-                 result.Add(res);
+                 using (var upl = new EnginerFileRun(repository)){
+                     result.Add(upl.UploadFile(cupFile, ref poUp));
+                 }
              });
 
             ctsUp.Dispose();
@@ -71,8 +71,7 @@ namespace SISHaU.Library.File
 
         public UploadeResultModel UploadFiles(string patch, Repo repository)
         {
-            var result = UploadFilesList( new []{ patch } , repository).SingleOrDefault();
-            return result;
+            return UploadFilesList(new[] { patch }, repository).SingleOrDefault();
         }
 
 
@@ -95,22 +94,17 @@ namespace SISHaU.Library.File
 
         public DownloadResultModel DownloadFiles(DownloadModel model)
         {
-            
-            var bild = new EnginerFileRun(model.Repository);
-
-            var file = bild.DownloadFile(model.FileGuid);
-
-            bild.Dispose();
-
-            var result=new DownloadResultModel
+            using (var bild = new EnginerFileRun(model.Repository))
             {
-                ErrorMessage = file.ErrorMessage,
-                FileBytes = Operation.CollectFile(file.Parts),
-                FileName = file.FileInfo.FileName,
-                FileSize = file.FileInfo.FileSize
-            };
-
-            return result;
+                var file = bild.DownloadFile(model.FileGuid);
+                return new DownloadResultModel
+                {
+                    ErrorMessage = file.ErrorMessage,
+                    FileBytes = Operation.CollectFile(file.Parts),
+                    FileName = file.FileInfo.FileName,
+                    FileSize = file.FileInfo.FileSize
+                };
+            }
         }
 
         private void Dispose(bool disposing)

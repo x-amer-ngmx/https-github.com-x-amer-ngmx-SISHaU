@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -197,18 +198,15 @@ namespace SISHaU.Library.File
 
             return MD5.Create().ComputeHash(data);
         }
-        public static byte[] FileMd5(this System.IO.Stream stream)
+        public static byte[] FileMd5(this Stream stream)
         {
             return MD5.Create().ComputeHash(stream);
         }
 
         public static string FileGost(this byte[] stream)
         {
-            string result;
             var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
-            result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
-
-            return result;
+            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
         /// <summary>
@@ -216,12 +214,11 @@ namespace SISHaU.Library.File
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static string FileGost(this System.IO.Stream stream)
+        public static string FileGost(this Stream stream)
         {
             var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
-            var result = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
-
-            return result;
+            stream.Seek(0, SeekOrigin.Begin);
+            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
         /// <summary>
@@ -245,10 +242,11 @@ namespace SISHaU.Library.File
                     UseDefaultCredentials = false
                 };
 
-                var client = new HttpClient(httpClientHandler);
+                var client = new HttpClient(httpClientHandler){
+                    Timeout = TimeSpan.FromMinutes(60)
+                };
 
                 //Для узкого канала желательно установить 15мин
-                client.Timeout = TimeSpan.FromMinutes(60);
 
                 var sender = client.SendAsync(
                     message,

@@ -12,8 +12,9 @@ namespace SISHaU.Library.File.Enginer
         /// Обработка коллекции путей к файлам
         /// </summary>
         /// <param name="splitFileName">Путь к файлу</param>
+        /// <param name="filePrefix">Часть пути с именем файла без расширения</param>
         /// <returns>Возвращает объект с данными для формирование MessageRequest</returns>
-        public SplitFileModel SplitFile(string splitFileName, string temp)
+        public SplitFileModel SplitFile(string splitFileName, string filePrefix)
         {
             var result = new SplitFileModel();
 
@@ -26,9 +27,7 @@ namespace SISHaU.Library.File.Enginer
                     FileSize = file.Length,
                     GostHash = file.FileGost()
                 };
-                file.Seek(0, SeekOrigin.Begin);
-
-                result.AddParts(SplitFiles(file, temp, Path.GetFileNameWithoutExtension(splitFileName)));
+                result.AddParts(SplitFiles(file, filePrefix));
             }
 
             return result;
@@ -61,13 +60,14 @@ namespace SISHaU.Library.File.Enginer
 
 
         #region Локальные методы
+
         /// <summary>
         /// Операция расщипления потока файла на буферные части
         /// </summary>
         /// <param name="file">Поток файла</param>
-        /// <param name="fName">Наименование файла с расширением</param>
+        /// <param name="filePartPrefix">Наименование файла без расширения и часть пути к папке Temp</param>
         /// <returns>Возвращает объект с данными для формирование MessageRequest</returns>
-        private IEnumerable<UpPartInfoModel> SplitFiles(Stream file,string temp, string fName)
+        private IEnumerable<UpPartInfoModel> SplitFiles(Stream file, string filePartPrefix)
         {
             var result = new List<UpPartInfoModel>();
 
@@ -80,7 +80,7 @@ namespace SISHaU.Library.File.Enginer
                 var partSize = file.Read(buffer, 0, (int)Config.MaxPartSize);
                 if (partSize == 0) break;
 
-                var splitPartName = $@"{temp}\{fName}_{partNumber:D2}_{file.Length}.tmpart";
+                var splitPartName = $"{filePartPrefix}_{partNumber:D2}_{file.Length}.tmpart";
                 using (var tmpFile = new FileStream(splitPartName, FileMode.Create, FileAccess.Write))
                 {
                     tmpFile.Write(buffer, 0, partSize);
