@@ -67,7 +67,7 @@ namespace SISHaU.Library.File.Enginer
         /// <param name="file">Поток файла</param>
         /// <param name="fName">Наименование файла с расширением</param>
         /// <returns>Возвращает объект с данными для формирование MessageRequest</returns>
-        private static IEnumerable<UpPartInfoModel> SplitFiles(Stream file,string temp, string fName)
+        private IEnumerable<UpPartInfoModel> SplitFiles(Stream file,string temp, string fName)
         {
             var result = new List<UpPartInfoModel>();
 

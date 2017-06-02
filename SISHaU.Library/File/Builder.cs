@@ -19,7 +19,7 @@ namespace SISHaU.Library.File
 
     public class Builder : IDisposable, IBuilder
     {
-        OperationFile Operation => new OperationFile();
+        private static OperationFile Operation => new OperationFile();
 
         public IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository)
         {
@@ -34,7 +34,6 @@ namespace SISHaU.Library.File
 
             Parallel.ForEach(fpatch, (file, state) =>
             {
-
                 if (!System.IO.File.Exists(file))
                 {
                     result.Add(new UploadeResultModel
@@ -49,11 +48,7 @@ namespace SISHaU.Library.File
                     return;
                 }
 
-                var operation = new OperationFile();
-
-                upFile.Add(operation.SplitFile(file, tempPatch));
-
-                operation.Dispose();
+                upFile.Add(Operation.SplitFile(file, tempPatch));
             });
 
             var ctsUp = new CancellationTokenSource();
