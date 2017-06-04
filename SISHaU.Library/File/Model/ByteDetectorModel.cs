@@ -16,11 +16,9 @@
         public byte[] Md5Hash { get; set; }
     }
 
-    public class DownPortInfoModel
+    public class DownPartInfoModel : RangeModel
     {
         public int Part { get; set; }
-        public long From { get; set; }
-        public long To { get; set; }
     }
 
 }

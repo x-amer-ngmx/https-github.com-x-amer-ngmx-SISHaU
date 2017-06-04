@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -209,60 +210,77 @@ namespace SISHaU.Library.File.Enginer
 
         public PrivateDownloadModel DownloadFile(string fileId)
         {
-            PrivateDownloadModel result = new PrivateDownloadModel();
+            var result = new PrivateDownloadModel();
+            ResponseInfoModel fileInfo = null;
 
-            var response = _serverConnect.RequestLoadingUnitInfo(fileId).SendRequest();
+            using (var response = _serverConnect.RequestLoadingUnitInfo(fileId).SendRequest())
+            {
+                fileInfo = response.ResultEnginer<ResponseInfoModel>();
+            }
+            
+            //Получаем инфу о скачиваемом файле
+            
+            var filePrefix = $@"{Config.TempPath(Config.TempType.Up)}\{Path.GetFileNameWithoutExtension(fileInfo.FileName)}";
 
-            var fileInfo = response.ResultEnginer<ResponseInfoModel>();
+            //Определяем кол-во частей и диапазон скачиваемых байт каждой части(отдельный метод)
+            var download = DownloadeInfo(fileInfo);
 
+            DownloadParts(fileId, download, filePrefix);
+
+            result.FileInfo = download.FileInfo;
+
+
+            //В цыкле скачиваем части и паралельно сохраняем их во временно потготовленные файлы
+            //Делаем это всё паралельно
+            //
+
+            return result;
+        }
+
+        private void DownloadParts(string fileId, DownloadFileInfo dinfo, string filePrefix)
+        {
+            foreach (var part in dinfo.Parts)
+            {
+                using (var response = _serverConnect.RequestDownLoading(fileId, part).SendRequest())
+                {
+                    var stream = response.Content.ReadAsStreamAsync().Result;
+                    using (var fileStream = new FileStream($"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart", FileMode.Create, FileAccess.Write))
+                    {
+                        stream.CopyTo(fileStream);
+                    }
+                }
+
+            }
+
+        }
+
+
+        private DownloadFileInfo DownloadeInfo(ResponseInfoModel info)
+        {
+            var result = new DownloadFileInfo();
             long partFromSize = 0;
 
-            if (fileInfo.FileCompleateParts.Length > 0) { result.Parts = new List<PrivateExplodUnitModel>(); }
+            result.FileInfo = new ResultModel { FileSize = info.FileSize, FileName = info.FileName };
 
-            //TODO: Ваще необходим рефакторинг и я бы подумал над тем чтобы это всё распоточить, если есть в этом смысл...
-            foreach (var part in fileInfo.FileCompleateParts)
+            var range = new List<DownPartInfoModel>();
+
+            foreach (var part in info.FileCompleateParts)
             {
                 var thisPartSize = (partFromSize + Config.MaxPartSize);
-                var partToSize = fileInfo.FileSize < thisPartSize ? fileInfo.FileSize : thisPartSize;
+                var partToSize = info.FileSize < thisPartSize ? info.FileSize : thisPartSize;
 
                 var to = partToSize - 1;
 
-                response = _serverConnect.RequestDownLoading(fileId, new RangeModel
+                range.Add(new DownPartInfoModel
                 {
+                    Part = part,
                     From = partFromSize,
                     To = to
-                }).SendRequest();
-
-                //TODO: Реализовать проверку ошибок ответа (BadReqest/BadResponse)
-                var stream = response.Content.ReadAsByteArrayAsync().Result;
-
-
-                result.Parts.Add(new PrivateExplodUnitModel
-                {
-
-                    PartDetect = new ByteDetectorModel
-                    {
-                        Part = part,
-                        From = partFromSize,
-                        To = to
-                    },
-
-                    Unit = stream
-
                 });
-
-
                 partFromSize = thisPartSize;
             }
 
-            response.Dispose();
-
-            result.FileInfo = new ResultModel {
-                FileName = fileInfo.FileName,
-                FileSize = fileInfo.FileSize
-            };
-            
-
+            result.Parts = range;
 
             return result;
         }

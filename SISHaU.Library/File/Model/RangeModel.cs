@@ -11,4 +11,12 @@ namespace SISHaU.Library.File.Model
         public long? From { get; set; }
         public long? To { get; set; }
     }
+
+    public class DownloadFileInfo
+    {
+        public ResultModel FileInfo { get; set; }
+        public IList<DownPartInfoModel> Parts { get; set; }
+    }
+
+
 }
