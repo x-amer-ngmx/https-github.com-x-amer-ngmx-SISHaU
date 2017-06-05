@@ -242,7 +242,7 @@ namespace SISHaU.Library.File
                     UseDefaultCredentials = false
                 };
 
-                var client = new HttpClient(httpClientHandler){
+                var client = new HttpClient(){
                     Timeout = TimeSpan.FromMinutes(60)
                 };
 

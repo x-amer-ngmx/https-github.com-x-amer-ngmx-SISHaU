@@ -9,7 +9,7 @@ namespace SISHaU.Library.File.Enginer
     sealed public class ResponseRequestOnServer : IDisposable
     {
 
-        private UriRequestModel RequestUri { get; }
+        public UriRequestModel RequestUri { get; }
 
         public ResponseRequestOnServer(Repo rep)
         {

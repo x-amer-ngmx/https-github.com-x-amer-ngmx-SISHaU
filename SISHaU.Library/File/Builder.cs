@@ -87,12 +87,12 @@ namespace SISHaU.Library.File
             var collect = new ConcurrentBag<DownloadModel>(model);
             var result = new List<DownloadResultModel>();
 
-            //foreach(var download in collect)
-            Parallel.ForEach(collect, (download, state) =>
+            foreach(var download in collect)
+            //Parallel.ForEach(collect, (download, state) =>
             {
                 result.Add(DownloadFiles(download));
                 //Thread.Sleep(5000);
-            });
+            }//);
 
             return result;
         }

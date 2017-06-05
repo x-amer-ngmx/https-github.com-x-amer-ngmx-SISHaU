@@ -116,7 +116,7 @@ namespace SISHaU.Library.File.Enginer
 
             while (true)
             {
-                var response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();                
+                var response = _serverConnect.RequestLoadingUnitCloseSession(session.UploadId).SendRequest();
 
                 if (index > 0) Thread.Sleep(10000 * index);
                 if (index < 6) index++;
@@ -175,8 +175,8 @@ namespace SISHaU.Library.File.Enginer
 
         private HttpResponseMessage UpLoadePart(UpPartInfoModel part, string name = null, string sessId = null)
         {
-            
-            var param = (!string.IsNullOrEmpty(name) ? (object) name : part.Part);
+
+            var param = (!string.IsNullOrEmpty(name) ? (object)name : part.Part);
 
             HttpResponseMessage result;
 
@@ -217,17 +217,18 @@ namespace SISHaU.Library.File.Enginer
             {
                 fileInfo = response.ResultEnginer<ResponseInfoModel>();
             }
-            
+
             //Получаем инфу о скачиваемом файле
-            
-            var filePrefix = $@"{Config.TempPath(Config.TempType.Up)}\{Path.GetFileNameWithoutExtension(fileInfo.FileName)}";
+
+            var filePrefix = $@"{Config.TempPath(Config.TempType.Down)}\{Path.GetFileNameWithoutExtension(fileInfo.FileName)}";
 
             //Определяем кол-во частей и диапазон скачиваемых байт каждой части(отдельный метод)
             var download = DownloadeInfo(fileInfo);
 
-            DownloadParts(fileId, download, filePrefix);
+            DownloadPartsAsync(fileId, download, filePrefix);
 
             result.FileInfo = download.FileInfo;
+
 
 
             //В цыкле скачиваем части и паралельно сохраняем их во временно потготовленные файлы
@@ -237,21 +238,69 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private void DownloadParts(string fileId, DownloadFileInfo dinfo, string filePrefix)
+        private void DownloadPartsAsync(string fileId, DownloadFileInfo dinfo, string filePrefix)
         {
             foreach (var part in dinfo.Parts)
             {
-                using (var response = _serverConnect.RequestDownLoading(fileId, part).SendRequest())
+                while (true)
                 {
-                    var stream = response.Content.ReadAsStreamAsync().Result;
-                    using (var fileStream = new FileStream($"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart", FileMode.Create, FileAccess.Write))
+                    
+                    try
                     {
-                        stream.CopyTo(fileStream);
+                        using (var client = new MyWeb())
+                        {
+                            client.Proxy = new WebProxy("http://127.0.0.1:8888", false);
+
+                            client.Headers.Set(HttpRequestHeader.Authorization, Config.XAutent.ToString());
+                            client.SetRange(part);
+                            client.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), Config.CertificateFingerPrint.ToUpper());
+                            client.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), Config.DataProviderId);
+
+                            /*
+                            var buff = client.DownloadData(_serverConnect.RequestUri.UriRequest);
+                            client.DownloadFile(_serverConnect.RequestUri.UriRequest, $"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart");*/
+                            
+                            var stream = client.OpenRead(_serverConnect.RequestUri.UriRequest);
+
+                            if (client.StatusCode() == HttpStatusCode.OK) {
+
+                                using (var fileStream = new FileStream($"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart", FileMode.Create, FileAccess.Write))
+                                {
+                                    stream.CopyToAsync(fileStream).Wait();
+                                }
+                            
+                                break;
+                            }
+
+                        }
                     }
+                    catch (Exception ex)
+                    {
+
+                        var ass = ex.Message;
+                    }
+
+                    
+                    /*
+                    using (var response = _serverConnect.RequestDownLoading(fileId, part).SendRequest())
+                    {
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            var stream = response.Content.ReadAsStreamAsync();
+                            stream.Wait();
+                            using (var fileStream = new FileStream($"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart", FileMode.Create, FileAccess.Write))
+                            {
+                                stream.Result.CopyToAsync(fileStream).Wait();
+                            }
+
+                            break;
+                        }
+                    }*/
+
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
-
         }
 
 
@@ -303,5 +352,49 @@ namespace SISHaU.Library.File.Enginer
         {
             Dispose(false);
         }
+    }
+
+    class MyWeb : WebClient
+    {
+        private HttpWebRequest _request;
+        private RangeModel range;
+        public void SetRange(RangeModel range)
+        {
+            this.range = range;
+        }
+
+        public HttpStatusCode StatusCode() {
+            HttpStatusCode result;
+
+            if (_request == null)
+            {
+                throw (new InvalidOperationException("Гавно"));
+            }
+
+
+            if (base.GetWebResponse(this._request) is HttpWebResponse response)
+            {
+                result = response.StatusCode;
+            }
+            else
+            {
+                throw (new InvalidOperationException("Совсем гавно"));
+            }
+
+            return result;
+        }
+
+
+        protected override WebRequest GetWebRequest(Uri address)
+        {
+            _request = (HttpWebRequest)base.GetWebRequest(address);
+
+            if (range != null) _request.AddRange((int)range.From, (int)range.To);
+
+            return _request;
+
+        }
+
+        
     }
 }
