@@ -99,14 +99,13 @@ namespace SISHaU.Library.File
 
         public DownloadResultModel DownloadFiles(DownloadModel model)
         {
-            
             using (var bild = new EnginerFileRun(model.Repository))
             {
                 var file = bild.DownloadFile(model.FileGuid);
                 return new DownloadResultModel
                 {
-                    ErrorMessage = file.ErrorMessage,
-                    FileBytes = Operation.CollectFile(file.Parts),
+                    //ErrorMessage = file.ErrorMessage,
+                    //FileBytes = Operation.CollectFile(file.Parts),
                     FileName = file.FileInfo.FileName,
                     FileSize = file.FileInfo.FileSize
                 };

@@ -1,4 +1,6 @@
-﻿namespace SISHaU.Library.File.Model
+﻿using System.Collections.Generic;
+
+namespace SISHaU.Library.File.Model
 {
     public class ByteDetectorModel
     {
@@ -9,10 +11,20 @@
         public byte[] Md5Hash { get; set; }
     }
 
-    public class UpPartInfoModel
+    public class PartInfoModel
     {
         public int Part { get; set; }
         public string Patch { get; set; }
+    }
+
+    public class DownloadInfo
+    {
+        public ResultModel FileInfo { get; set; }
+        public IList<PartInfoModel> PartInfo { get; set; }
+    }
+
+    public class UpPartInfoModel : PartInfoModel
+    {
         public byte[] Md5Hash { get; set; }
     }
 

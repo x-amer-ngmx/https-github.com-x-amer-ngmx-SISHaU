@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using SISHaU.Library.File.Model;
 using System.Net.Http;
 using System.Threading;
+using NHibernate.Util;
 
 namespace SISHaU.Library.File.Enginer
 {
@@ -208,9 +210,9 @@ namespace SISHaU.Library.File.Enginer
 
         #region Загрузка файлов
 
-        public PrivateDownloadModel DownloadFile(string fileId)
+        public DownloadInfo DownloadFile(string fileId)
         {
-            var result = new PrivateDownloadModel();
+            var result = new DownloadInfo();
             ResponseInfoModel fileInfo = null;
 
             using (var response = _serverConnect.RequestLoadingUnitInfo(fileId).SendRequest())
@@ -225,11 +227,9 @@ namespace SISHaU.Library.File.Enginer
             //Определяем кол-во частей и диапазон скачиваемых байт каждой части(отдельный метод)
             var download = DownloadeInfo(fileInfo);
 
-            DownloadPartsAsync(fileId, download, filePrefix);
-
             result.FileInfo = download.FileInfo;
 
-
+            result.PartInfo = DownloadPartsAsync(download, filePrefix);
 
             //В цыкле скачиваем части и паралельно сохраняем их во временно потготовленные файлы
             //Делаем это всё паралельно
@@ -238,37 +238,51 @@ namespace SISHaU.Library.File.Enginer
             return result;
         }
 
-        private void DownloadPartsAsync(string fileId, DownloadFileInfo dinfo, string filePrefix)
+        private IList<PartInfoModel> DownloadPartsAsync(DownloadFileInfo dinfo, string filePrefix)
         {
-            foreach (var part in dinfo.Parts)
+            var result = new List<PartInfoModel>();
+
+            var collect = new ConcurrentBag<DownPartInfoModel>(dinfo.Parts);
+
+            Parallel.ForEach(collect, (part, state) =>
+                //foreach (var part in collect)
             {
                 while (true)
                 {
-                    
+
                     try
                     {
-                        using (var client = new MyWeb())
+                        using (var client = new HttpWebClient())
                         {
                             client.Proxy = new WebProxy("http://127.0.0.1:8888", false);
 
                             client.Headers.Set(HttpRequestHeader.Authorization, Config.XAutent.ToString());
+
                             client.SetRange(part);
+
+
                             client.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), Config.CertificateFingerPrint.ToUpper());
                             client.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), Config.DataProviderId);
 
-                            /*
-                            var buff = client.DownloadData(_serverConnect.RequestUri.UriRequest);
-                            client.DownloadFile(_serverConnect.RequestUri.UriRequest, $"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart");*/
-                            
+
                             var stream = client.OpenRead(_serverConnect.RequestUri.UriRequest);
 
-                            if (client.StatusCode() == HttpStatusCode.OK) {
-
-                                using (var fileStream = new FileStream($"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart", FileMode.Create, FileAccess.Write))
+                            if (client.StatusCode() == HttpStatusCode.OK)
+                            {
+                                var patch = $"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart";
+                                using (var fileStream =
+                                    new FileStream(patch,
+                                        FileMode.Create, FileAccess.Write))
                                 {
-                                    stream.CopyToAsync(fileStream).Wait();
+                                    stream?.CopyToAsync(fileStream).Wait();
                                 }
-                            
+
+                                result.Add(new PartInfoModel
+                                {
+                                    Part = part.Part,
+                                    Patch = patch
+                                });
+
                                 break;
                             }
 
@@ -276,31 +290,14 @@ namespace SISHaU.Library.File.Enginer
                     }
                     catch (Exception ex)
                     {
-
                         var ass = ex.Message;
                     }
-
-                    
-                    /*
-                    using (var response = _serverConnect.RequestDownLoading(fileId, part).SendRequest())
-                    {
-                        if (response.StatusCode == HttpStatusCode.OK)
-                        {
-                            var stream = response.Content.ReadAsStreamAsync();
-                            stream.Wait();
-                            using (var fileStream = new FileStream($"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart", FileMode.Create, FileAccess.Write))
-                            {
-                                stream.Result.CopyToAsync(fileStream).Wait();
-                            }
-
-                            break;
-                        }
-                    }*/
-
                 }
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-            }
+            });
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            return result;
         }
 
 
@@ -354,47 +351,4 @@ namespace SISHaU.Library.File.Enginer
         }
     }
 
-    class MyWeb : WebClient
-    {
-        private HttpWebRequest _request;
-        private RangeModel range;
-        public void SetRange(RangeModel range)
-        {
-            this.range = range;
-        }
-
-        public HttpStatusCode StatusCode() {
-            HttpStatusCode result;
-
-            if (_request == null)
-            {
-                throw (new InvalidOperationException("Гавно"));
-            }
-
-
-            if (base.GetWebResponse(this._request) is HttpWebResponse response)
-            {
-                result = response.StatusCode;
-            }
-            else
-            {
-                throw (new InvalidOperationException("Совсем гавно"));
-            }
-
-            return result;
-        }
-
-
-        protected override WebRequest GetWebRequest(Uri address)
-        {
-            _request = (HttpWebRequest)base.GetWebRequest(address);
-
-            if (range != null) _request.AddRange((int)range.From, (int)range.To);
-
-            return _request;
-
-        }
-
-        
-    }
 }
