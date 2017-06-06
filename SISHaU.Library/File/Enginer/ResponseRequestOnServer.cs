@@ -142,11 +142,32 @@ namespace SISHaU.Library.File.Enginer
             RequestUri.UriRequest = $"{fileId}?getfile";
 
             var result = RequestHead();
-                        
-            if(range!=null) result.Headers.Range = new RangeHeaderValue(range.From, range.To);
+
+            if (range != null) result.Headers.Range = new RangeHeaderValue(range.From, range.To);
 
             return result;
         }
+
+        public HttpWebClient RequestDownloading(string fileId, RangeModel part)
+        {
+            RequestUri.UriRequest = $"{fileId}?getfile";
+
+            var result = new HttpWebClient();
+
+            result.Proxy = new WebProxy("http://127.0.0.1:8888", false);
+
+            result.Headers.Set(HttpRequestHeader.Authorization, Config.XAutent.ToString());
+
+            result.SetMethod("GET");
+
+            result.SetRange(part);
+
+            result.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), Config.CertificateFingerPrint.ToUpper());
+            result.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), Config.DataProviderId);
+
+            return result;
+        }
+
 
         /// <summary>
         /// Формируем http-content, передаём массив байт файла или части

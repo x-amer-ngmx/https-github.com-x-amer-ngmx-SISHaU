@@ -28,7 +28,7 @@ namespace SISHaU.UnitTests
 
                   FilesPathList = *files* new List<string>
                   {
-                          @"D:\test0.zip",
+                          /*@"D:\test0.zip",
                           @"D:\test1.zip",
                           @"D:\test2.zip",
                           @"D:\test3.zip",
@@ -42,7 +42,7 @@ namespace SISHaU.UnitTests
                           @"D:\test11.zip",
                           @"D:\test12.zip",
                           @"D:\test13.zip",
-                          @"D:\test14.zip"*
+                          @"D:\test14.zip"
                   },
                   RepositoryMarker = Repo.Homemanagement
               };

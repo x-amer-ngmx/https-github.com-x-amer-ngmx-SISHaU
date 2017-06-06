@@ -111,7 +111,7 @@ namespace SISHaU.Tests
 
                     foreach (var dow in downResult.Result)
                     {
-                        File.WriteAllBytes($@"D:\result\{dow.FileName}", dow.FileBytes);
+                       // File.WriteAllBytes($@"D:\result\{dow.FileName}", dow.FileBytes);
                     }
                 }
 

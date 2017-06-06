@@ -114,6 +114,7 @@ namespace SISHaU.Library.File
 
             //разобрать HttpResponseMessage
 
+
             var typeSwitcher = new Dictionary<Type, Action>
             {
                 { typeof(ResponseModel), () =>
@@ -203,12 +204,6 @@ namespace SISHaU.Library.File
             return MD5.Create().ComputeHash(stream);
         }
 
-        public static string FileGost(this byte[] stream)
-        {
-            var hash = new Gost3411CryptoServiceProvider().ComputeHash(stream);
-            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
-        }
-
         /// <summary>
         /// Определяем и сохраняем хеш-по-госту файла
         /// </summary>
@@ -242,7 +237,7 @@ namespace SISHaU.Library.File
                     UseDefaultCredentials = false
                 };
 
-                var client = new HttpClient(){
+                var client = new HttpClient(httpClientHandler){
                     Timeout = TimeSpan.FromMinutes(60)
                 };
 
@@ -261,7 +256,7 @@ namespace SISHaU.Library.File
             catch (Exception ex)
             {
                 var resMess = ex.Message;
-                //
+                return null;
             }
             message?.Dispose();
             result?.RequestMessage.Dispose();

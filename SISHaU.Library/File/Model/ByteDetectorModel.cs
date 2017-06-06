@@ -17,10 +17,11 @@ namespace SISHaU.Library.File.Model
         public string Patch { get; set; }
     }
 
-    public class DownloadInfo
+    public class DownloadInfoModel
     {
         public ResultModel FileInfo { get; set; }
         public IList<PartInfoModel> PartInfo { get; set; }
+        public RequestErrorModel ErrorMessage { get; set; }
     }
 
     public class UpPartInfoModel : PartInfoModel

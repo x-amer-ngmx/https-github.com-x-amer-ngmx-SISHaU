@@ -31,7 +31,7 @@ namespace SISHaU.ServiceModel.Types
     }
 
     public class DownloadFileResponse{
-        public DownloadResultModel Result { get; set; }
+        public DownloadInfoModel Result { get; set; }
 
     }
 
@@ -44,6 +44,6 @@ namespace SISHaU.ServiceModel.Types
 
     public class DownloadFilesResponse
     {
-        public IList<DownloadResultModel> Result { get; set; }
+        public IList<DownloadInfoModel> Result { get; set; }
     }
 }

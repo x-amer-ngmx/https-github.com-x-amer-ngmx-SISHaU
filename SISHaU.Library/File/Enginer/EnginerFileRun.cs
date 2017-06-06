@@ -177,8 +177,8 @@ namespace SISHaU.Library.File.Enginer
 
         private HttpResponseMessage UpLoadePart(UpPartInfoModel part, string name = null, string sessId = null)
         {
-
-            var param = (!string.IsNullOrEmpty(name) ? (object)name : part.Part);
+            
+            object param = !string.IsNullOrEmpty(name) ? (object)name : part.Part;
 
             HttpResponseMessage result;
 
@@ -192,8 +192,7 @@ namespace SISHaU.Library.File.Enginer
                             partStream.Length,
                             part.Md5Hash,
                             param,
-                            sessId)
-                        .SendRequest();
+                            sessId).SendRequest();
                 }
 
                 if (index > 0) Thread.Sleep(1000 * index);
@@ -210,35 +209,53 @@ namespace SISHaU.Library.File.Enginer
 
         #region Загрузка файлов
 
-        public DownloadInfo DownloadFile(string fileId)
+        public DownloadInfoModel DownloadFile(string fileId)
         {
-            var result = new DownloadInfo();
+            var result = new DownloadInfoModel();
             ResponseInfoModel fileInfo = null;
 
-            using (var response = _serverConnect.RequestLoadingUnitInfo(fileId).SendRequest())
+            //пытаемся достучаться до сервака
+            var index = 0;
+            while (true)
             {
-                fileInfo = response.ResultEnginer<ResponseInfoModel>();
+                using (var response = _serverConnect.RequestLoadingUnitInfo(fileId).SendRequest())
+                {
+                    fileInfo = response.ResultEnginer<ResponseInfoModel>();
+
+                    if (index > 0) Thread.Sleep(10000 * index);
+
+                    if (index > 6)
+                    {
+                        result.ErrorMessage = new RequestErrorModel
+                        {
+                            ErrorCode = 503,
+                            ErrorInfo = "Соединение с сервером небыло установленно",
+                            PointErrorDescript = ""
+                        };
+
+                        return result;
+                    }
+                    index++;
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        break;
+                    }
+                }
+
             }
 
-            //Получаем инфу о скачиваемом файле
-
             var filePrefix = $@"{Config.TempPath(Config.TempType.Down)}\{Path.GetFileNameWithoutExtension(fileInfo.FileName)}";
-
-            //Определяем кол-во частей и диапазон скачиваемых байт каждой части(отдельный метод)
             var download = DownloadeInfo(fileInfo);
 
             result.FileInfo = download.FileInfo;
 
-            result.PartInfo = DownloadPartsAsync(download, filePrefix);
-
-            //В цыкле скачиваем части и паралельно сохраняем их во временно потготовленные файлы
-            //Делаем это всё паралельно
-            //
+            var parts = DownloadPartsAsync(fileId, download, filePrefix);
+            result.PartInfo = parts.Count > 1 ? (from p in parts orderby p.Part select p).ToList() : parts;
 
             return result;
         }
 
-        private IList<PartInfoModel> DownloadPartsAsync(DownloadFileInfo dinfo, string filePrefix)
+        private IList<PartInfoModel> DownloadPartsAsync(string fileId, DownloadFileInfo dinfo, string filePrefix)
         {
             var result = new List<PartInfoModel>();
 
@@ -252,22 +269,11 @@ namespace SISHaU.Library.File.Enginer
 
                     try
                     {
-                        using (var client = new HttpWebClient())
+                        using (var client = _serverConnect.RequestDownloading(fileId, part))
                         {
-                            client.Proxy = new WebProxy("http://127.0.0.1:8888", false);
-
-                            client.Headers.Set(HttpRequestHeader.Authorization, Config.XAutent.ToString());
-
-                            client.SetRange(part);
-
-
-                            client.Headers.Add(HeadParam.X_Client_Cert_Fingerprint.GetName(), Config.CertificateFingerPrint.ToUpper());
-                            client.Headers.Add(HeadParam.X_Upload_OrgPPAGUID.GetName(), Config.DataProviderId);
-
-
                             var stream = client.OpenRead(_serverConnect.RequestUri.UriRequest);
 
-                            if (client.StatusCode() == HttpStatusCode.OK)
+                            if ((client.StatusCode() == HttpStatusCode.OK) && stream!=null)
                             {
                                 var patch = $"{filePrefix}_{part.Part:D2}_{dinfo.FileInfo.FileSize}.tmpart";
                                 using (var fileStream =

@@ -14,8 +14,8 @@ namespace SISHaU.Library.File
     {
         IList<UploadeResultModel> UploadFilesList(IList<string> patch, Repo repository);
         UploadeResultModel UploadFiles(string patch, Repo repository);
-        IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model);
-        DownloadResultModel DownloadFiles(DownloadModel model);
+        IList<DownloadInfoModel> DownloadFilesList(IList<DownloadModel> model);
+        DownloadInfoModel DownloadFiles(DownloadModel model);
     }
 
     public class Builder : IDisposable, IBuilder
@@ -80,12 +80,12 @@ namespace SISHaU.Library.File
         }
 
 
-        public IList<DownloadResultModel> DownloadFilesList(IList<DownloadModel> model)
+        public IList<DownloadInfoModel> DownloadFilesList(IList<DownloadModel> model)
         {
             if (model == null || !model.Any()) throw new Exception($"Параметр {{{nameof(model)}}} не должен быть пустым");
 
             var collect = new ConcurrentBag<DownloadModel>(model);
-            var result = new List<DownloadResultModel>();
+            var result = new List<DownloadInfoModel>();
 
             foreach(var download in collect)
             //Parallel.ForEach(collect, (download, state) =>
@@ -97,18 +97,11 @@ namespace SISHaU.Library.File
             return result;
         }
 
-        public DownloadResultModel DownloadFiles(DownloadModel model)
+        public DownloadInfoModel DownloadFiles(DownloadModel model)
         {
             using (var bild = new EnginerFileRun(model.Repository))
             {
-                var file = bild.DownloadFile(model.FileGuid);
-                return new DownloadResultModel
-                {
-                    //ErrorMessage = file.ErrorMessage,
-                    //FileBytes = Operation.CollectFile(file.Parts),
-                    FileName = file.FileInfo.FileName,
-                    FileSize = file.FileInfo.FileSize
-                };
+                return bild.DownloadFile(model.FileGuid);                
             }
         }
 

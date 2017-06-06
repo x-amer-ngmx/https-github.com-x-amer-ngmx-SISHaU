@@ -4,13 +4,19 @@ using SISHaU.Library.File.Model;
 
 namespace SISHaU.Library.File.Enginer
 {
-    internal class HttpWebClient : WebClient
+    public class HttpWebClient : WebClient
     {
         private HttpWebRequest _request;
         private RangeModel _range;
+        private string _method;
         public void SetRange(RangeModel range)
         {
-            this._range = range;
+            _range = range;
+        }
+
+        public void SetMethod(string method)
+        {
+            _method = method;
         }
 
         public HttpStatusCode StatusCode()
@@ -44,6 +50,7 @@ namespace SISHaU.Library.File.Enginer
                 throw new ArgumentNullException("Запрос не задан...");
             }
             _request.Timeout = 60 * 60 * 1000;
+            if(string.IsNullOrEmpty(_method)) _request.Method = _method;
 
             if (_range?.From == null || _range?.To == null)
             {
