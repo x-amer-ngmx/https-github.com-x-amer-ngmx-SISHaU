@@ -5,6 +5,7 @@ using SISHaU.ServiceModel.Types;
 using SISHaU.Library.File.Model;
 using System.Linq;
 using System;
+using System.IO;
 
 namespace SISHaU.UnitTests
 {
@@ -64,12 +65,31 @@ namespace SISHaU.UnitTests
                 new DownloadModel{ FileGuid = "04ff4133-9029-419f-971f-246a85030ff6"},
                 new DownloadModel{ FileGuid = "78d0a58f-2089-4900-b406-b31a3ac2d120"},
                 new DownloadModel{ FileGuid = "f7cada60-6939-46a1-b403-60df7f27724f"},
-                new DownloadModel{ FileGuid = "b3f92ef5-7cf4-4a9a-b8f0-41a7fb4fb0e6"}
+                //new DownloadModel{ FileGuid = "b3f92ef5-7cf4-4a9a-b8f0-41a7fb4fb0e6"}
             };
 
 
 
             var downResult = fileServiceBuilder.DownloadFilesList(down);
+
+            foreach (var dow in downResult)
+            {
+                var patch = $@"{Config.TempPath(Config.TempType.Down)}\{dow.FileInfo.FileName}";
+                using (var strim = new FileStream(patch, FileMode.Create, FileAccess.Write))
+                {
+                    foreach (var part in dow.PartInfo)
+                    {
+                        var bytes = File.ReadAllBytes(part.Patch);
+                        strim.Write(bytes, 0, bytes.Length);
+
+                        File.Delete(part.Patch);
+                    }
+
+                }
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             downResult = null;
             down = null;
             fileServiceBuilder = null;
