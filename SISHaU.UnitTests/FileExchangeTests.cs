@@ -12,30 +12,38 @@ namespace SISHaU.UnitTests
     [TestClass]
     public class FileExchangeTests
     {
+        private Builder _fileServiceBuilder;
+        [TestInitialize]
+        public void TestSetup()
+        {
+            Config.InitConfig();
+
+            _fileServiceBuilder = new Builder();
+        }
+
         [TestMethod]
         public void TestUploadFiles()
         {
 
-            Config.InitConfig();
+
 
             /*System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"D:\TestFileUploade");
 
             var files = dir.EnumerateFiles().Select(x=> $@"{x.FullName}").ToList();*/
-            
-            var fileServiceBuilder = new Builder();
-            /*
-              var doUpload = new UploadFiles
-              {
 
-                  FilesPathList = *files* new List<string>
+
+            var doUpload = new UploadFiles
+            {
+
+                FilesPathList = /*files*/ new List<string>
                   {
-                          /*@"D:\test0.zip",
+                          @"D:\test0.zip",
                           @"D:\test1.zip",
                           @"D:\test2.zip",
                           @"D:\test3.zip",
                           @"D:\test4.zip",
                           @"D:\test5.zip",
-                          @"D:\test6.zip",*
+                          @"D:\test6.zip",
                           @"D:\test7.zip",
                           @"D:\test8.zip",
                           @"D:\test9.zip",
@@ -45,12 +53,16 @@ namespace SISHaU.UnitTests
                           @"D:\test13.zip",
                           @"D:\test14.zip"
                   },
-                  RepositoryMarker = Repo.Homemanagement
-              };
-              var result = fileServiceBuilder.UploadFilesList(doUpload.FilesPathList, doUpload.RepositoryMarker);
+                RepositoryMarker = Repo.Homemanagement
+            };
+            var result = _fileServiceBuilder.UploadFilesList(doUpload.FilesPathList, doUpload.RepositoryMarker);
 
-            System.Threading.Thread.Sleep(15000);*/
 
+        }
+
+        [TestMethod]
+        public void TestDownloadFiles()
+        {
             /*47*
             var down = new List<DownloadModel>() {
                 new DownloadModel{ FileGuid = "e56e6ed5-3315-492e-bf7e-05d2cd58410b"},
@@ -70,7 +82,7 @@ namespace SISHaU.UnitTests
 
 
 
-            var downResult = fileServiceBuilder.DownloadFilesList(down);
+            var downResult = _fileServiceBuilder.DownloadFilesList(down);
 
             foreach (var dow in downResult)
             {
@@ -89,27 +101,12 @@ namespace SISHaU.UnitTests
             }
             GC.Collect();
             GC.WaitForPendingFinalizers();
-
-            downResult = null;
-            down = null;
-            fileServiceBuilder = null;
-/*
-            while (true)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-            }*/
-
-            /*
-            if (downResult != null)
-            {
-                foreach (var dow in downResult)
-                {
-                    //File.WriteAllBytes($@"D:\result\{dow.FileName}", dow.FileBytes);
-                }
-            }*/
-
-
         }
+
+        [TestCleanup]
+        public void Clianup() {
+            _fileServiceBuilder = null;
+        }
+
     }
 }
