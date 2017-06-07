@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
@@ -45,29 +48,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FluentBilder\FEnginerModel\BaseModel.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FBillsOperation\BillsModel\BillsModel.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FBillsOperation\BillsOperationEnginer.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHandbookManagement\HandbookManagementEnginer.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FPaymentOperation\PaymentEnginer.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FPaymentOperation\Payment\PaymentModel.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FResourceContractOperation\ResourceContractEnginer.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountModel.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\AccountReason.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\Account\PayerInfo.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseOperation\Class1.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\HouseManagementEnginer.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristics.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\BasicCharacteristicsSetValues.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\DeviceDataToCreate.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceExport.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceImport.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\MeteringDeviceModel.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FHouseManagement\MeteringDevice\ResidentialPremiseDevice.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\RemovedFNotification\INotification.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\RemovedFNotification\Notificator.cs" />
-    <Compile Include="FluentBilder\FEnginerModel\FResourceContractOperation\ResourceContract\ResourceContractModel.cs" />
-    <Compile Include="FluentBilder\FInterface\IBaseModelPooler.cs" />
+    <Compile Include="BaseModel.cs" />
+    <Compile Include="EntityGenerator.cs" />
+    <Compile Include="HouseManagement\AccountDataModel.cs" />
+    <Compile Include="HouseManagement\Account\AccomodationModel.cs" />
+    <Compile Include="HouseManagement\Account\AccountModel.cs" />
+    <Compile Include="HouseManagement\Account\AddAccountModel.cs" />
+    <Compile Include="HouseManagement\Account\PayerInfoModel.cs" />
+    <Compile Include="HouseManagement\ExportMeteringDeviceDataModel.cs" />
+    <Compile Include="HouseManagement\HouseManagementModel.cs" />
+    <Compile Include="HouseManagement\HouseRsoDataModel.cs" />
+    <Compile Include="HouseManagement\ImportMeteringDeviceModel.cs" />
+    <Compile Include="HouseManagement\ImportNotificationDataModel.cs" />
+    <Compile Include="HouseManagement\ImportSupplyResourceContractDataModel.cs" />
+    <Compile Include="HouseManagement\IndividualServicesDataModel.cs" />
+    <Compile Include="HouseManagement\MeteringDeviceDataModel.cs" />
+    <Compile Include="HouseManagement\MeteringDevice\BasicCharacteristics.cs" />
+    <Compile Include="HouseManagement\MeteringDevice\BasicCharacteristicsSetValues.cs" />
+    <Compile Include="HouseManagement\MeteringDevice\CollectiveDevice.cs" />
+    <Compile Include="HouseManagement\MeteringDevice\DeviceDataToCreate.cs" />
+    <Compile Include="HouseManagement\MeteringDevice\MeteringDeviceModel.cs" />
+    <Compile Include="HouseManagement\MeteringDevice\ResidentialPremiseDevice.cs" />
+    <Compile Include="HouseManagement\SupplyResourceContractDataModel.cs" />
+    <Compile Include="HouseManagement\SupplyResourceContract\SupplyResourceContract.cs" />
+    <Compile Include="HouseRso\HouseRsoModel.cs" />
+    <Compile Include="IBaseModelBehavior.cs" />
+    <Compile Include="IEntityGenerator.cs" />
+    <Compile Include="NsiCommon\ExportNsiListDataModel.cs" />
+    <Compile Include="NsiCommon\NsiCommonDataModel.cs" />
+    <Compile Include="NsiService\ExportDataProviderNsiItemModel.cs" />
+    <Compile Include="NsiService\ImportAdditionalServicesModel.cs" />
+    <Compile Include="Payments\ExportPaymentDocumentDetailsDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -84,16 +95,6 @@
       <Name>SISHaU.Library</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FluentBilder\FEnginerModel\FHandbookManagement\HandbookModel\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="FluentBilder\FEnginerModel\FBillsOperation\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FResourceContractOperation\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FHandbookManagement\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FHouseManagement\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\RemovedFNotification\Task.txt" />
-    <Content Include="FluentBilder\FEnginerModel\FPaymentOperation\Task.txt" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

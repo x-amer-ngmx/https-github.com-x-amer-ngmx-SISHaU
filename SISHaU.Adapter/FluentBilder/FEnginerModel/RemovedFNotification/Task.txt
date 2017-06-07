@@ -1,6 +1,0 @@
-﻿Обработка иформационных сообщений
-
-1. importNotificationsOfOrderExecution (импорт извещений о принятии к исполнению распоряжений);
-2. importNotificationsOfOrderExecutionCancellation (импорт сведений об аннулировании извещений о принятии к исполнению распоряжений).
-3. importNotificationData (импорт новости для информирования граждан).
-4. exportNotificationsOfOrderExecution (экспорт извещений о принятии к исполнению распоряжений с результатами квитирования);

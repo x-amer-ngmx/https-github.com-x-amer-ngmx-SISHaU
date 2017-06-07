@@ -1,6 +1,0 @@
-﻿Обработка оплат
-
-1. exportPaymentDocumentDetails
-2. importNotificationsOfOrderExecution
-3. importNotificationsOfOrderExecutionCancellation
-4. importSupplierNotificationsOfOrderExecution

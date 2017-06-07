@@ -81,37 +81,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="File\Model\SplitFileModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\Account\AccomodationModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\Account\AccountModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\Account\AddAccountModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\Account\PayerInfoModel.cs" />
-    <Compile Include="API\GisServiceModels\BaseModel.cs" />
-    <Compile Include="API\GisServiceModels\EntityGenerator.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\AccountDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\ExportMeteringDeviceDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\HouseManagementModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\HouseRsoDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\ImportMeteringDeviceModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\ImportNotificationDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\ImportSupplyResourceContractDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\IndividualServicesDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\MeteringDeviceDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\MeteringDevice\BasicCharacteristics.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\MeteringDevice\BasicCharacteristicsSetValues.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\MeteringDevice\CollectiveDevice.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\MeteringDevice\DeviceDataToCreate.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\MeteringDevice\MeteringDeviceModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\MeteringDevice\ResidentialPremiseDevice.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\SupplyResourceContractDataModel.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\SupplyResourceContract\SupplyResourceContract.cs" />
-    <Compile Include="API\GisServiceModels\HouseRso\HouseRsoModel.cs" />
-    <Compile Include="API\GisServiceModels\IBaseModelBehavior.cs" />
-    <Compile Include="API\GisServiceModels\IEntityGenerator.cs" />
-    <Compile Include="API\GisServiceModels\NsiCommon\ExportNsiListDataModel.cs" />
-    <Compile Include="API\GisServiceModels\NsiCommon\NsiCommonDataModel.cs" />
-    <Compile Include="API\GisServiceModels\NsiService\ExportDataProviderNsiItemModel.cs" />
-    <Compile Include="API\GisServiceModels\NsiService\ImportAdditionalServicesModel.cs" />
-    <Compile Include="API\GisServiceModels\Payments\ExportPaymentDocumentDetailsDataModel.cs" />
     <Compile Include="Util\GisUtil.cs" />
     <Compile Include="API\Interfaces\IGisBinder.cs" />
     <Compile Include="API\Interfaces\IGisIntegrationService.cs" />

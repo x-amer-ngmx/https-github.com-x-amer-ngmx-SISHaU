@@ -1,4 +1,0 @@
-﻿Работа с договорами.
-
-1. importSupplyResourceContract (импортДРСО); 
-2. exportSupplyResourceContract (экспорт ДРСО).
