@@ -7061,7 +7061,7 @@ namespace Integration.HouseManagement
         public HouseRSOType LivingHouseToUpdate { get; set; }
         
         [System.Xml.Serialization.XmlElementAttribute("Blocks", typeof(importHouseRSORequestLivingHouseBlocks), Order=2)]
-        public importHouseRSORequestLivingHouseBlocks Blocks { get; set; }
+        public importHouseRSORequestLivingHouseBlocks[] Blocks { get; set; }
         
         [System.Xml.Serialization.XmlElementAttribute("LivingRoomToCreate", typeof(RoomRSOType), Order=3)]
         public RoomRSOType[] LivingRoomToCreate { get; set; }

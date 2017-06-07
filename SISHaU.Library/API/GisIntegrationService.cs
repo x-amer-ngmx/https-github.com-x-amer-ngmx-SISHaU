@@ -10,7 +10,7 @@ using SISHaU.Library.Util;
 
 namespace SISHaU.Library.API
 {
-    public class GisIntegrationService<T, TU> : GisBinder, IGisIntegrationService<T,TU>
+    public class GisIntegrationService<T, TU> : GisBinder, IGisIntegrationService<T, TU>
         where T : class
         where TU : class
     {
@@ -25,28 +25,17 @@ namespace SISHaU.Library.API
             if (!IsSimpleService())
             {
                 _abstractProxy = GetProxy<T>();
+                _methods = typeof(T).GetMethods()
+                    .Where(t => t.ReturnType.IsAssignableFrom(typeof(ResultHeader)))
+                    .ToDictionary(t => t.GetParameters().ElementAt(1).ParameterType.Name, t => t);
             }
 
             _abstractProxyAsync = GetProxy<TU>();
 
-            _methods = typeof(T).GetMethods()
-                .Where(t => t.ReturnType.IsAssignableFrom(typeof(ResultHeader)))
-                .ToDictionary(t => t.GetParameters().ElementAt(1).ParameterType.Name, t => t);
             _methodsAsync = typeof(TU).GetMethods()
                 .Where(t => t.ReturnType.IsAssignableFrom(typeof(ResultHeader)))
                 .ToDictionary(t => t.GetParameters().ElementAt(1).ParameterType.Name, t => t);
 
-            /*
-        var allOtherMethods = CacheMethods(typeof(T))typeof(T).GetMethods()
-            .Where(t => t.ReturnType.IsAssignableFrom(typeof(ResultHeader)))
-            .Select(t => t)
-            .ToDictionary(
-                    k => k.GetParameters().ElementAt(1).ParameterType.Name,
-                    k => k.Name
-                );
-
-        var allOtherMethodsAsync = typeof(TU).GetMethods();
-        */
             InitMapper(mapConfig);
         }
 
@@ -80,7 +69,7 @@ namespace SISHaU.Library.API
 
         public virtual TS ProcessRequest<TS>(object request) where TS : class
         {
-            return /*IsSimpleService() ? */ProcessMethod<TS>(request) /*: ProcessMethodAsync<TS>(request)*/;
+            return IsSimpleService() ? ProcessMethodAsync<TS>(request) : ProcessMethod<TS>(request);
         }
 
         public TS BeginProcessRequest<TS>(object request) where TS : class

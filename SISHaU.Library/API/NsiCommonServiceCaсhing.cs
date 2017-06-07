@@ -104,6 +104,8 @@ namespace SISHaU.Library.API
             }
         }
 
+        private static readonly Dictionary<string, object> NsiCacher = new Dictionary<string, object>();
+
         private TS ExportNsiItem<TS, T, TU>(object request, IGisIntegrationService<T, TU> gisIntegrationService)
             where TS : class
             where T : class
@@ -139,10 +141,10 @@ namespace SISHaU.Library.API
                     .WhereRestrictionOn(t => t.NsiItemRegistryNumber).IsLike(registryNumber, MatchMode.Exact)
                     .List();
 
-                if (queryResult.Any())
-                {
-                    Log(queryResult.First());
-                    return UtilMapper.Map<TS>(queryResult.First());
+                if (queryResult.Any()){
+                    //Log(queryResult.First());
+                    NsiCacher.Add(registryNumber, UtilMapper.Map<TS>(queryResult.First()));
+                    return NsiCacher[registryNumber] as TS;
                 }
 
                 var processObjects = gisIntegrationService.ProcessRequest<TS>(request);

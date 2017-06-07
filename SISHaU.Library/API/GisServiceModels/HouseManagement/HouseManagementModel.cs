@@ -4,7 +4,7 @@ using Integration.Base;
 using Integration.HouseManagement;
 using Integration.HouseManagementService;
 using Integration.HouseManagementServiceAsync;
-using SISHaU.Library.API.GisServiceModels.Account;
+using SISHaU.Library.API.GisServiceModels.HouseManagement.Account;
 using SISHaU.Library.API.GisServiceModels.HouseManagement.MeteringDevice;
 using SISHaU.Library.API.GisServiceModels.HouseManagement.SupplyResourceContract;
 using SISHaU.Library.API.GisServiceModels.HouseRso;

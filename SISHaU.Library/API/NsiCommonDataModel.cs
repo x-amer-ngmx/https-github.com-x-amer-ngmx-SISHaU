@@ -24,6 +24,11 @@ namespace SISHaU.Library.API
                     .Contains(registryNumber);
         }
 
+        public exportNsiListResult ExportNsiList()
+        {
+            return _nsiCommonService.ProcessRequest<exportNsiListResult>(GenerateGenericType<exportNsiListRequest>());
+        }
+
         private exportNsiItemResult ProcessRequest(string registryNumber)
         {
             return _nsiCommonService.ProcessRequest<exportNsiItemResult>(
@@ -44,13 +49,13 @@ namespace SISHaU.Library.API
         public Dictionary<string, nsiRef> GetNsiRefList(string itemRegistryNumber, string strFilter = "")
         {
             var response = ProcessRequest(itemRegistryNumber);
-            return null == response.NsiItem ? null : GetNsiRefList(response, strFilter);
+            return null == response.NsiItem ? new Dictionary<string, nsiRef>() : GetNsiRefList(response, strFilter);
         }
 
         public Dictionary<string, string> GetList(string itemRegistryNumber, string strFilter = "")
         {
             var response = ProcessRequest(itemRegistryNumber);
-            return null == response.NsiItem ? null : GetNsiList(response, strFilter);
+            return null == response.NsiItem ? new Dictionary<string, string>() : GetNsiList(response, strFilter);
         }
 
         /// <summary>
@@ -92,6 +97,11 @@ namespace SISHaU.Library.API
             return GetNsiRef("22", "Причина закрытия лицевого счета", reason);
         }
 
+        /// <summary>
+        /// Недоделано
+        /// </summary>
+        /// <param name="serviceName"></param>
+        /// <returns></returns>
         public nsiRef GetAdditionalService(string serviceName)
         {
             var a1 = GetNsiRef("1", "Вид дополнительной услуги", serviceName);
@@ -105,10 +115,16 @@ namespace SISHaU.Library.API
             return GetNsiRef("16", "Межповерочный интервал", intervalValue.ToString());
         }
 
+        public static Dictionary<string, nsiRef> MeteringDeviceMunicipalResourceCaching = new Dictionary<string, nsiRef>();
+
         public nsiRef GetMeteringDeviceMunicipalResource(string resourceName)
         {
             return GetNsiRef("2", "Вид коммунального ресурса", resourceName);
         }
 
+        public nsiRef GetPremiseCharacteristic(string premiseCharacteristicString)
+        {
+            return GetNsiRef("30", "Характеристика помещения", premiseCharacteristicString);
+        }
     }
 }

@@ -6,9 +6,8 @@ using Integration.HouseManagementService;
 using Integration.HouseManagementServiceAsync;
 using Integration.NsiBase;
 using ImportResult = Integration.HouseManagement.ImportResult;
-using SISHaU.Library.API;
 
-namespace ServiceHelperHost.Library.GisServiceModel.HouseManagement
+namespace SISHaU.Library.API.GisServiceModels.HouseManagement
 {
     public class MeteringDeviceDataModel : Requester<HouseManagementPortsTypeClient, HouseManagementPortsTypeAsyncClient>
     {

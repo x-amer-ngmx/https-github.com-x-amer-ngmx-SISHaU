@@ -81,10 +81,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="File\Model\SplitFileModel.cs" />
-    <Compile Include="API\GisServiceModels\Account\AccomodationModel.cs" />
-    <Compile Include="API\GisServiceModels\Account\AccountModel.cs" />
-    <Compile Include="API\GisServiceModels\Account\AddAccountModel.cs" />
-    <Compile Include="API\GisServiceModels\Account\PayerInfoModel.cs" />
+    <Compile Include="API\GisServiceModels\HouseManagement\Account\AccomodationModel.cs" />
+    <Compile Include="API\GisServiceModels\HouseManagement\Account\AccountModel.cs" />
+    <Compile Include="API\GisServiceModels\HouseManagement\Account\AddAccountModel.cs" />
+    <Compile Include="API\GisServiceModels\HouseManagement\Account\PayerInfoModel.cs" />
     <Compile Include="API\GisServiceModels\BaseModel.cs" />
     <Compile Include="API\GisServiceModels\EntityGenerator.cs" />
     <Compile Include="API\GisServiceModels\HouseManagement\AccountDataModel.cs" />
@@ -104,8 +104,6 @@
     <Compile Include="API\GisServiceModels\HouseManagement\MeteringDevice\ResidentialPremiseDevice.cs" />
     <Compile Include="API\GisServiceModels\HouseManagement\SupplyResourceContractDataModel.cs" />
     <Compile Include="API\GisServiceModels\HouseManagement\SupplyResourceContract\SupplyResourceContract.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\zzzHouseManagementHelper.cs" />
-    <Compile Include="API\GisServiceModels\HouseManagement\zzzHouseManagementService.cs" />
     <Compile Include="API\GisServiceModels\HouseRso\HouseRsoModel.cs" />
     <Compile Include="API\GisServiceModels\IBaseModelBehavior.cs" />
     <Compile Include="API\GisServiceModels\IEntityGenerator.cs" />

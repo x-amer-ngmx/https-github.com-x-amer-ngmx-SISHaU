@@ -5,11 +5,11 @@ using Integration.NsiCommon;
 
 namespace SISHaU.Library.Util
 {
-    public class NsiUtil : TypeUtils
+    /// <summary>
+    /// Рефлексия творит чудеса
+    /// </summary>
+    public class NsiUtil : GisUtil
     {
-        /// <summary>
-        /// Рефлексия творит чудеса
-        /// </summary>
         protected nsiRef GetNsiRef(exportNsiItemResult response, string strFilter, string strFilterItem)
         {
             var list = GetNsiRefList(response, strFilter);
